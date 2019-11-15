@@ -32,7 +32,7 @@ namespace HabitTrackerServices
             }
             catch (Exception ex)
             {
-
+                throw;
             }
         }
 
