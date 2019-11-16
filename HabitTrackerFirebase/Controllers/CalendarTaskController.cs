@@ -28,8 +28,6 @@ namespace HabitTrackerFirebase.Controllers
         public async Task<List<CalendarTask>> Get(string userId)
         {
             return await CalendarTaskService.GetAsync(userId);
-
-            // var tasks = CalendarTaskService.Get(userId);
         }
 
         // POST 
