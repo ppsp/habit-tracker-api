@@ -79,7 +79,13 @@ namespace HabitTrackerCore.Models
         /// </summary>
         [FirestoreProperty]
         public bool Void { get; set; }
-        
+
+        public CalendarTask()
+        {
+
+        }
+
+
         public CalendarTask(DTOCalendarTask task)
         {
             try
