@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HabitTrackerCore\HabitTrackerCore.csproj" />
     <ProjectReference Include="..\HabitTrackerServices\HabitTrackerServices.csproj" />
+    <ProjectReference Include="..\HabitTrackerTools\HabitTrackerTools.csproj" />
   </ItemGroup>
 
 </Project>

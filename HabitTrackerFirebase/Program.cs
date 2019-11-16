@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HabitTrackerTools;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,8 @@ namespace HabitTrackerFirebase
     {
         public static void Main(string[] args)
         {
+            Logger.ConfigLogger();
+            Logger.Debug("Starting HabitTracker");
             CreateHostBuilder(args).Build().Run();
         }
 

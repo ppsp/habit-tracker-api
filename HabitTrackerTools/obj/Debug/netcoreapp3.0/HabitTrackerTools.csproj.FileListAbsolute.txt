@@ -1,0 +1,8 @@
+F:\GIT\HabitTrackerFirebase\HabitTrackerTools\bin\Debug\netcoreapp3.0\HabitTrackerTools.deps.json
+F:\GIT\HabitTrackerFirebase\HabitTrackerTools\bin\Debug\netcoreapp3.0\HabitTrackerTools.dll
+F:\GIT\HabitTrackerFirebase\HabitTrackerTools\obj\Debug\netcoreapp3.0\HabitTrackerTools.csprojAssemblyReference.cache
+F:\GIT\HabitTrackerFirebase\HabitTrackerTools\obj\Debug\netcoreapp3.0\HabitTrackerTools.AssemblyInfoInputs.cache
+F:\GIT\HabitTrackerFirebase\HabitTrackerTools\obj\Debug\netcoreapp3.0\HabitTrackerTools.AssemblyInfo.cs
+F:\GIT\HabitTrackerFirebase\HabitTrackerTools\bin\Debug\netcoreapp3.0\HabitTrackerTools.pdb
+F:\GIT\HabitTrackerFirebase\HabitTrackerTools\obj\Debug\netcoreapp3.0\HabitTrackerTools.dll
+F:\GIT\HabitTrackerFirebase\HabitTrackerTools\obj\Debug\netcoreapp3.0\HabitTrackerTools.pdb
