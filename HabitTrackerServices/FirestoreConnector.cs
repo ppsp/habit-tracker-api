@@ -21,7 +21,7 @@ namespace HabitTrackerServices
         {
             string filepath = Environment.CurrentDirectory + "\\pp-app-1893d-a10a5bc8bf7a.json";
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", filepath);
-            projectId = "pp-app-1893d";
+            projectId = "HabitTrackerFirebase";
             fireStoreDb = FirestoreDb.Create(projectId);
         }
     }
