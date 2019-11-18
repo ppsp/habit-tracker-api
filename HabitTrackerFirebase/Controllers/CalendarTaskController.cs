@@ -24,7 +24,6 @@ namespace HabitTrackerFirebase.Controllers
 
         // GET 
         [HttpGet]
-        //public async Task<List<CalendarTask>> Get(string userId)
         public async Task<List<CalendarTask>> Get(string userId)
         {
             return await CalendarTaskService.GetAsync(userId);
@@ -41,7 +40,14 @@ namespace HabitTrackerFirebase.Controllers
         [HttpPut]
         public async Task<bool> Put([FromBody]DTOCalendarTask task)
         {
-            return await CalendarTaskService.ReplaceTaskAsync(new CalendarTask(task));
+            return await CalendarTaskService.UpdateTaskAsync(new CalendarTask(task));
+        }
+
+        // DELETE
+        [HttpDelete]
+        public async Task<bool> Delete(string calendarTaskId)
+        {
+            return await CalendarTaskService.DeleteTaskAsync(calendarTaskId);
         }
     }
 }
