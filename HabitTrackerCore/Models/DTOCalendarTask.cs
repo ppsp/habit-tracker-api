@@ -6,10 +6,8 @@ namespace HabitTrackerCore.Models
 {
     public class DTOCalendarTask
     {
-        public string ID { get; set; }
-
         /// <summary>
-        /// 
+        /// Represents the DocumentId
         /// </summary>
         public string CalendarTaskId { get; set; }
 

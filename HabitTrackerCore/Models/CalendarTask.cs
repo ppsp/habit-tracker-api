@@ -8,10 +8,6 @@ namespace HabitTrackerCore.Models
     [FirestoreData]
     public class CalendarTask
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        [FirestoreProperty]
         public string CalendarTaskId { get; set; }
 
         /// <summary>
@@ -90,7 +86,6 @@ namespace HabitTrackerCore.Models
         {
             try
             {
-                //this.ID = task.ID != null ? new ObjectId(task.ID) : new ObjectId();
                 this.CalendarTaskId = task.CalendarTaskId;
                 this.ColumnPosition = task.ColumnPosition;
                 this.Description = task.Description;
