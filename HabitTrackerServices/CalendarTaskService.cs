@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using HabitTrackerTools;
 
 namespace HabitTrackerServices
 {
@@ -43,6 +44,7 @@ namespace HabitTrackerServices
             }
             catch (Exception ex)
             {
+                Logger.Error("Error in GetAsync", ex);
                 return new List<CalendarTask>();
             }
         }
@@ -54,6 +56,8 @@ namespace HabitTrackerServices
                 await ReorderTasks(task, 50000); // Increase the count from x to 50000 
                 // TODO: Refactor to remove the use of this arbitrary number
 
+                task.InsertDate = DateTime.Now;
+
                 CollectionReference colRef = FirestoreConnector.Instance.fireStoreDb.Collection("task_todo");
                 await colRef.AddAsync(task);
 
@@ -61,6 +65,7 @@ namespace HabitTrackerServices
             }
             catch (Exception ex)
             {
+                Logger.Error("Error in InsertTaskAsync", ex);
                 return false;
             }
         }
@@ -88,8 +93,7 @@ namespace HabitTrackerServices
             }
             catch (Exception ex)
             {
-                //TODO : Logger
-                
+                Logger.Error("Error in ReorderTasks", ex);
                 return false;
             }
         }
@@ -98,6 +102,11 @@ namespace HabitTrackerServices
         {
             try
             {
+                task.UpdateDate = DateTime.Now;
+
+                if (task.Void && task.VoidDate == null)
+                    task.VoidDate = DateTime.Now;
+
                 DocumentReference taskRef = FirestoreConnector.Instance.fireStoreDb
                                                                        .Collection("task_todo")
                                                                        .Document(task.CalendarTaskId);
@@ -110,6 +119,7 @@ namespace HabitTrackerServices
             }
             catch (Exception ex)
             {
+                Logger.Error("Error in UpdateTaskAsyncNoPositionCheck", ex);
                 return false;
             }
         }
@@ -125,6 +135,7 @@ namespace HabitTrackerServices
             }
             catch (Exception ex)
             {
+                Logger.Error("Error in UpdateTaskAsyncNoPositionCheck", ex);
                 return false;
             }
         }

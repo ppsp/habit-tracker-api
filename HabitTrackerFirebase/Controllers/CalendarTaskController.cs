@@ -1,6 +1,7 @@
-﻿using HabitTrackerCore.Models;
-using HabitTrackerCore.Services;
+﻿using HabitTrackerCore.Services;
 using HabitTrackerServices;
+using HabitTrackerServices.Models.DTO;
+using HabitTrackerServices.Models.Firestore;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace HabitTrackerFirebase.Controllers
         [HttpPost]
         public async Task<bool> Post([FromBody]DTOCalendarTask task)
         {
-            return await CalendarTaskService.InsertTaskAsync(new CalendarTask(task));
+            return await CalendarTaskService.InsertTaskAsync(new FireCalendarTask(task));
         }
 
         // PUT
@@ -49,7 +50,7 @@ namespace HabitTrackerFirebase.Controllers
                 task.AbsolutePosition = 50000; // TODO: Refactor to remove the necessity of this arbitrary number
             }
                 
-            return await CalendarTaskService.UpdateTaskAsync(new CalendarTask(task), initialAbsolutePosition);
+            return await CalendarTaskService.UpdateTaskAsync(new FireCalendarTask(task), initialAbsolutePosition);
         }
     }
 }

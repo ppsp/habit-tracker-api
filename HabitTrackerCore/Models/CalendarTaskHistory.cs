@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HabitTrackerCore.Models
 {
-    public class CalendarTaskHistory
+    public interface CalendarTaskHistory
     {
         public int TaskID { get; set; }
         public string TaskName { get; set; }
