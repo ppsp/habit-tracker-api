@@ -13,7 +13,7 @@ namespace HabitTrackerCore.Models
         /// <summary>
         /// 
         /// </summary>
-        [FirestoreProperty]
+        [FirestoreProperty] //TODO: Core should not depend on Firebase (should not have any dependencies)
         public string UserId { get; set; }
 
         /// <summary>
@@ -47,10 +47,10 @@ namespace HabitTrackerCore.Models
         public eTaskFrequency Frequency { get; set; }
 
         /// <summary>
-        /// 
+        /// Position (order) in the task list
         /// </summary>
         [FirestoreProperty]
-        public int ColumnPosition { get; set; }
+        public int AbsolutePosition { get; set; }
 
         /// <summary>
         /// 
@@ -87,7 +87,7 @@ namespace HabitTrackerCore.Models
             try
             {
                 this.CalendarTaskId = task.CalendarTaskId;
-                this.ColumnPosition = task.ColumnPosition;
+                this.AbsolutePosition = task.AbsolutePosition;
                 this.Description = task.Description;
                 this.FontAwesomeIcon = task.FontAwesomeIcon;
                 this.Frequency = task.Frequency;
@@ -101,7 +101,7 @@ namespace HabitTrackerCore.Models
             }
             catch (Exception ex)
             {
-
+                // TODO: Application Insight/log4net
             }
         }
     }
