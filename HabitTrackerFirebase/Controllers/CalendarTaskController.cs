@@ -1,12 +1,10 @@
-﻿using System;
+﻿using HabitTrackerCore.Models;
+using HabitTrackerCore.Services;
+using HabitTrackerServices;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HabitTrackerCore.Models;
-using HabitTrackerCore.Services;
-using HabitTrackerServices;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace HabitTrackerFirebase.Controllers
 {
@@ -41,18 +39,17 @@ namespace HabitTrackerFirebase.Controllers
         [HttpPut]
         public async Task<bool> Put([FromBody]DTOCalendarTask task)
         {
-            int? initialAbsolutePosition = task.InitialAbsolutePosition == task.AbsolutePosition ?
-                                            (int?)null :
-                                            task.InitialAbsolutePosition;
-
+            // TODO: Move this logic in service layer
+            int? initialAbsolutePosition = null;
+            if (task.InitialAbsolutePosition != task.AbsolutePosition)
+                initialAbsolutePosition = task.InitialAbsolutePosition;
+            else if (task.Void)
+            {
+                initialAbsolutePosition = task.InitialAbsolutePosition;
+                task.AbsolutePosition = 50000; // TODO: Refactor to remove the necessity of this arbitrary number
+            }
+                
             return await CalendarTaskService.UpdateTaskAsync(new CalendarTask(task), initialAbsolutePosition);
-        }
-
-        // DELETE
-        [HttpDelete]
-        public async Task<bool> Delete(string calendarTaskId)
-        {
-            return await CalendarTaskService.DeleteTaskAsync(calendarTaskId);
         }
     }
 }

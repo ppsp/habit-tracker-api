@@ -12,13 +12,19 @@ namespace HabitTrackerServices
 {
     public class CalendarTaskService : ICalendarTaskService
     {
+        /// <summary>
+        /// Does not return Voided tasks
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<List<CalendarTask>> GetAsync(string userId)
         {
             try
             {
                 Query taskCollection = FirestoreConnector.Instance.fireStoreDb
                                                                   .Collection("task_todo")
-                                                                  .WhereEqualTo("UserId", userId);
+                                                                  .WhereEqualTo("UserId", userId)
+                                                                  .WhereEqualTo("Void", false);
                 QuerySnapshot tasksQuerySnapshot = await taskCollection.GetSnapshotAsync();
                 List<CalendarTask> tasks = new List<CalendarTask>();
 
@@ -45,6 +51,9 @@ namespace HabitTrackerServices
         {
             try
             {
+                await ReorderTasks(task, 50000); // Increase the count from x to 50000 
+                // TODO: Refactor to remove the use of this arbitrary number
+
                 CollectionReference colRef = FirestoreConnector.Instance.fireStoreDb.Collection("task_todo");
                 await colRef.AddAsync(task);
 
@@ -113,26 +122,6 @@ namespace HabitTrackerServices
                     await this.ReorderTasks(task, initialAbsolutePosition.Value);
 
                 return await UpdateTaskAsyncNoPositionCheck(task);
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
-
-        public async Task<bool> DeleteTaskAsync(string calendarTaskId)
-        {
-            try
-            {
-                DocumentReference taskRef = FirestoreConnector.Instance.fireStoreDb
-                                                                       .Collection("task_todo")
-                                                                       .Document(calendarTaskId);
-
-                await taskRef.DeleteAsync();
-
-                //TODO: Delete the history (the delete history function has to be done first, or do we want to keep it and simply void the task to preserve the history ? or delete only if there is no history and void if there is one)
-
-                return true;
             }
             catch (Exception ex)
             {
