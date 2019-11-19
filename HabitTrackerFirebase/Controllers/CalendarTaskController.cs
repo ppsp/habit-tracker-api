@@ -24,9 +24,10 @@ namespace HabitTrackerFirebase.Controllers
 
         // GET 
         [HttpGet]
-        public async Task<List<CalendarTask>> Get(string userId)
+        public async Task<List<DTOCalendarTask>> Get(string userId)
         {
-            return await CalendarTaskService.GetAsync(userId);
+            var tasks = await CalendarTaskService.GetAsync(userId);
+            return tasks.Select(p => new DTOCalendarTask(p)).ToList();
         }
 
         // POST 
@@ -40,7 +41,11 @@ namespace HabitTrackerFirebase.Controllers
         [HttpPut]
         public async Task<bool> Put([FromBody]DTOCalendarTask task)
         {
-            return await CalendarTaskService.UpdateTaskAsync(new CalendarTask(task));
+            int? initialAbsolutePosition = task.InitialAbsolutePosition == task.AbsolutePosition ?
+                                            (int?)null :
+                                            task.InitialAbsolutePosition;
+
+            return await CalendarTaskService.UpdateTaskAsync(new CalendarTask(task), initialAbsolutePosition);
         }
 
         // DELETE
