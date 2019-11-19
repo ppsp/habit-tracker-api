@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace HabitTrackerServices
 {
@@ -40,11 +41,6 @@ namespace HabitTrackerServices
             }
         }
 
-        public List<CalendarTask> Get(string userId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> InsertTaskAsync(CalendarTask task)
         {
             try
@@ -60,7 +56,36 @@ namespace HabitTrackerServices
             }
         }
 
-        public async Task<bool> UpdateTaskAsync(CalendarTask task)
+        public async Task<bool> ReorderTasks(CalendarTask task, int initialAbsolutePosition)
+        {
+            try
+            {
+                int difference = task.AbsolutePosition - initialAbsolutePosition;
+
+                var tasks = await GetAsync(task.UserId);
+
+                foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition, 
+                                                                                          initialAbsolutePosition) &&
+                                                             !p.Void && p.CalendarTaskId != task.CalendarTaskId))
+                {
+                    currentTask.AbsolutePosition = difference < 0 ?
+                                                    currentTask.AbsolutePosition + 1 :
+                                                    currentTask.AbsolutePosition - 1;
+
+                    await UpdateTaskAsyncNoPositionCheck(currentTask);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //TODO : Logger
+                
+                return false;
+            }
+        }
+
+        private async Task<bool> UpdateTaskAsyncNoPositionCheck(CalendarTask task)
         {
             try
             {
@@ -73,6 +98,21 @@ namespace HabitTrackerServices
                 await taskRef.UpdateAsync(dictionnary);
 
                 return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateTaskAsync(CalendarTask task, int? initialAbsolutePosition = null)
+        {
+            try
+            {
+                if (initialAbsolutePosition != null)
+                    await this.ReorderTasks(task, initialAbsolutePosition.Value);
+
+                return await UpdateTaskAsyncNoPositionCheck(task);
             }
             catch (Exception ex)
             {
