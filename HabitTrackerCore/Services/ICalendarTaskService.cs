@@ -10,8 +10,7 @@ namespace HabitTrackerCore.Services
     {
         Task<bool> InsertTaskAsync(CalendarTask task);
         Task<List<CalendarTask>> GetAsync(string userId);
-        List<CalendarTask> Get(string userId);
-        Task<bool> UpdateTaskAsync(CalendarTask task);
+        Task<bool> UpdateTaskAsync(CalendarTask task, int? initialAbsolutePosition = null);
         Task<bool> DeleteTaskAsync(string taskId);
     }
 }
