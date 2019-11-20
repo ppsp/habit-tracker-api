@@ -25,7 +25,7 @@ namespace HabitTrackerFirebase.Controllers
         [HttpGet]
         public async Task<List<DTOCalendarTask>> Get(string userId)
         {
-            var tasks = await CalendarTaskService.GetAsync(userId);
+            var tasks = await CalendarTaskService.GetTasksAsync(userId);
             return tasks.Select(p => new DTOCalendarTask(p)).ToList();
         }
 

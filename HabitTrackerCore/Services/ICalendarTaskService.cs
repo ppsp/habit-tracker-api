@@ -9,7 +9,8 @@ namespace HabitTrackerCore.Services
     public interface ICalendarTaskService
     {
         Task<string> InsertTaskAsync(ICalendarTask task);
-        Task<List<ICalendarTask>> GetAsync(string userId);
+        Task<List<ICalendarTask>> GetTasksAsync(string userId, bool includeVoid = false);
         Task<bool> UpdateTaskAsync(ICalendarTask task);
+        Task<ICalendarTask> GetTaskAsync(string calendarTaskId);
     }
 }

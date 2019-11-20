@@ -2,15 +2,12 @@
 using HabitTrackerCore.Models;
 using HabitTrackerCore.Services;
 using HabitTrackerCore.Utils;
+using HabitTrackerServices.Models.Firestore;
+using HabitTrackerTools;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using HabitTrackerTools;
-using HabitTrackerServices.Models.DTO;
-using System.Text.Json;
-using Newtonsoft.Json;
-using HabitTrackerServices.Models.Firestore;
+using System.Threading.Tasks;
 
 namespace HabitTrackerServices
 {
@@ -21,11 +18,11 @@ namespace HabitTrackerServices
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<List<ICalendarTask>> GetAsync(string userId)
+        public async Task<List<ICalendarTask>> GetTasksAsync(string userId, bool includeVoid = false)
         {
             try
             {
-                return await getAsync(userId);
+                return await getAsync(userId, includeVoid);
             }
             catch (Exception ex)
             {
@@ -34,12 +31,17 @@ namespace HabitTrackerServices
             }
         }
 
-        private async Task<List<ICalendarTask>> getAsync(string userId)
+        private async Task<List<ICalendarTask>> getAsync(string userId, bool includeVoid = false)
         {
-            Query taskCollection = FirestoreConnector.Instance.fireStoreDb
-                                                                              .Collection("task_todo")
-                                                                              .WhereEqualTo("UserId", userId)
-                                                                              .WhereEqualTo("Void", false);
+            Query taskCollection = includeVoid ?
+                                    FirestoreConnector.Instance.fireStoreDb
+                                                               .Collection("task_todo")
+                                                               .WhereEqualTo("UserId", userId) :
+                                    FirestoreConnector.Instance.fireStoreDb
+                                                               .Collection("task_todo")
+                                                               .WhereEqualTo("UserId", userId)
+                                                               .WhereEqualTo("Void", false);
+
             QuerySnapshot tasksQuerySnapshot = await taskCollection.GetSnapshotAsync();
             List<ICalendarTask> tasks = new List<ICalendarTask>();
 
@@ -71,7 +73,7 @@ namespace HabitTrackerServices
 
         private async Task<string> insertTaskAsync(ICalendarTask task)
         {
-            await ReorderTasks(new DTOCalendarTask(task, TaskPosition.MaxValue));
+            await ReorderTasks(task);
 
             task.InsertDate = DateTime.UtcNow;
 
@@ -81,7 +83,7 @@ namespace HabitTrackerServices
             return reference.Id;
         }
 
-        public async Task<bool> ReorderTasks(DTOCalendarTask task)
+        public async Task<bool> ReorderTasks(ICalendarTask task)
         {
             try
             {
@@ -95,11 +97,11 @@ namespace HabitTrackerServices
             }
         }
 
-        private async Task reorderTasks(DTOCalendarTask task)
+        private async Task reorderTasks(ICalendarTask task)
         {
             int difference = task.AbsolutePosition - task.InitialAbsolutePosition;
 
-            var tasks = await GetAsync(task.UserId);
+            var tasks = await GetTasksAsync(task.UserId);
 
             foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
                                                                                       task.InitialAbsolutePosition) &&
@@ -147,7 +149,7 @@ namespace HabitTrackerServices
         {
             try
             {
-                return await updateTaskAsync(new DTOCalendarTask(task));
+                return await updateTaskAsync(task);
             }
             catch (Exception ex)
             {
@@ -156,7 +158,7 @@ namespace HabitTrackerServices
             }
         }
 
-        private async Task<bool> updateTaskAsync(DTOCalendarTask task)
+        private async Task<bool> updateTaskAsync(ICalendarTask task)
         {
             if (task.HasBeenVoided())
             {
@@ -167,6 +169,49 @@ namespace HabitTrackerServices
                 await this.ReorderTasks(task);
 
             return await UpdateTaskAsyncNoPositionCheck(task);
+        }
+
+        public async Task<ICalendarTask> GetTaskAsync(string calendarTaskId)
+        {
+            try
+            {
+                var reference = FirestoreConnector.Instance.fireStoreDb
+                                                           .Collection("task_todo")
+                                                           .Document(calendarTaskId);
+
+                var snapshot = await reference.GetSnapshotAsync();
+
+                var task = snapshot.ConvertTo<FireCalendarTask>();
+
+                return task.ToCalendarTask();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in GetAsync", ex);
+                return null;
+            }
+        }
+
+
+        public async Task<bool> DeleteTaskAsync(string calendarTaskId)
+        {
+            try
+            {
+                DocumentReference taskRef = FirestoreConnector.Instance.fireStoreDb
+                                                                       .Collection("task_todo")
+                                                                       .Document(calendarTaskId);
+
+                await taskRef.DeleteAsync();
+
+                //TODO: Delete the history (the delete history function has to be done first, or do we want to keep it and simply void the task to preserve the history ? or delete only if there is no history and void if there is one)
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in DeleteTaskAsync", ex);
+                return false;
+            }
         }
     }
 }
