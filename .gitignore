@@ -12,3 +12,5 @@
 /HabitTrackerServices/obj
 /HabitTrackerFirebase/appsettings.json
 /HabitTrackerFirebase/logs
+/HabitTrackerTest/bin/Debug/netcoreapp3.0
+/HabitTrackerTest/obj
