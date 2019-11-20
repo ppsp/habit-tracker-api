@@ -32,6 +32,11 @@ namespace HabitTrackerCore.Models
         public int AbsolutePosition { get; set; }
 
         /// <summary>
+        /// Used to track if AbsolutePosition has changed
+        /// </summary>
+        public int InitialAbsolutePosition { get; set; }
+
+        /// <summary>
         /// The result type of the task. If It's simply Done or Not done, use Binary. 
         /// Use decimal to store a number and use Time to store a time of day
         /// </summary>
@@ -53,9 +58,7 @@ namespace HabitTrackerCore.Models
         public DateTime? UpdateDate { get; set; }
         public DateTime? VoidDate { get; set; }
 
-        public bool HasBeenVoided()
-        {
-            return this.Void = true && this.VoidDate == null;
-        }
+        public bool HasBeenVoided();
+        public bool PositionHasBeenModified();
     }
 }

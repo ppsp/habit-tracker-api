@@ -112,35 +112,7 @@ namespace HabitTrackerServices.Models.DTO
         {
             try
             {
-                this.InitialAbsolutePosition = task.AbsolutePosition;
-
-                this.CalendarTaskId = task.CalendarTaskId;
-                this.AbsolutePosition = task.AbsolutePosition;
-                this.Description = task.Description;
-                this.Frequency = task.Frequency;
-                this.MinDuration = task.MinDuration;
-                this.Name = task.Name;
-                this.Positive = task.Positive;
-                this.RequiredDays = task.RequiredDays;
-                this.ResultType = task.ResultType;
-                this.UserId = task.UserId;
-                this.Void = task.Void;
-                this.InsertDate = task.InsertDate;
-                this.UpdateDate = task.UpdateDate;
-                this.VoidDate = task.VoidDate;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Error constructing DTOCalendarTask", ex);
-                throw;
-            }
-        }
-
-        public DTOCalendarTask(ICalendarTask task, int initialAbsolutePosition)
-        {
-            try
-            {
-                this.InitialAbsolutePosition = initialAbsolutePosition;
+                this.InitialAbsolutePosition = task.InitialAbsolutePosition;
                 this.CalendarTaskId = task.CalendarTaskId;
                 this.AbsolutePosition = task.AbsolutePosition;
                 this.Description = task.Description;
@@ -169,6 +141,7 @@ namespace HabitTrackerServices.Models.DTO
 
             task.CalendarTaskId = this.CalendarTaskId;
             task.AbsolutePosition = this.AbsolutePosition;
+            task.InitialAbsolutePosition = this.InitialAbsolutePosition;
             task.Description = this.Description;
             task.Frequency = this.Frequency;
             task.MinDuration = this.MinDuration;

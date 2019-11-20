@@ -9,7 +9,7 @@ using System.Text;
 namespace HabitTrackerServices.Models.Firestore
 {
     [FirestoreData]
-    public class FireCalendarTask : ICalendarTask
+    public class FireCalendarTask
     {
         public string CalendarTaskId { get; set; }
 
