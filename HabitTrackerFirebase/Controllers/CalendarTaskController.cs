@@ -21,7 +21,7 @@ namespace HabitTrackerFirebase.Controllers
             CalendarTaskService = new CalendarTaskService();
         }
 
-        // GET 
+        // GET
         [HttpGet]
         public async Task<List<DTOCalendarTask>> Get(string userId)
         {
@@ -29,28 +29,19 @@ namespace HabitTrackerFirebase.Controllers
             return tasks.Select(p => new DTOCalendarTask(p)).ToList();
         }
 
-        // POST 
+        // POST
         [HttpPost]
         public async Task<bool> Post([FromBody]DTOCalendarTask task)
         {
-            return await CalendarTaskService.InsertTaskAsync(new FireCalendarTask(task));
+            var result = await CalendarTaskService.InsertTaskAsync(task);
+            return result != null;
         }
 
         // PUT
         [HttpPut]
         public async Task<bool> Put([FromBody]DTOCalendarTask task)
         {
-            // TODO: Move this logic in service layer
-            int? initialAbsolutePosition = null;
-            if (task.InitialAbsolutePosition != task.AbsolutePosition)
-                initialAbsolutePosition = task.InitialAbsolutePosition;
-            else if (task.Void)
-            {
-                initialAbsolutePosition = task.InitialAbsolutePosition;
-                task.AbsolutePosition = 50000; // TODO: Refactor to remove the necessity of this arbitrary number
-            }
-                
-            return await CalendarTaskService.UpdateTaskAsync(new FireCalendarTask(task), initialAbsolutePosition);
+            return await CalendarTaskService.UpdateTaskAsync(task);
         }
     }
 }

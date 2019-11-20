@@ -9,37 +9,51 @@ using System.Text;
 namespace HabitTrackerServices.Models.Firestore
 {
     [FirestoreData]
-    public class FireCalendarTask : CalendarTask
+    public class FireCalendarTask : ICalendarTask
     {
-        [FirestoreProperty]
-        public override string UserId { get; set; }
+        public string CalendarTaskId { get; set; }
 
         [FirestoreProperty]
-        public override string Name { get; set; }
+        public string UserId { get; set; }
 
         [FirestoreProperty]
-        public override string Description { get; set; }
+        public string Name { get; set; }
 
         [FirestoreProperty]
-        public override int MinDuration { get; set; }
+        public string Description { get; set; }
 
         [FirestoreProperty]
-        public override List<DayOfWeek> RequiredDays { get; set; }
+        public int MinDuration { get; set; }
 
         [FirestoreProperty]
-        public override eTaskFrequency Frequency { get; set; }
+        public List<DayOfWeek> RequiredDays { get; set; }
 
         [FirestoreProperty]
-        public override int AbsolutePosition { get; set; }
+        public eTaskFrequency Frequency { get; set; }
+
+        /// <summary>
+        /// Workaround because custom type conversion doesn't work
+        /// </summary>
+        public int absolutePosition { get; set; }
 
         [FirestoreProperty]
-        public override eResultType ResultType { get; set; }
+        public int AbsolutePosition { get; set; }
 
         [FirestoreProperty]
-        public override bool Positive { get; set; }
+        public eResultType ResultType { get; set; }
 
         [FirestoreProperty]
-        public override bool Void { get; set; }
+        public bool Positive { get; set; }
+
+        [FirestoreProperty]
+        public bool Void { get; set; }
+
+        [FirestoreProperty]
+        public DateTime? InsertDate { get; set; }
+        [FirestoreProperty]
+        public DateTime? UpdateDate { get; set; }
+        [FirestoreProperty]
+        public DateTime? VoidDate { get; set; }
 
         public FireCalendarTask()
         {
@@ -47,7 +61,7 @@ namespace HabitTrackerServices.Models.Firestore
         }
 
 
-        public FireCalendarTask(DTOCalendarTask task)
+        public FireCalendarTask(ICalendarTask task)
         {
             try
             {
@@ -62,6 +76,9 @@ namespace HabitTrackerServices.Models.Firestore
                 this.ResultType = task.ResultType;
                 this.UserId = task.UserId;
                 this.Void = task.Void;
+                this.InsertDate = task.InsertDate;
+                this.UpdateDate = task.UpdateDate;
+                this.VoidDate = task.VoidDate;
             }
             catch (Exception ex)
             {
@@ -74,17 +91,20 @@ namespace HabitTrackerServices.Models.Firestore
         {
             CalendarTask task = new CalendarTask();
 
-            task.CalendarTaskId = task.CalendarTaskId;
-            task.AbsolutePosition = task.AbsolutePosition;
-            task.Description = task.Description;
-            task.Frequency = task.Frequency;
-            task.MinDuration = task.MinDuration;
-            task.Name = task.Name;
-            task.Positive = task.Positive;
-            task.RequiredDays = task.RequiredDays;
-            task.ResultType = task.ResultType;
-            task.UserId = task.UserId;
-            task.Void = task.Void;
+            task.CalendarTaskId = this.CalendarTaskId;
+            task.AbsolutePosition = this.AbsolutePosition;
+            task.Description = this.Description;
+            task.Frequency = this.Frequency;
+            task.MinDuration = this.MinDuration;
+            task.Name = this.Name;
+            task.Positive = this.Positive;
+            task.RequiredDays = this.RequiredDays;
+            task.ResultType = this.ResultType;
+            task.UserId = this.UserId;
+            task.Void = this.Void;
+            task.InsertDate = this.InsertDate;
+            task.UpdateDate = this.UpdateDate;
+            task.VoidDate = this.VoidDate;
 
             return task;
         }

@@ -8,8 +8,8 @@ namespace HabitTrackerCore.Services
 {
     public interface ICalendarTaskService
     {
-        Task<bool> InsertTaskAsync(CalendarTask task);
-        Task<List<CalendarTask>> GetAsync(string userId);
-        Task<bool> UpdateTaskAsync(CalendarTask task, int? initialAbsolutePosition = null);
+        Task<string> InsertTaskAsync(ICalendarTask task);
+        Task<List<ICalendarTask>> GetAsync(string userId);
+        Task<bool> UpdateTaskAsync(ICalendarTask task);
     }
 }
