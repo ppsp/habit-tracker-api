@@ -1,13 +1,11 @@
 ﻿using HabitTrackerCore.Services;
 using HabitTrackerServices;
 using HabitTrackerServices.Models.DTO;
-using HabitTrackerServices.Models.Firestore;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HabitTrackerFirebase.Controllers
+namespace HabitTrackerWebApi.Controllers
 {
     [Route("api/[controller]")]
     [Produces("application/json")]
@@ -23,25 +21,26 @@ namespace HabitTrackerFirebase.Controllers
 
         // GET
         [HttpGet]
-        public async Task<List<DTOCalendarTask>> Get(string userId)
+        public async Task<IActionResult> Get(string userId)
         {
             var tasks = await CalendarTaskService.GetTasksAsync(userId);
-            return tasks.Select(p => new DTOCalendarTask(p)).ToList();
+            return Ok(tasks.Select(p => new DTOCalendarTask(p)).ToList());
         }
 
         // POST
         [HttpPost]
-        public async Task<bool> Post([FromBody]DTOCalendarTask task)
+        public async Task<IActionResult> Post([FromBody]DTOCalendarTask task)
         {
             var result = await CalendarTaskService.InsertTaskAsync(task);
-            return result != null;
+            return Ok(result != null);
         }
 
         // PUT
         [HttpPut]
-        public async Task<bool> Put([FromBody]DTOCalendarTask task)
+        public async Task<IActionResult> Put([FromBody]DTOCalendarTask task)
         {
-            return await CalendarTaskService.UpdateTaskAsync(task);
+            var result = await CalendarTaskService.UpdateTaskAsync(task);
+            return Ok(result);
         }
     }
 }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabitTrackerFirebase", "HabitTrackerFirebase\HabitTrackerFirebase.csproj", "{39089C92-1624-43C5-B5E9-1ABAD51460F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabitTrackerWebApi", "HabitTrackerFirebase\HabitTrackerWebApi.csproj", "{39089C92-1624-43C5-B5E9-1ABAD51460F5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabitTrackerCore", "HabitTrackerCore\HabitTrackerCore.csproj", "{B20EED8C-6E8A-4084-8988-72DBF42F9850}"
 EndProject
@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabitTrackerServices", "Hab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabitTrackerTools", "HabitTrackerTools\HabitTrackerTools.csproj", "{AA5FF93C-5C4B-41BD-A9E0-018C7AEFCBB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabitTrackerTest", "HabitTrackerTest\HabitTrackerTest.csproj", "{9E5507D0-B306-43D8-8905-0BAFD06C4820}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabitTrackerTest", "HabitTrackerTest\HabitTrackerTest.csproj", "{9E5507D0-B306-43D8-8905-0BAFD06C4820}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

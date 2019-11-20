@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HabitTrackerCore\HabitTrackerCore.csproj" />
+    <ProjectReference Include="..\HabitTrackerFirebase\HabitTrackerWebApi.csproj" />
     <ProjectReference Include="..\HabitTrackerServices\HabitTrackerServices.csproj" />
   </ItemGroup>
 

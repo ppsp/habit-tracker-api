@@ -182,6 +182,7 @@ namespace HabitTrackerServices
                 var snapshot = await reference.GetSnapshotAsync();
 
                 var task = snapshot.ConvertTo<FireCalendarTask>();
+                task.CalendarTaskId = snapshot.Id;
 
                 return task.ToCalendarTask();
             }
