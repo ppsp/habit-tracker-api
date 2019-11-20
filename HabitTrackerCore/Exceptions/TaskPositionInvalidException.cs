@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace HabitTrackerCore.Exceptions
 {
     [Serializable]
-    internal class TaskPositionInvalidException : Exception
+    public class TaskPositionInvalidException : Exception
     {
         public TaskPositionInvalidException()
         {

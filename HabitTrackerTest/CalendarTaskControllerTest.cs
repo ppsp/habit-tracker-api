@@ -1,13 +1,12 @@
 ﻿using HabitTrackerCore.Models;
-using HabitTrackerWebApi.Controllers;
 using HabitTrackerServices;
 using HabitTrackerServices.Models.DTO;
 using HabitTrackerTools;
+using HabitTrackerWebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace HabitTrackerTest
 {

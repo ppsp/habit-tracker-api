@@ -1,10 +1,8 @@
 ﻿using Google.Cloud.Firestore;
 using HabitTrackerCore.Models;
-using HabitTrackerServices.Models.DTO;
 using HabitTrackerTools;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace HabitTrackerServices.Models.Firestore
 {

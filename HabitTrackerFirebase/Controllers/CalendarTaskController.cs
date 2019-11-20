@@ -1,6 +1,8 @@
-﻿using HabitTrackerCore.Services;
+﻿using FirebaseAdmin.Auth;
+using HabitTrackerCore.Services;
 using HabitTrackerServices;
 using HabitTrackerServices.Models.DTO;
+using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +12,7 @@ namespace HabitTrackerWebApi.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
+    [CustomAuthorizeAttribute]
     public class CalendarTaskController : ControllerBase
     {
         private ICalendarTaskService CalendarTaskService { get; set; }

@@ -49,5 +49,10 @@ namespace HabitTrackerCore.Models
         /// between x and MaxValue have to be updated either +1 or -1)
         /// </summary>
         public static readonly int MaxValue = 500;
+
+        public override string ToString()
+        {
+            return _value.ToString();
+        }
     }
 }
