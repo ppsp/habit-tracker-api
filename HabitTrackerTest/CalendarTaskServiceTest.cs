@@ -106,7 +106,6 @@ namespace HabitTrackerTest
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
-                testTask.InitialAbsolutePosition = i;
                 testTask.Positive = false;
                 testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
 
@@ -149,7 +148,6 @@ namespace HabitTrackerTest
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
-                testTask.InitialAbsolutePosition = i;
                 testTask.Positive = false;
                 testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
 
@@ -172,6 +170,38 @@ namespace HabitTrackerTest
             Assert.AreEqual(1, updatedTasks.First(p => p.CalendarTaskId == tasks[1].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(2, updatedTasks.First(p => p.CalendarTaskId == tasks[2].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(3, updatedTasks.First(p => p.CalendarTaskId == tasks[3].CalendarTaskId).AbsolutePosition);
+        }
+
+        [TestMethod]
+        public void InsertAtTheEnd_ShouldNotIncrementOtherTasks()
+        {
+            // ARRANGE + ACT
+            var ids = new List<string>();
+            var tasks = new List<DTOCalendarTask>();
+            for (int i = 1; i < 3; i++)
+            {
+                var testTask = new DTOCalendarTask();
+
+                testTask.Name = Guid.NewGuid().ToString();
+                testTask.Description = Guid.NewGuid().ToString();
+                testTask.Frequency = eTaskFrequency.Monthly;
+                testTask.ResultType = eResultType.Decimal;
+                testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
+                testTask.UserId = testUserId;
+                testTask.AbsolutePosition = i;
+                testTask.Positive = false;
+                testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
+
+                tasks.Add(testTask);
+            }
+
+            Assert.AreEqual(1, tasks[0].AbsolutePosition);
+            Assert.AreEqual(2, tasks[1].AbsolutePosition);
+
+            // ASSERT
+            var updatedTasks = calendarTaskService.GetTasksAsync(testUserId).Result;
+            Assert.AreEqual(1, updatedTasks.First(p => p.CalendarTaskId == tasks[0].CalendarTaskId).AbsolutePosition);
+            Assert.AreEqual(2, updatedTasks.First(p => p.CalendarTaskId == tasks[1].CalendarTaskId).AbsolutePosition);
         }
 
         private static void DeleteTests()

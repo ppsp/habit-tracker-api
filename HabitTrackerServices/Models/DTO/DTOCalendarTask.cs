@@ -76,7 +76,7 @@ namespace HabitTrackerServices.Models.DTO
 
         public DTOCalendarTask()
         {
-
+            this.InitialAbsolutePosition = TaskPosition.MaxValue;
         }
 
         public DTOCalendarTask(FireCalendarTask task)
