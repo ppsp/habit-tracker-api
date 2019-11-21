@@ -1,4 +1,5 @@
-﻿using HabitTrackerTools;
+﻿using HabitTrackerCore.Exceptions;
+using HabitTrackerTools;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Net;
@@ -29,9 +30,14 @@ namespace HabitTrackerWebApi.ActionFilterAttributes
                 else
                     return;
             }
+            catch (InvalidJwtTokenException)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
+            }
             catch (Exception ex)
             {
                 Logger.Debug("Error in OnAuthorizationAsync", ex);
+                throw;
             }
         }
     }
