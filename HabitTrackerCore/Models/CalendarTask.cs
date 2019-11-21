@@ -22,6 +22,8 @@ namespace HabitTrackerCore.Models
         public DateTime? UpdateDate { get ; set ; }
         public DateTime? VoidDate { get ; set ; }
 
+        public IEnumerable<ITaskHistory> Histories { get; set; }
+
         public bool HasBeenVoided()
         {
             return this.Void && this.VoidDate == null;

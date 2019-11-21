@@ -1,6 +1,6 @@
 ﻿using HabitTrackerCore.Models;
-using HabitTrackerServices;
 using HabitTrackerServices.Models.DTO;
+using HabitTrackerServices.Services;
 using HabitTrackerTools;
 using HabitTrackerWebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;

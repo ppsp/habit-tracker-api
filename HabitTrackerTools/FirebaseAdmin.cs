@@ -2,13 +2,10 @@
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using HabitTrackerCore.Exceptions;
-using HabitTrackerTools;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace HabitTrackerServices
+namespace HabitTrackerTools
 {
     public sealed class FirebaseAdmin
     {

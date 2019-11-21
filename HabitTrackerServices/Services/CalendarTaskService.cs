@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HabitTrackerServices
+namespace HabitTrackerServices.Services
 {
     public class CalendarTaskService : ICalendarTaskService
     {
@@ -18,11 +18,12 @@ namespace HabitTrackerServices
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<List<ICalendarTask>> GetTasksAsync(string userId, bool includeVoid = false)
+        public async Task<List<ICalendarTask>> GetTasksAsync(string userId, 
+                                                             bool includeVoid = false)
         {
             try
             {
-                return await getAsync(userId, includeVoid);
+                return await getTasksAsync(userId, includeVoid);
             }
             catch (Exception ex)
             {
@@ -31,31 +32,36 @@ namespace HabitTrackerServices
             }
         }
 
-        private async Task<List<ICalendarTask>> getAsync(string userId, bool includeVoid = false)
+        private async Task<List<ICalendarTask>> getTasksAsync(string userId, bool includeVoid)
         {
-            Query taskCollection = includeVoid ?
-                                    FirestoreConnector.Instance.fireStoreDb
-                                                               .Collection("task_todo")
-                                                               .WhereEqualTo("UserId", userId) :
-                                    FirestoreConnector.Instance.fireStoreDb
-                                                               .Collection("task_todo")
-                                                               .WhereEqualTo("UserId", userId)
-                                                               .WhereEqualTo("Void", false);
+            Query query = getGetTasksQuery(userId, includeVoid);
 
-            QuerySnapshot tasksQuerySnapshot = await taskCollection.GetSnapshotAsync();
+            QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
             List<ICalendarTask> tasks = new List<ICalendarTask>();
 
-            foreach (DocumentSnapshot documentSnapshot in tasksQuerySnapshot.Documents)
+            foreach (var document in tasksQuerySnapshot.Documents)
             {
-                if (documentSnapshot.Exists)
+                if (document.Exists)
                 {
-                    var newFireTask = documentSnapshot.ConvertTo<FireCalendarTask>();
+                    var newFireTask = document.ConvertTo<FireCalendarTask>();
                     var newTask = newFireTask.ToCalendarTask();
-                    newTask.CalendarTaskId = documentSnapshot.Id;
+                    newTask.CalendarTaskId = document.Id;
                     tasks.Add(newTask);
                 }
             }
             return tasks;
+        }
+
+        private static Query getGetTasksQuery(string userId, bool includeVoid)
+        {
+            return includeVoid ?
+                                                FirestoreConnector.Instance.fireStoreDb
+                                                                           .Collection("task_todo")
+                                                                           .WhereEqualTo("UserId", userId) :
+                                                FirestoreConnector.Instance.fireStoreDb
+                                                                           .Collection("task_todo")
+                                                                           .WhereEqualTo("UserId", userId)
+                                                                           .WhereEqualTo("Void", false);
         }
 
         public async Task<string> InsertTaskAsync(ICalendarTask task)

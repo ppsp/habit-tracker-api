@@ -1,6 +1,6 @@
 using HabitTrackerCore.Models;
-using HabitTrackerServices;
 using HabitTrackerServices.Models.DTO;
+using HabitTrackerServices.Services;
 using HabitTrackerTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -120,6 +120,7 @@ namespace HabitTrackerTest
             // ACT (Take the last one, put it in first)
             var lastTask = tasks.Last();
             lastTask.AbsolutePosition = 1;
+            lastTask.InitialAbsolutePosition = 4;
             var result = calendarTaskService.UpdateTaskAsync(lastTask).Result;
 
             // ASSERT
@@ -162,6 +163,7 @@ namespace HabitTrackerTest
             // ACT (Take the first one, put it in last)
             var lastTask = tasks.First();
             lastTask.AbsolutePosition = 4;
+            lastTask.InitialAbsolutePosition = 1;
             var result = calendarTaskService.UpdateTaskAsync(lastTask).Result;
 
             // ASSERT

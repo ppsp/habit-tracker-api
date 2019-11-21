@@ -1,9 +1,7 @@
 ﻿using Google.Cloud.Firestore;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace HabitTrackerServices
+namespace HabitTrackerTools
 {
     public sealed class FirestoreConnector
     {

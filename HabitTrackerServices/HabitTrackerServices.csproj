@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FirebaseAdmin" Version="1.9.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\HabitTrackerCore\HabitTrackerCore.csproj" />
     <ProjectReference Include="..\HabitTrackerTools\HabitTrackerTools.csproj" />
   </ItemGroup>

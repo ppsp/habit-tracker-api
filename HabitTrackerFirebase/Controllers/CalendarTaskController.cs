@@ -1,7 +1,6 @@
-﻿using FirebaseAdmin.Auth;
-using HabitTrackerCore.Services;
-using HabitTrackerServices;
+﻿using HabitTrackerCore.Services;
 using HabitTrackerServices.Models.DTO;
+using HabitTrackerServices.Services;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -12,14 +11,16 @@ namespace HabitTrackerWebApi.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    [CustomAuthorizeAttribute]
+    [AuthorizeJwt]
     public class CalendarTaskController : ControllerBase
     {
         private ICalendarTaskService CalendarTaskService { get; set; }
+        private ITaskHistoryService TaskHistoryService { get; set; }
 
         public CalendarTaskController()
         {
             CalendarTaskService = new CalendarTaskService();
+            TaskHistoryService = new TaskHistoryService();
         }
 
         // GET
@@ -27,6 +28,11 @@ namespace HabitTrackerWebApi.Controllers
         public async Task<IActionResult> Get(string userId)
         {
             var tasks = await CalendarTaskService.GetTasksAsync(userId);
+            var histories = await TaskHistoryService.GetHistoriesAsync(userId);
+
+            foreach (var task in tasks)
+                task.Histories = histories.Where(p => p.CalendarTaskId == task.CalendarTaskId);
+
             return Ok(tasks.Select(p => new DTOCalendarTask(p)).ToList());
         }
 
