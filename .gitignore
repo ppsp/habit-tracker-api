@@ -3,16 +3,16 @@
 ################################################################################
 
 /.vs/HabitTrackerFirebase
-/HabitTrackerCore/bin/Debug/netcoreapp3.0
+/HabitTrackerCore/bin
 /HabitTrackerCore/obj
-/HabitTrackerFirebase/bin/Debug/netcoreapp3.0
+/HabitTrackerFirebase/bin
 /HabitTrackerFirebase/obj
 /HabitTrackerFirebase/pp-app-1893d-a10a5bc8bf7a.json
-/HabitTrackerServices/bin/Debug/netcoreapp3.0
+/HabitTrackerServices/bin
 /HabitTrackerServices/obj
 /HabitTrackerFirebase/appsettings.json
 /HabitTrackerFirebase/logs
-/HabitTrackerTest/bin/Debug/netcoreapp3.0
+/HabitTrackerTest/bin
 /HabitTrackerTest/obj
 /HabitTrackerTools/obj
-/HabitTrackerTools/bin/Debug/netcoreapp3.0
+/HabitTrackerTools/bin
