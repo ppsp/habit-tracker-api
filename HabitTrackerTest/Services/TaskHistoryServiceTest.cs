@@ -1,36 +1,14 @@
 using HabitTrackerCore.Models;
-using HabitTrackerServices.Models.DTO;
-using HabitTrackerServices.Services;
-using HabitTrackerTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HabitTrackerTest
 {
-    [TestClass]
-    public class TaskHistoryServiceTest
+    public partial class CalendarTaskApiTest
     {
-        private static CalendarTaskService calendarTaskService = new CalendarTaskService();
-        private static TaskHistoryService taskHistoryService = new TaskHistoryService();
-        private static string testUserId = "testUser";
-
-        [ClassInitialize()]
-        public static void ClassInit(TestContext context)
-        {
-            Logger.ConfigLogger();
-            DeleteTests();
-        }
-
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
-            DeleteTests();
-        }
-
         [TestMethod]
-        public void InsertTaskAsync_ShouldReturnId()
+        public void InsertHistoryAsync_ShouldReturnId()
         {
             // ARRANGE
             var testTask = new CalendarTask();
@@ -59,7 +37,7 @@ namespace HabitTrackerTest
 
 
         [TestMethod]
-        public void GetTaskAsync_ShouldReturnSameValuesAsInsert()
+        public void GetHistoryAsync_ShouldReturnSameValuesAsInsert()
         {
             // ARRANGE
             var testTask = new CalendarTask();
@@ -96,16 +74,6 @@ namespace HabitTrackerTest
             Assert.AreEqual(testHistory.TaskSkipped, history.TaskSkipped);
             Assert.AreEqual(testHistory.UserId, history.UserId);
             Assert.AreEqual(testHistory.Void, history.Void);
-        }
-
-        private static void DeleteTests()
-        {
-            var tasks = taskHistoryService.GetHistoriesAsync(testUserId, true).Result;
-
-            foreach (var task in tasks)
-            {
-                var result = taskHistoryService.DeleteTaskAsync(task.TaskHistoryId).Result;
-            }
         }
     }
 }

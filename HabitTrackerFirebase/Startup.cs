@@ -1,3 +1,5 @@
+using HabitTrackerTools;
+using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +27,20 @@ namespace HabitTrackerWebApi
                         options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                     });
             services.AddApplicationInsightsTelemetry();
+
+            var vaultName = Configuration["KeyVaultName"];
+            var vaultFirebaseSecretName = Configuration["KeyVaultFirebaseSecretName"];
+
+            services.AddSingleton(new AzureVaultConnector(vaultName));
+
+            // Add FirebaseConnector which depends on AzureVaultConnector
+            services.AddSingleton(serviceProvider => {
+                var avureVault = serviceProvider.GetService<AzureVaultConnector>();
+                var firebaseSecretJson = avureVault.GetSecretValueString(vaultFirebaseSecretName);
+                var firebaseConnector = new FirebaseConnector(firebaseSecretJson);
+                return firebaseConnector;
+            });
+            services.AddScoped<AuthorizeJwt>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

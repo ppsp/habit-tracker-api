@@ -1,7 +1,5 @@
 using HabitTrackerCore.Models;
 using HabitTrackerServices.Models.DTO;
-using HabitTrackerServices.Services;
-using HabitTrackerTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -9,25 +7,8 @@ using System.Linq;
 
 namespace HabitTrackerTest
 {
-    [TestClass]
-    public class CalendarTaskServiceTest
+    public partial class CalendarTaskApiTest
     {
-        private static CalendarTaskService calendarTaskService = new CalendarTaskService();
-        private static string testUserId = "testUser";
-
-        [ClassInitialize()]
-        public static void ClassInit(TestContext context)
-        {
-            Logger.ConfigLogger();
-            DeleteTests();
-        }
-
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
-            DeleteTests();
-        }
-
         [TestMethod]
         public void HelloWorld()
         {
@@ -204,16 +185,6 @@ namespace HabitTrackerTest
             var updatedTasks = calendarTaskService.GetTasksAsync(testUserId).Result;
             Assert.AreEqual(1, updatedTasks.First(p => p.CalendarTaskId == tasks[0].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(2, updatedTasks.First(p => p.CalendarTaskId == tasks[1].CalendarTaskId).AbsolutePosition);
-        }
-
-        private static void DeleteTests()
-        {
-            var tasks = calendarTaskService.GetTasksAsync(testUserId, true).Result;
-
-            foreach (var task in tasks)
-            {
-                var result = calendarTaskService.DeleteTaskAsync(task.CalendarTaskId).Result;
-            }
         }
     }
 }

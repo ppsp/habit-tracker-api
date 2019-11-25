@@ -11,6 +11,13 @@ namespace HabitTrackerServices.Services
 {
     public class TaskHistoryService : ITaskHistoryService
     {
+        private FirebaseConnector Connector { get; set; }
+
+        public TaskHistoryService(FirebaseConnector connector)
+        {
+            this.Connector = connector;
+        }
+
         public async Task<List<ITaskHistory>> GetHistoriesAsync(string userId, 
                                                                 bool includeVoid = false,
                                                                 DateTime? dateStart = null,
@@ -51,7 +58,7 @@ namespace HabitTrackerServices.Services
             return tasks;
         }
 
-        private static Query getGetHistoriesQuery(string userId, 
+        private Query getGetHistoriesQuery(string userId, 
                                                   bool includeVoid, 
                                                   DateTime? dateStart, 
                                                   DateTime? dateEnd)
@@ -63,20 +70,20 @@ namespace HabitTrackerServices.Services
 
             if (includeVoid)
             {
-                return FirestoreConnector.Instance.fireStoreDb
-                                                  .Collection("task_history")
-                                                  .WhereEqualTo("UserId", userId)
-                                                  .WhereGreaterThanOrEqualTo("DoneDate", dateStart.Value.ToUniversalTime())
-                                                  .WhereLessThanOrEqualTo("DoneDate", dateEnd.Value.ToUniversalTime());
+                return this.Connector.fireStoreDb
+                                     .Collection("task_history")
+                                     .WhereEqualTo("UserId", userId)
+                                     .WhereGreaterThanOrEqualTo("DoneDate", dateStart.Value.ToUniversalTime())
+                                     .WhereLessThanOrEqualTo("DoneDate", dateEnd.Value.ToUniversalTime());
             }
             else
             {
-                return FirestoreConnector.Instance.fireStoreDb
-                                         .Collection("task_history")
-                                         .WhereEqualTo("UserId", userId)
-                                         .WhereEqualTo("Void", false)
-                                         .WhereGreaterThanOrEqualTo("DoneDate", dateStart.Value.ToUniversalTime())
-                                         .WhereLessThanOrEqualTo("DoneDate", dateEnd.Value.ToUniversalTime());
+                return this.Connector.fireStoreDb
+                                     .Collection("task_history")
+                                     .WhereEqualTo("UserId", userId)
+                                     .WhereEqualTo("Void", false)
+                                     .WhereGreaterThanOrEqualTo("DoneDate", dateStart.Value.ToUniversalTime())
+                                     .WhereLessThanOrEqualTo("DoneDate", dateEnd.Value.ToUniversalTime());
             }
         }
 
@@ -100,7 +107,7 @@ namespace HabitTrackerServices.Services
             if (history.TaskResult is DateTime)
                 history.TaskResult = ((DateTime)history.TaskResult).ToUniversalTime();
 
-            CollectionReference colRef = FirestoreConnector.Instance.fireStoreDb.Collection("task_history");
+            CollectionReference colRef = this.Connector.fireStoreDb.Collection("task_history");
             var reference = await colRef.AddAsync(new FireTaskHistory(history));
 
             return reference.Id;
@@ -110,9 +117,9 @@ namespace HabitTrackerServices.Services
         {
             try
             {
-                var reference = FirestoreConnector.Instance.fireStoreDb
-                                                           .Collection("task_history")
-                                                           .Document(taskHistoryId);
+                var reference = this.Connector.fireStoreDb
+                                              .Collection("task_history")
+                                              .Document(taskHistoryId);
 
                 var snapshot = await reference.GetSnapshotAsync();
 
@@ -133,9 +140,9 @@ namespace HabitTrackerServices.Services
         {
             try
             {
-                DocumentReference taskRef = FirestoreConnector.Instance.fireStoreDb
-                                                                       .Collection("task_history")
-                                                                       .Document(taskHistoryId);
+                DocumentReference taskRef = this.Connector.fireStoreDb
+                                                          .Collection("task_history")
+                                                          .Document(taskHistoryId);
 
                 await taskRef.DeleteAsync();
 

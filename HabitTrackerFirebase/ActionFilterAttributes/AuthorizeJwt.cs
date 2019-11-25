@@ -12,9 +12,11 @@ namespace HabitTrackerWebApi.ActionFilterAttributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public class AuthorizeJwt : Attribute, IAsyncAuthorizationFilter
     {
-        public AuthorizeJwt()
-        {
+        private FirebaseConnector Connector { get; set; }
 
+        public AuthorizeJwt(FirebaseConnector connector)
+        {
+            Connector = connector;
         }
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
@@ -23,7 +25,7 @@ namespace HabitTrackerWebApi.ActionFilterAttributes
             {
                 var token = context.HttpContext.Request.Headers["Authorization"].ToString();
 
-                var result = await HabitTrackerTools.FirebaseAdmin.Instance.ValidateJwt(token);
+                var result = await Connector.ValidateJwt(token);
 
                 if (!result)
                     throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));

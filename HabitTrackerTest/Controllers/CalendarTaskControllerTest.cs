@@ -2,7 +2,10 @@
 using HabitTrackerServices.Models.DTO;
 using HabitTrackerServices.Services;
 using HabitTrackerTools;
+using HabitTrackerWebApi;
 using HabitTrackerWebApi.Controllers;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -11,22 +14,28 @@ using System.Collections.Generic;
 namespace HabitTrackerTest
 {
     [TestClass]
-    public class CalendarTaskControllerTest
+    public partial class CalendarTaskApiTest
     {
-        private static CalendarTaskService calendarTaskService = new CalendarTaskService();
-        private static CalendarTaskController calendarTaskController = new CalendarTaskController();
+        private DependencyResolverHelper ServiceProvider;
+        private CalendarTaskService calendarTaskService;
+        private TaskHistoryService taskHistoryService;
+        private CalendarTaskController calendarTaskController;
         private static string testUserId = "testUser";
 
-        [ClassInitialize()]
-        public static void ClassInit(TestContext context)
+        public CalendarTaskApiTest()
         {
             Logger.ConfigLogger();
-            DeleteTests();
-        }
 
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
+            var webHost = WebHost.CreateDefaultBuilder()
+                                 .UseStartup<Startup>()
+                                 .Build();
+
+            ServiceProvider = new DependencyResolverHelper(webHost);
+            var firebaseConnector = ServiceProvider.GetService<FirebaseConnector>();
+            this.calendarTaskController = new CalendarTaskController(firebaseConnector);
+            this.calendarTaskService = new CalendarTaskService(firebaseConnector);
+            this.taskHistoryService = new TaskHistoryService(firebaseConnector);
+
             DeleteTests();
         }
 
@@ -151,7 +160,7 @@ namespace HabitTrackerTest
             CollectionAssert.AreEqual(DTOtask.RequiredDays, taskUpdated.RequiredDays);
         }
 
-        private static void DeleteTests()
+        private void DeleteTests()
         {
             var tasks = calendarTaskService.GetTasksAsync(testUserId, true).Result;
 

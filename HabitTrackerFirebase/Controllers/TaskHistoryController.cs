@@ -1,6 +1,7 @@
 ﻿using HabitTrackerCore.Models;
 using HabitTrackerCore.Services;
 using HabitTrackerServices.Services;
+using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -10,14 +11,14 @@ namespace HabitTrackerWebApi.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    [AuthorizeJwt]
+    [ServiceFilter(typeof(AuthorizeJwt))]
     public class TaskHistoryController : ControllerBase
     {
         private ITaskHistoryService TaskHistoryService { get; set; }
 
-        public TaskHistoryController()
+        public TaskHistoryController(FirebaseConnector connector)
         {
-            TaskHistoryService = new TaskHistoryService();
+            TaskHistoryService = new TaskHistoryService(connector);
         }
 
         // GET

@@ -13,6 +13,13 @@ namespace HabitTrackerServices.Services
 {
     public class CalendarTaskService : ICalendarTaskService
     {
+        private FirebaseConnector Connector { get; set; }
+
+        public CalendarTaskService(FirebaseConnector connector)
+        {
+            this.Connector = connector;
+        }
+
         /// <summary>
         /// Does not return Voided tasks
         /// </summary>
@@ -52,16 +59,15 @@ namespace HabitTrackerServices.Services
             return tasks;
         }
 
-        private static Query getGetTasksQuery(string userId, bool includeVoid)
+        private Query getGetTasksQuery(string userId, bool includeVoid)
         {
-            return includeVoid ?
-                                                FirestoreConnector.Instance.fireStoreDb
-                                                                           .Collection("task_todo")
-                                                                           .WhereEqualTo("UserId", userId) :
-                                                FirestoreConnector.Instance.fireStoreDb
-                                                                           .Collection("task_todo")
-                                                                           .WhereEqualTo("UserId", userId)
-                                                                           .WhereEqualTo("Void", false);
+            return includeVoid ? this.Connector.fireStoreDb
+                                               .Collection("task_todo")
+                                               .WhereEqualTo("UserId", userId) :
+                                 this.Connector.fireStoreDb
+                                               .Collection("task_todo")
+                                               .WhereEqualTo("UserId", userId)
+                                               .WhereEqualTo("Void", false);
         }
 
         public async Task<string> InsertTaskAsync(ICalendarTask task)
@@ -83,7 +89,7 @@ namespace HabitTrackerServices.Services
 
             task.InsertDate = DateTime.UtcNow;
 
-            CollectionReference colRef = FirestoreConnector.Instance.fireStoreDb.Collection("task_todo");
+            CollectionReference colRef = this.Connector.fireStoreDb.Collection("task_todo");
             var reference = await colRef.AddAsync(new FireCalendarTask(task));
 
             return reference.Id;
@@ -142,9 +148,9 @@ namespace HabitTrackerServices.Services
             if (task.HasBeenVoided())
                 task.VoidDate = DateTime.UtcNow;
 
-            DocumentReference taskRef = FirestoreConnector.Instance.fireStoreDb
-                                                                   .Collection("task_todo")
-                                                                   .Document(task.CalendarTaskId);
+            DocumentReference taskRef = this.Connector.fireStoreDb
+                                                      .Collection("task_todo")
+                                                      .Document(task.CalendarTaskId);
 
             var dictionnary = task.ToDictionary();
 
@@ -181,9 +187,9 @@ namespace HabitTrackerServices.Services
         {
             try
             {
-                var reference = FirestoreConnector.Instance.fireStoreDb
-                                                           .Collection("task_todo")
-                                                           .Document(calendarTaskId);
+                var reference = this.Connector.fireStoreDb
+                                              .Collection("task_todo")
+                                              .Document(calendarTaskId);
 
                 var snapshot = await reference.GetSnapshotAsync();
 
@@ -204,9 +210,9 @@ namespace HabitTrackerServices.Services
         {
             try
             {
-                DocumentReference taskRef = FirestoreConnector.Instance.fireStoreDb
-                                                                       .Collection("task_todo")
-                                                                       .Document(calendarTaskId);
+                DocumentReference taskRef = this.Connector.fireStoreDb
+                                                          .Collection("task_todo")
+                                                          .Document(calendarTaskId);
 
                 await taskRef.DeleteAsync();
 

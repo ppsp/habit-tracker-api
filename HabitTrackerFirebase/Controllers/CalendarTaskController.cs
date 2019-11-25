@@ -1,6 +1,7 @@
 ﻿using HabitTrackerCore.Services;
 using HabitTrackerServices.Models.DTO;
 using HabitTrackerServices.Services;
+using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -11,16 +12,16 @@ namespace HabitTrackerWebApi.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    [AuthorizeJwt]
+    [ServiceFilter(typeof(AuthorizeJwt))]
     public class CalendarTaskController : ControllerBase
     {
         private ICalendarTaskService CalendarTaskService { get; set; }
         private ITaskHistoryService TaskHistoryService { get; set; }
 
-        public CalendarTaskController()
+        public CalendarTaskController(FirebaseConnector connector)
         {
-            CalendarTaskService = new CalendarTaskService();
-            TaskHistoryService = new TaskHistoryService();
+            CalendarTaskService = new CalendarTaskService(connector);
+            TaskHistoryService = new TaskHistoryService(connector);
         }
 
         // GET
