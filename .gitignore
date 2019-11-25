@@ -16,3 +16,7 @@
 /HabitTrackerTest/obj
 /HabitTrackerTools/obj
 /HabitTrackerTools/bin
+/.vscode
+/HabitTrackerFirebase/app
+/node_modules
+/package-lock.json
