@@ -72,9 +72,13 @@ namespace HabitTrackerWebApi
 
             app.UseAuthorization();
 
-            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
+            /*app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
             app.UseCors(builder => builder.WithOrigins("http://localhost").AllowAnyHeader().AllowAnyMethod());
-            app.UseCors(builder => builder.WithOrigins("ionic://localhost").AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder.WithOrigins("ionic://localhost").AllowAnyHeader().AllowAnyMethod());*/
+
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
+            Logger.Debug("Allow anything");
 
             app.UseEndpoints(endpoints =>
             {
