@@ -14,6 +14,9 @@ namespace HabitTrackerTools
 
         public string GetSecretValueString(string key)
         {
+            Logger.Debug("Getting secret for key : " + key);
+            Logger.Debug("Getting secret for uri : " + $"https://{this.VaultName}.vault.azure.net/secrets/{key}");
+
             AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
             KeyVaultClient keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
             var secretJson = keyVaultClient.GetSecretAsync($"https://{this.VaultName}.vault.azure.net/secrets/{key}")

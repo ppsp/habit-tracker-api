@@ -31,6 +31,9 @@ namespace HabitTrackerWebApi
             var vaultName = Configuration["KeyVaultName"];
             var vaultFirebaseSecretName = Configuration["KeyVaultFirebaseSecretName"];
 
+            Logger.Debug("from config, KeyVaultName : " + vaultName);
+            Logger.Debug("from config, KeyVaultFirebaseSecretName : " + vaultFirebaseSecretName);
+
             services.AddSingleton(new AzureVaultConnector(vaultName));
 
             // Add FirebaseConnector which depends on AzureVaultConnector
