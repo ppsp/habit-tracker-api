@@ -21,6 +21,8 @@ namespace HabitTrackerWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Logger.Debug("configuring services");
+
             services.AddControllers()
                     .AddNewtonsoftJson(options =>
                     {
@@ -31,8 +33,16 @@ namespace HabitTrackerWebApi
             var vaultName = Configuration["KeyVaultName"];
             var vaultFirebaseSecretName = Configuration["KeyVaultFirebaseSecretName"];
 
-            Logger.Debug("from config, KeyVaultName : " + vaultName);
-            Logger.Debug("from config, KeyVaultFirebaseSecretName : " + vaultFirebaseSecretName);
+            if (vaultName != null)
+            {
+                Logger.Debug("from config, KeyVaultName : " + vaultName);
+                Logger.Debug("from config, KeyVaultFirebaseSecretName : " + vaultFirebaseSecretName);
+            }
+            else
+            {
+                Logger.Debug("KeyVaultName is null");
+                Logger.Debug("Config to string : " + Configuration.ToString());
+            }
 
             services.AddSingleton(new AzureVaultConnector(vaultName));
 
@@ -44,6 +54,8 @@ namespace HabitTrackerWebApi
                 return firebaseConnector;
             });
             services.AddScoped<AuthorizeJwt>();
+
+            Logger.Debug("configured services");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
