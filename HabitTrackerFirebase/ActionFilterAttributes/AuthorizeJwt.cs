@@ -2,10 +2,7 @@
 using HabitTrackerTools;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace HabitTrackerWebApi.ActionFilterAttributes
 {
@@ -28,17 +25,18 @@ namespace HabitTrackerWebApi.ActionFilterAttributes
                 var result = await Connector.ValidateJwt(token);
 
                 if (!result)
-                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
+                    throw new UnauthorizedAccessException("Unable to validate Json Web Token");
                 else
                     return;
             }
             catch (InvalidJwtTokenException)
             {
-                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
+                throw new UnauthorizedAccessException();
             }
             catch (Exception ex)
             {
-                Logger.Debug("Error in OnAuthorizationAsync", ex);
+                Logger.Error("Unknown error while validating Json Web Token", ex);
+                throw new UnauthorizedAccessException("Unknown error while validating Json Web Token");
                 throw;
             }
         }
