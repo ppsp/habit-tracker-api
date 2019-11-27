@@ -21,6 +21,8 @@ namespace HabitTrackerWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Logger.Debug("configuring services");
+
             services.AddControllers()
                     .AddNewtonsoftJson(options =>
                     {
@@ -30,8 +32,28 @@ namespace HabitTrackerWebApi
 
             var vaultName = Configuration["KeyVaultName"];
             var vaultFirebaseSecretName = Configuration["KeyVaultFirebaseSecretName"];
+            var vaultInstrumentationKeySecretName = Configuration["InstrumentationKeySecretName"];
+
+            if (vaultName != null)
+            {
+                Logger.Debug("from config, KeyVaultName : " + vaultName);
+                Logger.Debug("from config, KeyVaultFirebaseSecretName : " + vaultFirebaseSecretName);
+            }
+            else
+            {
+                Logger.Debug("KeyVaultName is null");
+                Logger.Debug("Config to string : " + Configuration.ToString());
+            }
 
             services.AddSingleton(new AzureVaultConnector(vaultName));
+
+            // Add ApplicationInsightsInstrumentationKey which depends on AzureVaultConnector
+            services.AddSingleton(serviceProvider => {
+                var avureVault = serviceProvider.GetService<AzureVaultConnector>();
+                var instrumentationKey = avureVault.GetSecretValueString(vaultInstrumentationKeySecretName);
+                var applicationInsightsConnector = new ApplicationInsightsConnector(instrumentationKey);
+                return applicationInsightsConnector;
+            });
 
             // Add FirebaseConnector which depends on AzureVaultConnector
             services.AddSingleton(serviceProvider => {
@@ -41,6 +63,8 @@ namespace HabitTrackerWebApi
                 return firebaseConnector;
             });
             services.AddScoped<AuthorizeJwt>();
+
+            Logger.Debug("configured services");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,7 +81,13 @@ namespace HabitTrackerWebApi
 
             app.UseAuthorization();
 
-            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder.WithOrigins("http://localhost*").AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder.WithOrigins("ionic://localhost").AllowAnyHeader().AllowAnyMethod());
+
+            //app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
+            Logger.Debug("Allow anything");
 
             app.UseEndpoints(endpoints =>
             {
