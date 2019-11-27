@@ -84,7 +84,10 @@ namespace HabitTrackerTest
             }
 
             // ACT
-            var response = calendarTaskController.Get(testUserId).Result;
+            var response = calendarTaskController.Get(new DTOGetCalendarTaskRequest()
+            {
+                userId = testUserId
+            }).Result;
             var okResult = response as OkObjectResult;
 
             // ASSERT
