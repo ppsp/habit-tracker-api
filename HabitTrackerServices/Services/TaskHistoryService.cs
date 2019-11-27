@@ -64,9 +64,9 @@ namespace HabitTrackerServices.Services
                                                   DateTime? dateEnd)
         {
             if (dateStart == null)
-                dateStart = DateTime.Today;
+                dateStart = DateTime.Today.ToUniversalTime();
             if (dateEnd == null)
-                dateEnd = DateTime.Today.AddDays(1);
+                dateEnd = DateTime.Today.AddDays(1).ToUniversalTime();
 
             if (includeVoid)
             {
