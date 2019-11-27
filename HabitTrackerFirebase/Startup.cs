@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using System;
 
 namespace HabitTrackerWebApi
 {
@@ -81,13 +82,17 @@ namespace HabitTrackerWebApi
 
             app.UseAuthorization();
 
-            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
-            app.UseCors(builder => builder.WithOrigins("http://localhost*").AllowAnyHeader().AllowAnyMethod());
-            app.UseCors(builder => builder.WithOrigins("ionic://localhost").AllowAnyHeader().AllowAnyMethod());
-
-            //app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-
-            Logger.Debug("Allow anything");
+            app.UseCors(builder => builder.SetIsOriginAllowed(origin => {
+                if (new Uri(origin).Host == "localhost")
+                {
+                    return true;
+                }
+                else
+                {
+                    Logger.Warn("Origin unknown : " + origin);
+                    return false;
+                }
+            }).AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {
