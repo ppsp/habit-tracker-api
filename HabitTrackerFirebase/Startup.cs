@@ -32,6 +32,7 @@ namespace HabitTrackerWebApi
 
             var vaultName = Configuration["KeyVaultName"];
             var vaultFirebaseSecretName = Configuration["KeyVaultFirebaseSecretName"];
+            var vaultInstrumentationKeySecretName = Configuration["InstrumentationKeySecretName"];
 
             if (vaultName != null)
             {
@@ -45,6 +46,14 @@ namespace HabitTrackerWebApi
             }
 
             services.AddSingleton(new AzureVaultConnector(vaultName));
+
+            // Add ApplicationInsightsInstrumentationKey which depends on AzureVaultConnector
+            services.AddSingleton(serviceProvider => {
+                var avureVault = serviceProvider.GetService<AzureVaultConnector>();
+                var instrumentationKey = avureVault.GetSecretValueString(vaultInstrumentationKeySecretName);
+                var applicationInsightsConnector = new ApplicationInsightsConnector(instrumentationKey);
+                return applicationInsightsConnector;
+            });
 
             // Add FirebaseConnector which depends on AzureVaultConnector
             services.AddSingleton(serviceProvider => {
@@ -72,11 +81,11 @@ namespace HabitTrackerWebApi
 
             app.UseAuthorization();
 
-            /*app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
-            app.UseCors(builder => builder.WithOrigins("http://localhost").AllowAnyHeader().AllowAnyMethod());
-            app.UseCors(builder => builder.WithOrigins("ionic://localhost").AllowAnyHeader().AllowAnyMethod());*/
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder.WithOrigins("http://localhost*").AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder.WithOrigins("ionic://localhost").AllowAnyHeader().AllowAnyMethod());
 
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            //app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             Logger.Debug("Allow anything");
 
