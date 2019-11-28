@@ -92,7 +92,7 @@ namespace HabitTrackerWebApi
                     Logger.Warn("Origin unknown : " + origin);
                     return false;
                 }
-            }).AllowAnyHeader());
+            }).AllowAnyHeader().AllowAnyMethod());
 
             app.UseEndpoints(endpoints =>
             {

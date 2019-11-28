@@ -1,6 +1,7 @@
 ﻿using Google.Cloud.Firestore;
 using HabitTrackerCore.Models;
 using HabitTrackerCore.Services;
+using HabitTrackerCore.Utils;
 using HabitTrackerServices.Models.Firestore;
 using HabitTrackerTools;
 using System;
@@ -136,7 +137,7 @@ namespace HabitTrackerServices.Services
             }
         }
 
-        public async Task<bool> DeleteTaskAsync(string taskHistoryId)
+        public async Task<bool> DeleteHistoryAsync(string taskHistoryId)
         {
             try
             {
@@ -153,6 +154,37 @@ namespace HabitTrackerServices.Services
                 Logger.Error("Error in DeleteTaskAsync", ex);
                 return false;
             }
+        }
+
+        public async Task<bool> UpdateHistoryAsync(ITaskHistory history)
+        {
+            try
+            {
+                return await updateHistoryAsync(history);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in UpdateHistoryAsync", ex);
+                return false;
+            }
+        }
+
+        private async Task<bool> updateHistoryAsync(ITaskHistory history)
+        {
+            history.UpdateDate = DateTime.UtcNow;
+
+            if (history.HasBeenVoided())
+                history.VoidDate = DateTime.UtcNow;
+
+            DocumentReference taskRef = this.Connector.fireStoreDb
+                                                      .Collection("task_history")
+                                                      .Document(history.TaskHistoryId);
+
+            var dictionnary = history.ToDictionary();
+
+            await taskRef.UpdateAsync(dictionnary);
+
+            return true;
         }
     }
 }
