@@ -27,5 +27,9 @@ namespace HabitTrackerCore.Models
             this.UserId = task.UserId;
             this.CalendarTaskId = task.CalendarTaskId;
         }
+        public bool HasBeenVoided()
+        {
+            return this.Void && this.VoidDate == null;
+        }
     }
 }

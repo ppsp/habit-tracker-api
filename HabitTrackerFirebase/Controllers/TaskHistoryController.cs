@@ -34,7 +34,15 @@ namespace HabitTrackerWebApi.Controllers
         public async Task<IActionResult> Post([FromBody]TaskHistory task)
         {
             var result = await TaskHistoryService.InsertHistoryAsync(task);
-            return Ok(result != null);
+            return Ok(result);
+        }
+
+        // PUT
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody]TaskHistory task)
+        {
+            var result = await TaskHistoryService.UpdateHistoryAsync(task);
+            return Ok(result);
         }
     }
 }
