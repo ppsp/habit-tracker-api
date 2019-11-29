@@ -26,13 +26,13 @@ namespace HabitTrackerWebApi.Controllers
 
         // GET
         [HttpGet]
-        public async Task<IActionResult> Get([FromBody]DTOGetCalendarTaskRequest dtoRequest)
+        public async Task<IActionResult> Get([FromQuery]DTOGetCalendarTaskRequest dtoRequest)
         {
             var tasks = await CalendarTaskService.GetTasksAsync(dtoRequest.userId);
             var histories = await TaskHistoryService.GetHistoriesAsync(dtoRequest.userId,
                                                                        dtoRequest.IncludeVoid,
-                                                                       dtoRequest.DateStart,
-                                                                       dtoRequest.DateEnd);
+                                                                       dtoRequest.DateStart.Value.ToUniversalTime(),
+                                                                       dtoRequest.DateEnd.Value.ToUniversalTime());
 
             foreach (var task in tasks)
                 task.Histories = histories.Where(p => p.CalendarTaskId == task.CalendarTaskId);
