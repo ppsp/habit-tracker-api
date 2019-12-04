@@ -1,5 +1,7 @@
-﻿using HabitTrackerCore.Models;
+﻿using HabitTrackerCore.DAL;
+using HabitTrackerCore.Models;
 using HabitTrackerCore.Services;
+using HabitTrackerServices.DAL;
 using HabitTrackerServices.Services;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
@@ -16,16 +18,21 @@ namespace HabitTrackerWebApi.Controllers
     {
         private ITaskHistoryService TaskHistoryService { get; set; }
 
-        public TaskHistoryController(FirebaseConnector connector)
+        public TaskHistoryController(CachingManager cachingManager,
+                                     DALTaskHistory dalTaskHistory)
         {
-            TaskHistoryService = new TaskHistoryService(connector);
+            TaskHistoryService = new TaskHistoryService(dalTaskHistory, cachingManager);
         }
 
         // GET
         [HttpGet]
         public async Task<IActionResult> Get(string userId)
         {
-            var tasks = await TaskHistoryService.GetHistoriesAsync(userId, false);
+            var tasks = await TaskHistoryService.GetHistoriesAsync(new GetCalendarTaskRequest()
+            {
+                UserId = userId,
+                IncludeVoid = false
+            });
             return Ok(tasks);
         }
 

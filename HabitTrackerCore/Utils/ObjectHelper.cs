@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -38,6 +39,18 @@ namespace HabitTrackerCore.Utils
         private static void ThrowExceptionWhenSourceArgumentIsNull()
         {
             throw new ArgumentNullException("source", "Unable to convert object to a dictionary. The source object is null.");
+        }
+
+        /// <summary>
+        /// Clone the object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static T Clone<T>(this T source)
+        {
+            var serialized = JsonConvert.SerializeObject(source);
+            return JsonConvert.DeserializeObject<T>(serialized);
         }
     }
 }

@@ -1,3 +1,6 @@
+using HabitTrackerCore.DAL;
+using HabitTrackerCore.Utils;
+using HabitTrackerServices.DAL;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Builder;
@@ -61,9 +64,20 @@ namespace HabitTrackerWebApi
                 var avureVault = serviceProvider.GetService<AzureVaultConnector>();
                 var firebaseSecretJson = avureVault.GetSecretValueString(vaultFirebaseSecretName);
                 var firebaseConnector = new FirebaseConnector(firebaseSecretJson);
+
                 return firebaseConnector;
             });
+
+            // Add DALTaskHistory which depends on FirebaseConnector
+            services.AddSingleton<IDALTaskHistory>(serviceProvider => {
+                var firebaseConnector = serviceProvider.GetService<FirebaseConnector>();
+                var dalTaskHistory = new DALTaskHistory(firebaseConnector);
+                return dalTaskHistory;
+            });
+
             services.AddScoped<AuthorizeJwt>();
+
+            services.AddSingleton(new CachingManager());
 
             Logger.Debug("configured services");
         }

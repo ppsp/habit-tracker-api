@@ -1,8 +1,7 @@
-﻿using Google.Cloud.Firestore;
+﻿using HabitTrackerCore.DAL;
 using HabitTrackerCore.Models;
 using HabitTrackerCore.Services;
-using HabitTrackerCore.Utils;
-using HabitTrackerServices.Models.Firestore;
+using HabitTrackerServices.DAL;
 using HabitTrackerTools;
 using System;
 using System.Collections.Generic;
@@ -10,83 +9,90 @@ using System.Threading.Tasks;
 
 namespace HabitTrackerServices.Services
 {
+    /*public class CachedTaskHistories
+    {
+        public List<TaskHistory> Histories { get; set; }
+        public GetCalendarTaskRequest Request { get; set; }
+    }*/
+
     public class TaskHistoryService : ITaskHistoryService
     {
-        private FirebaseConnector Connector { get; set; }
+        private IDALTaskHistory DALTaskHistory { get; set; }
+        private CachingManager Caching { get; set; }
 
-        public TaskHistoryService(FirebaseConnector connector)
+        public TaskHistoryService(IDALTaskHistory dalTaskHistory, 
+                                  CachingManager cachingManager)
         {
-            this.Connector = connector;
+            this.DALTaskHistory = dalTaskHistory;
+            this.Caching = cachingManager;
         }
 
-        public async Task<List<ITaskHistory>> GetHistoriesAsync(string userId, 
-                                                                bool includeVoid = false,
-                                                                DateTime? dateStart = null,
-                                                                DateTime? dateEnd = null)
+        public async Task<List<ITaskHistory>> GetHistoriesAsync(GetCalendarTaskRequest request)
         {
             try
             {
-                return await getHistoriesAsync(userId, includeVoid, dateStart, dateEnd);
+                return await getHistoriesAsync(request);
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in GetAsync", ex);
+                // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
+                Logger.Error("Error in GetHistoriesAsync", ex);
                 return new List<ITaskHistory>();
             }
         }
 
-        private async Task<List<ITaskHistory>> getHistoriesAsync(string userId, 
-                                                                 bool includeVoid,
-                                                                 DateTime? dateStart = null,
-                                                                 DateTime? dateEnd = null)
+        private async Task<List<ITaskHistory>> getHistoriesAsync(GetCalendarTaskRequest request)
         {
-            Query query = getGetHistoriesQuery(userId, includeVoid, dateStart, dateEnd);
+            if (request.DateStart == null)
+                request.DateStart = DateTime.Today.ToUniversalTime();
+            if (request.DateEnd == null)
+                request.DateEnd = DateTime.Today.AddDays(1).ToUniversalTime();
 
-            QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
-            List<ITaskHistory> tasks = new List<ITaskHistory>();
+            // TODO: Check if parameters are the same as when cached
+            /*string key = getCachingKey(userId);
+            List<TaskHistory> cachedHistories = (List<TaskHistory>)Caching.TryGet(key);
 
-            foreach (var document in tasksQuerySnapshot.Documents)
+            if (cachedHistories != null)
             {
-                if (document.Exists)
-                {
-                    var task = document.ConvertTo<FireTaskHistory>();
-                    var newTask = task.ToTaskHistory();
-                    newTask.TaskHistoryId = document.Id;
-                    tasks.Add(newTask);
-                }
-            }
+                List<ITaskHistory> histories = new List<ITaskHistory>();
+                cachedHistories.Clone().ForEach(p => histories.Add(p));
 
-            return tasks;
+                return histories;
+            }*/
+
+            var histories = await this.DALTaskHistory.GetHistoriesAsync(request);
+
+            //addToCache(histories.Clone());
+
+            return histories;
         }
 
-        private Query getGetHistoriesQuery(string userId, 
-                                                  bool includeVoid, 
-                                                  DateTime? dateStart, 
-                                                  DateTime? dateEnd)
+        /*private void addToCache(List<TaskHistory> newTask)
         {
-            if (dateStart == null)
-                dateStart = DateTime.Today.ToUniversalTime();
-            if (dateEnd == null)
-                dateEnd = DateTime.Today.AddDays(1).ToUniversalTime();
+            if (newTask == null || newTask.Count == 0 || newTask[0].UserId == null || newTask[0].UserId.Length == 0)
+                return;
 
-            if (includeVoid)
-            {
-                return this.Connector.fireStoreDb
-                                     .Collection("task_history")
-                                     .WhereEqualTo("UserId", userId)
-                                     .WhereGreaterThanOrEqualTo("DoneDate", dateStart.Value.ToUniversalTime())
-                                     .WhereLessThanOrEqualTo("DoneDate", dateEnd.Value.ToUniversalTime());
-            }
-            else
-            {
-                return this.Connector.fireStoreDb
-                                     .Collection("task_history")
-                                     .WhereEqualTo("UserId", userId)
-                                     .WhereEqualTo("Void", false)
-                                     .WhereGreaterThanOrEqualTo("DoneDate", dateStart.Value.ToUniversalTime())
-                                     .WhereLessThanOrEqualTo("DoneDate", dateEnd.Value.ToUniversalTime());
-            }
+            string cachingKey = getCachingKey(newTask);
+            this.Caching.TrySet(cachingKey,
+                                newTask,
+                                null,
+                                newTask.Count);
         }
+
+        private string getCachingKey(List<TaskHistory> newTask)
+        {
+            if (newTask == null || newTask.Count == 0 || newTask[0].UserId == null || newTask[0].UserId.Length == 0)
+                throw new ArgumentException("getCachingKey, newTask is invalid");
+                
+            return $"taskHistory{newTask[0].UserId}";
+        }
+        private string getCachingKey(string userId)
+        {
+            if (userId == null || userId.Length == 0)
+                throw new ArgumentException("getCachingKey, userId is invalid");
+
+            return $"taskHistory{userId}";
+        }*/
 
         public async Task<string> InsertHistoryAsync(ITaskHistory history)
         {
@@ -96,6 +102,8 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
+                // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
+
                 Logger.Error("Error in InsertHistoryAsync", ex);
                 return null;
             }
@@ -108,30 +116,28 @@ namespace HabitTrackerServices.Services
             if (history.TaskResult is DateTime)
                 history.TaskResult = ((DateTime)history.TaskResult).ToUniversalTime();
 
-            CollectionReference colRef = this.Connector.fireStoreDb.Collection("task_history");
-            var reference = await colRef.AddAsync(new FireTaskHistory(history));
+            var taskHistoryId = await DALTaskHistory.InsertHistoryAsync(history);
 
-            return reference.Id;
+            history.TaskHistoryId = taskHistoryId;
+
+            //this.addToCache(history);
+
+            return taskHistoryId;
         }
 
         public async Task<ITaskHistory> GetHistoryAsync(string taskHistoryId)
         {
             try
             {
-                var reference = this.Connector.fireStoreDb
-                                              .Collection("task_history")
-                                              .Document(taskHistoryId);
+                // TODO: get from cache
 
-                var snapshot = await reference.GetSnapshotAsync();
+                var history = await this.DALTaskHistory.GetHistoryAsync(taskHistoryId);
 
-                var task = snapshot.ConvertTo<FireTaskHistory>();
-                var newTask = task.ToTaskHistory();
-                newTask.TaskHistoryId = snapshot.Id;
-
-                return newTask;
+                return history;
             }
             catch (Exception ex)
             {
+                // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
                 Logger.Error("Error in GetAsync", ex);
                 return null;
             }
@@ -141,16 +147,15 @@ namespace HabitTrackerServices.Services
         {
             try
             {
-                DocumentReference taskRef = this.Connector.fireStoreDb
-                                                          .Collection("task_history")
-                                                          .Document(taskHistoryId);
+                // TODO: Delete from cache
 
-                await taskRef.DeleteAsync();
+                var result = await this.DALTaskHistory.DeleteHistoryAsync(taskHistoryId);
 
-                return true;
+                return result;
             }
             catch (Exception ex)
             {
+                // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
                 Logger.Error("Error in DeleteTaskAsync", ex);
                 return false;
             }
@@ -164,6 +169,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
+                // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
                 Logger.Error("Error in UpdateHistoryAsync", ex);
                 return false;
             }
@@ -176,15 +182,11 @@ namespace HabitTrackerServices.Services
             if (history.HasBeenVoided())
                 history.VoidDate = DateTime.UtcNow;
 
-            DocumentReference taskRef = this.Connector.fireStoreDb
-                                                      .Collection("task_history")
-                                                      .Document(history.TaskHistoryId);
+            var response = await this.DALTaskHistory.UpdateHistoryAsync(history);
 
-            var dictionnary = history.ToDictionary();
+            //addToCache(history);
 
-            await taskRef.UpdateAsync(dictionnary);
-
-            return true;
+            return response;
         }
     }
 }
