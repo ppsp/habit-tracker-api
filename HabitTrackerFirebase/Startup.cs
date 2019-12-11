@@ -1,5 +1,6 @@
 using HabitTrackerCore.DAL;
 using HabitTrackerCore.Utils;
+using HabitTrackerServices.Caching;
 using HabitTrackerServices.DAL;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
@@ -78,6 +79,13 @@ namespace HabitTrackerWebApi
             services.AddScoped<AuthorizeJwt>();
 
             services.AddSingleton(new CachingManager());
+
+            // Add TaskHistoryCache which depends on CachingManager
+            services.AddSingleton<TaskHistoryCache>(serviceProvider => {
+                var cachingManager = serviceProvider.GetService<CachingManager>();
+                var taskHistoryCache = new TaskHistoryCache(cachingManager);
+                return taskHistoryCache;
+            });
 
             Logger.Debug("configured services");
         }

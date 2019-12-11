@@ -1,6 +1,7 @@
 ﻿using HabitTrackerCore.DAL;
 using HabitTrackerCore.Models;
 using HabitTrackerCore.Services;
+using HabitTrackerServices.Caching;
 using HabitTrackerServices.DAL;
 using HabitTrackerServices.Services;
 using HabitTrackerTools;
@@ -19,9 +20,10 @@ namespace HabitTrackerWebApi.Controllers
         private ITaskHistoryService TaskHistoryService { get; set; }
 
         public TaskHistoryController(CachingManager cachingManager,
-                                     DALTaskHistory dalTaskHistory)
+                                     IDALTaskHistory dalTaskHistory,
+                                     TaskHistoryCache taskHistoryCache)
         {
-            TaskHistoryService = new TaskHistoryService(dalTaskHistory, cachingManager);
+            TaskHistoryService = new TaskHistoryService(dalTaskHistory, taskHistoryCache);
         }
 
         // GET

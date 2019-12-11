@@ -1,7 +1,7 @@
 ﻿using HabitTrackerCore.DAL;
 using HabitTrackerCore.Models;
 using HabitTrackerCore.Services;
-using HabitTrackerServices.DAL;
+using HabitTrackerServices.Caching;
 using HabitTrackerTools;
 using System;
 using System.Collections.Generic;
@@ -9,22 +9,17 @@ using System.Threading.Tasks;
 
 namespace HabitTrackerServices.Services
 {
-    /*public class CachedTaskHistories
-    {
-        public List<TaskHistory> Histories { get; set; }
-        public GetCalendarTaskRequest Request { get; set; }
-    }*/
-
     public class TaskHistoryService : ITaskHistoryService
     {
         private IDALTaskHistory DALTaskHistory { get; set; }
-        private CachingManager Caching { get; set; }
 
-        public TaskHistoryService(IDALTaskHistory dalTaskHistory, 
-                                  CachingManager cachingManager)
+        private TaskHistoryCache TaskHistoryCache { get; set; }
+
+        public TaskHistoryService(IDALTaskHistory dalTaskHistory,
+                                  TaskHistoryCache cacheTaskHistory)
         {
             this.DALTaskHistory = dalTaskHistory;
-            this.Caching = cachingManager;
+            this.TaskHistoryCache = cacheTaskHistory;
         }
 
         public async Task<List<ITaskHistory>> GetHistoriesAsync(GetCalendarTaskRequest request)
@@ -43,56 +38,22 @@ namespace HabitTrackerServices.Services
 
         private async Task<List<ITaskHistory>> getHistoriesAsync(GetCalendarTaskRequest request)
         {
+            SetDefaultDateValues(request);
+
+            var historiesFromDatabase = await this.DALTaskHistory.GetHistoriesAsync(request);
+
+            //this.TaskHistoryCache.AddToCache(new CachedTaskHistories(request, historiesFromDatabase));
+
+            return historiesFromDatabase;
+        }
+
+        private static void SetDefaultDateValues(GetCalendarTaskRequest request)
+        {
             if (request.DateStart == null)
                 request.DateStart = DateTime.Today.ToUniversalTime();
             if (request.DateEnd == null)
                 request.DateEnd = DateTime.Today.AddDays(1).ToUniversalTime();
-
-            // TODO: Check if parameters are the same as when cached
-            /*string key = getCachingKey(userId);
-            List<TaskHistory> cachedHistories = (List<TaskHistory>)Caching.TryGet(key);
-
-            if (cachedHistories != null)
-            {
-                List<ITaskHistory> histories = new List<ITaskHistory>();
-                cachedHistories.Clone().ForEach(p => histories.Add(p));
-
-                return histories;
-            }*/
-
-            var histories = await this.DALTaskHistory.GetHistoriesAsync(request);
-
-            //addToCache(histories.Clone());
-
-            return histories;
         }
-
-        /*private void addToCache(List<TaskHistory> newTask)
-        {
-            if (newTask == null || newTask.Count == 0 || newTask[0].UserId == null || newTask[0].UserId.Length == 0)
-                return;
-
-            string cachingKey = getCachingKey(newTask);
-            this.Caching.TrySet(cachingKey,
-                                newTask,
-                                null,
-                                newTask.Count);
-        }
-
-        private string getCachingKey(List<TaskHistory> newTask)
-        {
-            if (newTask == null || newTask.Count == 0 || newTask[0].UserId == null || newTask[0].UserId.Length == 0)
-                throw new ArgumentException("getCachingKey, newTask is invalid");
-                
-            return $"taskHistory{newTask[0].UserId}";
-        }
-        private string getCachingKey(string userId)
-        {
-            if (userId == null || userId.Length == 0)
-                throw new ArgumentException("getCachingKey, userId is invalid");
-
-            return $"taskHistory{userId}";
-        }*/
 
         public async Task<string> InsertHistoryAsync(ITaskHistory history)
         {
