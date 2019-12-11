@@ -1,4 +1,7 @@
-﻿using HabitTrackerCore.Services;
+﻿using HabitTrackerCore.DAL;
+using HabitTrackerCore.Services;
+using HabitTrackerServices.Caching;
+using HabitTrackerServices.DAL;
 using HabitTrackerServices.Models.DTO;
 using HabitTrackerServices.Services;
 using HabitTrackerTools;
@@ -18,10 +21,12 @@ namespace HabitTrackerWebApi.Controllers
         private ICalendarTaskService CalendarTaskService { get; set; }
         private ITaskHistoryService TaskHistoryService { get; set; }
 
-        public CalendarTaskController(FirebaseConnector connector)
+        public CalendarTaskController(FirebaseConnector connector,
+                                      TaskHistoryCache taskHistoryCache,
+                                      IDALTaskHistory dalTaskHistory)
         {
             CalendarTaskService = new CalendarTaskService(connector);
-            TaskHistoryService = new TaskHistoryService(connector);
+            TaskHistoryService = new TaskHistoryService(dalTaskHistory, taskHistoryCache);
         }
 
         // GET
@@ -29,10 +34,7 @@ namespace HabitTrackerWebApi.Controllers
         public async Task<IActionResult> Get([FromQuery]DTOGetCalendarTaskRequest dtoRequest)
         {
             var tasks = await CalendarTaskService.GetTasksAsync(dtoRequest.userId);
-            var histories = await TaskHistoryService.GetHistoriesAsync(dtoRequest.userId,
-                                                                       dtoRequest.IncludeVoid,
-                                                                       dtoRequest.DateStart.Value.ToUniversalTime(),
-                                                                       dtoRequest.DateEnd.Value.ToUniversalTime());
+            var histories = await TaskHistoryService.GetHistoriesAsync(dtoRequest.ToCalendarTaskRequest());
 
             foreach (var task in tasks)
                 task.Histories = histories.Where(p => p.CalendarTaskId == task.CalendarTaskId);
@@ -45,7 +47,7 @@ namespace HabitTrackerWebApi.Controllers
         public async Task<IActionResult> Post([FromBody]DTOCalendarTask task)
         {
             var result = await CalendarTaskService.InsertTaskAsync(task);
-            return Ok(result != null);
+            return Ok(result);
         }
 
         // PUT

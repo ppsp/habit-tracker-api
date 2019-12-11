@@ -36,5 +36,41 @@ namespace HabitTrackerCore.Utils
                 return min < value && value < max;
             }
         }
+
+        /// <summary>
+        /// [Custom Extension] : Returns 0 or defaultLong if conversion fails
+        /// </summary>
+        public static long ToLongNoException(this Object number, long _defaultLong = 0)
+        {
+            long myLong = _defaultLong;
+
+            if (number == DBNull.Value) return 0;
+
+            try
+            {
+                myLong = Convert.ToInt64(number);
+            }
+            catch { }
+
+            return myLong;
+        }
+
+        /// <summary>
+        /// [Custom Extension] : Returns null or defaultLong if conversion fails
+        /// </summary>
+        public static long? ToLongNoExceptionNullable(this Object number, long? _defaultLong = null)
+        {
+            long? myLong = _defaultLong;
+
+            if (number == DBNull.Value) return null;
+
+            try
+            {
+                myLong = Convert.ToInt64(number);
+            }
+            catch { }
+
+            return myLong;
+        }
     }
 }
