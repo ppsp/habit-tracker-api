@@ -1,4 +1,7 @@
-﻿using HabitTrackerCore.Models;
+﻿using HabitTrackerCore.DAL;
+using HabitTrackerCore.Models;
+using HabitTrackerServices.Caching;
+using HabitTrackerServices.DAL;
 using HabitTrackerServices.Models.DTO;
 using HabitTrackerServices.Services;
 using HabitTrackerTools;
@@ -20,6 +23,8 @@ namespace HabitTrackerTest
         private CalendarTaskService calendarTaskService;
         private TaskHistoryService taskHistoryService;
         private CalendarTaskController calendarTaskController;
+        private IDALTaskHistory dalTaskHistory;
+        private TaskHistoryCache taskHistoryCache;
         private static string testUserId = "testUser";
 
         public CalendarTaskApiTest()
@@ -32,9 +37,14 @@ namespace HabitTrackerTest
 
             ServiceProvider = new DependencyResolverHelper(webHost);
             var firebaseConnector = ServiceProvider.GetService<FirebaseConnector>();
-            this.calendarTaskController = new CalendarTaskController(firebaseConnector);
+            var cachingManager = ServiceProvider.GetService<CachingManager>();
+            var dalTaskHistory = ServiceProvider.GetService<IDALTaskHistory>();
+            var taskHistoryCache = ServiceProvider.GetService<TaskHistoryCache>();
+            this.calendarTaskController = new CalendarTaskController(firebaseConnector, taskHistoryCache, dalTaskHistory);
             this.calendarTaskService = new CalendarTaskService(firebaseConnector);
-            this.taskHistoryService = new TaskHistoryService(firebaseConnector);
+            this.taskHistoryService = new TaskHistoryService(dalTaskHistory, taskHistoryCache);
+            this.taskHistoryCache = taskHistoryCache;
+            this.dalTaskHistory = dalTaskHistory;
 
             DeleteTests();
         }
