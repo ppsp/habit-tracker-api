@@ -33,8 +33,10 @@
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist &quot;$(TargetDir)\StaticFiles\&quot; mkdir &quot;$(TargetDir)\StaticFiles\&quot;&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(ProjectDir)StaticFiles&quot; &quot;$(TargetDir)\StaticFiles\&quot; /S /Y" />
-  </Target>
+  <ItemGroup>
+    <None Include="$(ProjectDir)StaticFiles\**"
+          CopyToOutputDirectory="PreserveNewest"
+          LinkBase="staticfiles\" />
+  </ItemGroup>
 
 </Project>
