@@ -127,6 +127,14 @@ namespace HabitTrackerWebApi
             {
                 FileProvider = new PhysicalFileProvider(
                 Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles")),
+                RequestPath = "/staticfiles",
+                ServeUnknownFileTypes = true,
+            });
+
+            app.UseDirectoryBrowser(new DirectoryBrowserOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles")),
                 RequestPath = "/staticfiles"
             });
         }
