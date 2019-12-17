@@ -205,7 +205,6 @@ namespace HabitTrackerServices.Services
             }
         }
 
-
         public async Task<bool> DeleteTaskAsync(string calendarTaskId)
         {
             try
