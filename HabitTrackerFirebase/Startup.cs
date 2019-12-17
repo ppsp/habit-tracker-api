@@ -41,6 +41,9 @@ namespace HabitTrackerWebApi
             var vaultName = Configuration["KeyVaultName"];
             var vaultFirebaseSecretName = Configuration["KeyVaultFirebaseSecretName"];
             var vaultInstrumentationKeySecretName = Configuration["InstrumentationKeySecretName"];
+            var personnalAccessTokenSecretName = Configuration["AzureDevopsPersonnalTokenSecretName"];
+            var azureDevopsUri = Configuration["AzureDevopsUri"];
+            var azureDevopsProjectName = Configuration["AzureDevopsProjectName"];
 
             if (vaultName != null)
             {
@@ -70,6 +73,15 @@ namespace HabitTrackerWebApi
                 var firebaseConnector = new FirebaseConnector(firebaseSecretJson);
 
                 return firebaseConnector;
+            });
+
+            // Add AzureDevops which depends on AzureVaultConnector
+            services.AddSingleton(serviceProvider => {
+                var avureVault = serviceProvider.GetService<AzureVaultConnector>();
+                var personnalAccessToken = avureVault.GetSecretValueString(personnalAccessTokenSecretName);
+                var azureDevopsConnector = new AzureDevopsConnector(azureDevopsUri, personnalAccessToken, azureDevopsProjectName);
+
+                return azureDevopsConnector;
             });
 
             // Add DALTaskHistory which depends on FirebaseConnector
