@@ -15,4 +15,11 @@
         Decimal,
         Time,
     }
+
+    public enum eBugReportType
+    {
+        Bug,
+        Suggestion
+    }
 }
+

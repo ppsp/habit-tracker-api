@@ -33,6 +33,8 @@ namespace HabitTrackerServices.Models.Firestore
         public DateTime? UpdateDate { get; set; }
         [FirestoreProperty]
         public DateTime? VoidDate { get; set; }
+        [FirestoreProperty]
+        public string Comment { get; set; }
 
         public FireTaskHistory()
         {
@@ -54,6 +56,7 @@ namespace HabitTrackerServices.Models.Firestore
             this.UserId = history.UserId;
             this.Void = history.Void;
             this.VoidDate = history.VoidDate;
+            this.Comment = history.Comment;
         }
 
         public TaskHistory ToTaskHistory()
@@ -83,6 +86,7 @@ namespace HabitTrackerServices.Models.Firestore
             taskHistory.UserId = this.UserId;
             taskHistory.Void = this.Void;
             taskHistory.VoidDate = this.VoidDate;
+            taskHistory.Comment = this.Comment;
 
             return taskHistory;
         }
