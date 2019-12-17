@@ -6,6 +6,7 @@ using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -123,19 +124,15 @@ namespace HabitTrackerWebApi
                 endpoints.MapControllers();
             });
 
+            FileExtensionContentTypeProvider contentTypes = new FileExtensionContentTypeProvider();
+            contentTypes.Mappings[".apk"] = "application/vnd.android.package-archive";
+
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
                 Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles")),
                 RequestPath = "/staticfiles",
-                ServeUnknownFileTypes = true,
-            });
-
-            app.UseDirectoryBrowser(new DirectoryBrowserOptions
-            {
-                FileProvider = new PhysicalFileProvider(
-                Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles")),
-                RequestPath = "/staticfiles"
+                ContentTypeProvider = contentTypes,
             });
         }
     }
