@@ -79,7 +79,7 @@ namespace HabitTrackerServices.Models.Firestore
                 this.InsertDate = task.InsertDate;
                 this.UpdateDate = task.UpdateDate;
                 this.VoidDate = task.VoidDate;
-                this.TaskAssignedDate = task.TaskAssignedDate;
+                this.TaskAssignedDate = task.AssignedDate;
             }
             catch (Exception ex)
             {
@@ -106,7 +106,7 @@ namespace HabitTrackerServices.Models.Firestore
             task.InsertDate = this.InsertDate;
             task.UpdateDate = this.UpdateDate;
             task.VoidDate = this.VoidDate;
-            task.TaskAssignedDate = this.TaskAssignedDate;
+            task.AssignedDate = this.TaskAssignedDate;
 
             return task;
         }
