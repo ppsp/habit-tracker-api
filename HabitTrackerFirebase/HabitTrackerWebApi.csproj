@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>f1304baf-e028-4484-8384-15f7ec7b58b0</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <ApplicationInsightsResourceId>/subscriptions/5e4f4d8f-6a42-4457-8568-7acfd66c5e65/resourcegroups/HabitTracker/providers/microsoft.insights/components/habittrackerfree</ApplicationInsightsResourceId>
