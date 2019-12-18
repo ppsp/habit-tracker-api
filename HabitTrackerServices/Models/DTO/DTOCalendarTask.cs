@@ -57,6 +57,7 @@ namespace HabitTrackerServices.Models.DTO
         public DateTime? UpdateDate { get; set; }
         public DateTime? VoidDate { get; set; }
         public IEnumerable<ITaskHistory> Histories { get; set; }
+        public DateTime TaskAssignedDate { get; set; }
 
         /// <summary>
         /// This is needed in order to know if the position has to be updated
