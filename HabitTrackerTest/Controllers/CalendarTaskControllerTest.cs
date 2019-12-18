@@ -50,7 +50,7 @@ namespace HabitTrackerTest
         }
 
         [TestMethod]
-        public void Post_ShouldReturnTrueAndCode200()
+        public void Post_ShouldReturnIdAndCode200()
         {
             // ARRANGE
             var testTask = new DTOCalendarTask();
@@ -68,8 +68,8 @@ namespace HabitTrackerTest
             var okResult = response as OkObjectResult;
 
             // ASSERT
-            Assert.IsTrue(okResult.Value is Boolean);
-            Assert.AreEqual(true, (bool)okResult.Value);
+            Assert.IsTrue(okResult.Value is string);
+            Assert.IsTrue((okResult.Value as string).Length > 0);
             Assert.AreEqual(200, okResult.StatusCode);
         }
 
