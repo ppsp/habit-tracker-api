@@ -88,6 +88,8 @@ namespace HabitTrackerServices.Services
             await ReorderTasks(task);
 
             task.InsertDate = DateTime.UtcNow;
+            if (task.AssignedDate != null)
+                task.AssignedDate = task.AssignedDate.Value.ToUniversalTime();
 
             CollectionReference colRef = this.Connector.fireStoreDb.Collection("task_todo");
             var reference = await colRef.AddAsync(new FireCalendarTask(task));
@@ -147,6 +149,9 @@ namespace HabitTrackerServices.Services
 
             if (task.HasBeenVoided())
                 task.VoidDate = DateTime.UtcNow;
+
+            if (task.AssignedDate != null)
+                task.AssignedDate = task.AssignedDate.Value.ToUniversalTime();
 
             DocumentReference taskRef = this.Connector.fireStoreDb
                                                       .Collection("task_todo")

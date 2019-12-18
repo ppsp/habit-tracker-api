@@ -21,6 +21,7 @@ namespace HabitTrackerCore.Models
         public DateTime? InsertDate { get ; set ; }
         public DateTime? UpdateDate { get ; set ; }
         public DateTime? VoidDate { get ; set ; }
+        public DateTime? AssignedDate { get; set; }
 
         public IEnumerable<ITaskHistory> Histories { get; set; }
 

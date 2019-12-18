@@ -57,6 +57,7 @@ namespace HabitTrackerServices.Models.DTO
         public DateTime? UpdateDate { get; set; }
         public DateTime? VoidDate { get; set; }
         public IEnumerable<ITaskHistory> Histories { get; set; }
+        public DateTime? AssignedDate { get; set; }
 
         /// <summary>
         /// This is needed in order to know if the position has to be updated
@@ -100,6 +101,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.InsertDate = task.InsertDate;
                 this.UpdateDate = task.UpdateDate;
                 this.VoidDate = task.VoidDate;
+                this.AssignedDate = task.TaskAssignedDate;
             }
             catch (Exception ex)
             {
@@ -128,6 +130,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.UpdateDate = task.UpdateDate;
                 this.VoidDate = task.VoidDate;
                 this.Histories = task.Histories;
+                this.AssignedDate = task.AssignedDate;
             }
             catch (Exception ex)
             {
@@ -156,6 +159,7 @@ namespace HabitTrackerServices.Models.DTO
             task.UpdateDate = this.UpdateDate;
             task.VoidDate = this.VoidDate;
             task.Histories = this.Histories;
+            task.AssignedDate = this.AssignedDate;
 
             return task;
         }
