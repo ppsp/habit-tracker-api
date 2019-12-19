@@ -81,7 +81,6 @@ namespace HabitTrackerTest
             var testTask = new CalendarTask();
 
             testTask.Name = "Test Task";
-            testTask.Description = "Test Task Description";
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
