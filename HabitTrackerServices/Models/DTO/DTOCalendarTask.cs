@@ -15,14 +15,6 @@ namespace HabitTrackerServices.Models.DTO
 
         public string Name { get; set; }
 
-        public string Description { get; set; }
-
-        /// <summary>
-        /// The minimum duration of the task. This isn't an absolute minimum, it's simply
-        /// the amount of time a person wishes to invest in this task.
-        /// </summary>
-        public int MinDuration { get; set; }
-
         public List<DayOfWeek> RequiredDays { get; set; }
 
         /// <summary>
@@ -40,11 +32,6 @@ namespace HabitTrackerServices.Models.DTO
         /// Use decimal to store a number and use Time to store a time of day
         /// </summary>
         public eResultType ResultType { get; set; }
-
-        /// <summary>
-        /// This separates the "Good" habits from the "Bad" habits like eating junk food
-        /// </summary>
-        public bool Positive { get; set; }
 
         /// <summary>
         /// When we delete a task this is set to true. When retrieving the tasks these will be 
@@ -89,11 +76,8 @@ namespace HabitTrackerServices.Models.DTO
 
                 this.CalendarTaskId = task.CalendarTaskId;
                 this.AbsolutePosition = task.AbsolutePosition;
-                this.Description = task.Description;
                 this.Frequency = task.Frequency;
-                this.MinDuration = task.MinDuration;
                 this.Name = task.Name;
-                this.Positive = task.Positive;
                 this.RequiredDays = task.RequiredDays;
                 this.ResultType = task.ResultType;
                 this.UserId = task.UserId;
@@ -101,7 +85,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.InsertDate = task.InsertDate;
                 this.UpdateDate = task.UpdateDate;
                 this.VoidDate = task.VoidDate;
-                this.AssignedDate = task.TaskAssignedDate;
+                this.AssignedDate = task.AssignedDate;
             }
             catch (Exception ex)
             {
@@ -117,11 +101,8 @@ namespace HabitTrackerServices.Models.DTO
                 this.InitialAbsolutePosition = task.InitialAbsolutePosition;
                 this.CalendarTaskId = task.CalendarTaskId;
                 this.AbsolutePosition = task.AbsolutePosition;
-                this.Description = task.Description;
                 this.Frequency = task.Frequency;
-                this.MinDuration = task.MinDuration;
                 this.Name = task.Name;
-                this.Positive = task.Positive;
                 this.RequiredDays = task.RequiredDays;
                 this.ResultType = task.ResultType;
                 this.UserId = task.UserId;
@@ -146,11 +127,8 @@ namespace HabitTrackerServices.Models.DTO
             task.CalendarTaskId = this.CalendarTaskId;
             task.AbsolutePosition = this.AbsolutePosition;
             task.InitialAbsolutePosition = this.InitialAbsolutePosition;
-            task.Description = this.Description;
             task.Frequency = this.Frequency;
-            task.MinDuration = this.MinDuration;
             task.Name = this.Name;
-            task.Positive = this.Positive;
             task.RequiredDays = this.RequiredDays;
             task.ResultType = this.ResultType;
             task.UserId = this.UserId;
