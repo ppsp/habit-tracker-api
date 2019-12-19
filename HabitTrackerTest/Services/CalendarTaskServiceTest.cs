@@ -23,7 +23,6 @@ namespace HabitTrackerTest
             var testTask = new CalendarTask();
 
             testTask.Name = "Test Task";
-            testTask.Description = "Test Task Description";
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
@@ -45,13 +44,11 @@ namespace HabitTrackerTest
             var testTask = new CalendarTask();
 
             testTask.Name = Guid.NewGuid().ToString();
-            testTask.Description = Guid.NewGuid().ToString();
             testTask.Frequency = eTaskFrequency.Monthly;
             testTask.ResultType = eResultType.Decimal;
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
-            testTask.Positive = false;
 
             // ACT
             var id = calendarTaskService.InsertTaskAsync(testTask).Result;
@@ -59,13 +56,10 @@ namespace HabitTrackerTest
             // ASSERT
             var task = calendarTaskService.GetTaskAsync(id).Result;
             Assert.AreEqual(testTask.Name, task.Name);
-            Assert.AreEqual(testTask.MinDuration, task.MinDuration);
-            Assert.AreEqual(testTask.Positive, task.Positive);
             CollectionAssert.AreEqual(testTask.RequiredDays, task.RequiredDays);
             Assert.AreEqual(testTask.ResultType, task.ResultType);
             Assert.AreEqual(testTask.UserId, task.UserId);
             Assert.AreEqual(testTask.AbsolutePosition, task.AbsolutePosition);
-            Assert.AreEqual(testTask.Description, task.Description);
             Assert.AreEqual(testTask.Frequency, task.Frequency);
             Assert.IsTrue(task.InsertDate != null && task.InsertDate.Value > DateTime.MinValue);
         }
@@ -81,13 +75,11 @@ namespace HabitTrackerTest
                 var testTask = new DTOCalendarTask();
 
                 testTask.Name = Guid.NewGuid().ToString();
-                testTask.Description = Guid.NewGuid().ToString();
                 testTask.Frequency = eTaskFrequency.Monthly;
                 testTask.ResultType = eResultType.Decimal;
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
-                testTask.Positive = false;
                 testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
@@ -124,13 +116,11 @@ namespace HabitTrackerTest
                 var testTask = new DTOCalendarTask();
 
                 testTask.Name = Guid.NewGuid().ToString();
-                testTask.Description = Guid.NewGuid().ToString();
                 testTask.Frequency = eTaskFrequency.Monthly;
                 testTask.ResultType = eResultType.Decimal;
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
-                testTask.Positive = false;
                 testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
@@ -166,13 +156,11 @@ namespace HabitTrackerTest
                 var testTask = new DTOCalendarTask();
 
                 testTask.Name = Guid.NewGuid().ToString();
-                testTask.Description = Guid.NewGuid().ToString();
                 testTask.Frequency = eTaskFrequency.Monthly;
                 testTask.ResultType = eResultType.Decimal;
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
-                testTask.Positive = false;
                 testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);

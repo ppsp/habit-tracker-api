@@ -1,4 +1,5 @@
 ﻿using Google.Cloud.Firestore;
+using HabitTrackerCore.Exceptions;
 using HabitTrackerCore.Models;
 using HabitTrackerCore.Services;
 using HabitTrackerCore.Utils;
@@ -85,6 +86,8 @@ namespace HabitTrackerServices.Services
 
         private async Task<string> insertTaskAsync(ICalendarTask task)
         {
+            GuardAgainstInvalidTask(task);
+
             await ReorderTasks(task);
 
             task.InsertDate = DateTime.UtcNow;
@@ -95,6 +98,18 @@ namespace HabitTrackerServices.Services
             var reference = await colRef.AddAsync(new FireCalendarTask(task));
 
             return reference.Id;
+        }
+
+        private static void GuardAgainstInvalidTask(ICalendarTask task)
+        {
+            if (task.Name == null || task.Name.Length == 0)
+                throw new InvalidCalendarTaskException("Name is invalid");
+
+            if (!task.AbsolutePosition.IsBetween(0, 500))
+                throw new InvalidCalendarTaskException("Position must be between 0 and 500");
+
+            if (task.Frequency.In(eTaskFrequency.Once, eTaskFrequency.UntilDone) && task.AssignedDate == null)
+                throw new InvalidCalendarTaskException("Assigned date can't be null");
         }
 
         public async Task<bool> ReorderTasks(ICalendarTask task)
