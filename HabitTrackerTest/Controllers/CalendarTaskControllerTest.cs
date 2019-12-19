@@ -56,7 +56,6 @@ namespace HabitTrackerTest
             var testTask = new DTOCalendarTask();
 
             testTask.Name = "Test Task";
-            testTask.Description = "Test Task Description";
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
@@ -82,14 +81,12 @@ namespace HabitTrackerTest
                 var testTask = new DTOCalendarTask();
 
                 testTask.Name = Guid.NewGuid().ToString();
-                testTask.Description = Guid.NewGuid().ToString();
                 testTask.Frequency = eTaskFrequency.Monthly;
                 testTask.ResultType = eResultType.Decimal;
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
                 testTask.InitialAbsolutePosition = i;
-                testTask.Positive = false;
                 testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
             }
 
@@ -113,7 +110,6 @@ namespace HabitTrackerTest
             var testTask = new CalendarTask();
 
             testTask.Name = "Test Task";
-            testTask.Description = "Test Task Description";
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
@@ -124,7 +120,6 @@ namespace HabitTrackerTest
             // ACT
             var task = calendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
             var DTOtask = new DTOCalendarTask(task);
-            DTOtask.Description = "new description";
             var response = calendarTaskController.Put(DTOtask).Result;
             var okResult = response as OkObjectResult;
 
@@ -141,7 +136,6 @@ namespace HabitTrackerTest
             var testTask = new CalendarTask();
 
             testTask.Name = "Test Task";
-            testTask.Description = "Test Task Description";
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
@@ -152,9 +146,7 @@ namespace HabitTrackerTest
             // ACT
             var task = calendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
             var DTOtask = new DTOCalendarTask(task);
-            DTOtask.Description = "new description";
             DTOtask.Name = "new task name";
-            DTOtask.MinDuration = 3;
             DTOtask.AbsolutePosition = 2;
             DTOtask.Frequency = eTaskFrequency.Weekly;
             DTOtask.RequiredDays = new List<DayOfWeek>();
@@ -165,8 +157,6 @@ namespace HabitTrackerTest
 
             // ASSERT
             Assert.AreEqual(DTOtask.Name, taskUpdated.Name);
-            Assert.AreEqual(DTOtask.Description, taskUpdated.Description);
-            Assert.AreEqual(DTOtask.MinDuration, taskUpdated.MinDuration);
             Assert.AreEqual(DTOtask.AbsolutePosition, taskUpdated.AbsolutePosition);
             Assert.AreEqual(DTOtask.Frequency, taskUpdated.Frequency);
             Assert.AreEqual(DTOtask.ResultType, taskUpdated.ResultType);

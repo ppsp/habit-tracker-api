@@ -11,14 +11,6 @@ namespace HabitTrackerCore.Models
 
         public string Name { get; set; }
 
-        public string Description { get; set; }
-
-        /// <summary>
-        /// The minimum duration of the task. This isn't an absolute minimum, it's simply
-        /// the amount of time a person wishes to invest in this task.
-        /// </summary>
-        public int MinDuration { get; set; }
-
         public List<DayOfWeek> RequiredDays { get; set; }
 
         /// <summary>
@@ -41,11 +33,6 @@ namespace HabitTrackerCore.Models
         /// Use decimal to store a number and use Time to store a time of day
         /// </summary>
         public eResultType ResultType { get; set; }
-
-        /// <summary>
-        /// This separates the "Good" habits from the "Bad" habits like eating junk food
-        /// </summary>
-        public bool Positive { get; set; }
 
         /// <summary>
         /// When we delete a task this is set to true. When retrieving the tasks these will be 

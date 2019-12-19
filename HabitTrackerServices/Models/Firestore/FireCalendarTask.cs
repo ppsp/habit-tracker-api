@@ -18,12 +18,6 @@ namespace HabitTrackerServices.Models.Firestore
         public string Name { get; set; }
 
         [FirestoreProperty]
-        public string Description { get; set; }
-
-        [FirestoreProperty]
-        public int MinDuration { get; set; }
-
-        [FirestoreProperty]
         public List<DayOfWeek> RequiredDays { get; set; }
 
         [FirestoreProperty]
@@ -41,9 +35,6 @@ namespace HabitTrackerServices.Models.Firestore
         public eResultType ResultType { get; set; }
 
         [FirestoreProperty]
-        public bool Positive { get; set; }
-
-        [FirestoreProperty]
         public bool Void { get; set; }
 
         [FirestoreProperty]
@@ -53,7 +44,7 @@ namespace HabitTrackerServices.Models.Firestore
         [FirestoreProperty]
         public DateTime? VoidDate { get; set; }
         [FirestoreProperty]
-        public DateTime? TaskAssignedDate { get; set; }
+        public DateTime? AssignedDate { get; set; }
 
         public FireCalendarTask()
         {
@@ -67,11 +58,8 @@ namespace HabitTrackerServices.Models.Firestore
             {
                 this.CalendarTaskId = task.CalendarTaskId;
                 this.AbsolutePosition = task.AbsolutePosition;
-                this.Description = task.Description;
                 this.Frequency = task.Frequency;
-                this.MinDuration = task.MinDuration;
                 this.Name = task.Name;
-                this.Positive = task.Positive;
                 this.RequiredDays = task.RequiredDays;
                 this.ResultType = task.ResultType;
                 this.UserId = task.UserId;
@@ -79,7 +67,7 @@ namespace HabitTrackerServices.Models.Firestore
                 this.InsertDate = task.InsertDate;
                 this.UpdateDate = task.UpdateDate;
                 this.VoidDate = task.VoidDate;
-                this.TaskAssignedDate = task.AssignedDate;
+                this.AssignedDate = task.AssignedDate;
             }
             catch (Exception ex)
             {
@@ -94,11 +82,8 @@ namespace HabitTrackerServices.Models.Firestore
 
             task.CalendarTaskId = this.CalendarTaskId;
             task.AbsolutePosition = this.AbsolutePosition;
-            task.Description = this.Description;
             task.Frequency = this.Frequency;
-            task.MinDuration = this.MinDuration;
             task.Name = this.Name;
-            task.Positive = this.Positive;
             task.RequiredDays = this.RequiredDays;
             task.ResultType = this.ResultType;
             task.UserId = this.UserId;
@@ -106,7 +91,7 @@ namespace HabitTrackerServices.Models.Firestore
             task.InsertDate = this.InsertDate;
             task.UpdateDate = this.UpdateDate;
             task.VoidDate = this.VoidDate;
-            task.AssignedDate = this.TaskAssignedDate;
+            task.AssignedDate = this.AssignedDate;
 
             return task;
         }
