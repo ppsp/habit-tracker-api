@@ -44,6 +44,7 @@ namespace HabitTrackerServices.Models.DTO
         public DateTime? UpdateDate { get; set; }
         public DateTime? VoidDate { get; set; }
         public IEnumerable<ITaskHistory> Histories { get; set; }
+        public eStatType StatType { get; set; }
         public DateTime? AssignedDate { get; set; }
 
         /// <summary>
@@ -86,6 +87,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.UpdateDate = task.UpdateDate;
                 this.VoidDate = task.VoidDate;
                 this.AssignedDate = task.AssignedDate;
+                this.StatType = task.StatType;
             }
             catch (Exception ex)
             {
@@ -112,6 +114,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.VoidDate = task.VoidDate;
                 this.Histories = task.Histories;
                 this.AssignedDate = task.AssignedDate;
+                this.StatType = task.StatType;
             }
             catch (Exception ex)
             {
@@ -138,6 +141,7 @@ namespace HabitTrackerServices.Models.DTO
             task.VoidDate = this.VoidDate;
             task.Histories = this.Histories;
             task.AssignedDate = this.AssignedDate;
+            task.StatType = this.StatType;
 
             return task;
         }

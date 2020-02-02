@@ -45,6 +45,8 @@ namespace HabitTrackerServices.Models.Firestore
         public DateTime? VoidDate { get; set; }
         [FirestoreProperty]
         public DateTime? AssignedDate { get; set; }
+        [FirestoreProperty]
+        public eStatType StatType { get; set; }
 
         public FireCalendarTask()
         {
@@ -68,6 +70,7 @@ namespace HabitTrackerServices.Models.Firestore
                 this.UpdateDate = task.UpdateDate;
                 this.VoidDate = task.VoidDate;
                 this.AssignedDate = task.AssignedDate;
+                this.StatType = task.StatType;
             }
             catch (Exception ex)
             {
@@ -92,6 +95,7 @@ namespace HabitTrackerServices.Models.Firestore
             task.UpdateDate = this.UpdateDate;
             task.VoidDate = this.VoidDate;
             task.AssignedDate = this.AssignedDate;
+            task.StatType = this.StatType;
 
             return task;
         }

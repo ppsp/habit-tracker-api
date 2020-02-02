@@ -49,6 +49,8 @@ namespace HabitTrackerCore.Models
 
         public IEnumerable<ITaskHistory> Histories { get; set; }
 
+        public eStatType StatType { get; set; }
+
         public bool HasBeenVoided();
         public bool PositionHasBeenModified();
     }
