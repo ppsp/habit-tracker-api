@@ -34,5 +34,11 @@
         TimeEatStart = 5,
         TimeEatStop = 6,
     }
+
+    public enum eLanguage
+    {
+        English  = 0,
+        French = 1
+    }
 }
 
