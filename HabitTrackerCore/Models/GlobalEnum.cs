@@ -37,8 +37,8 @@
 
     public enum eLanguage
     {
-        English  = 0,
-        French = 1
+        English,
+        French
     }
 }
 

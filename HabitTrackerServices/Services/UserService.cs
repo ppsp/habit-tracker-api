@@ -45,6 +45,7 @@ namespace HabitTrackerServices.Services
                 if (document.Exists)
                 {
                     var newFireUser = document.ConvertTo<FireUser>();
+                    newFireUser.Id = document.Id;
                     return newFireUser.ToUser();
                 }
             }
@@ -59,15 +60,27 @@ namespace HabitTrackerServices.Services
                                  .WhereEqualTo("UserId", userId);
         }
 
-        public async Task<bool> UpdateUserAsync(IUser user)
+        public async Task<bool> InsertUpdateUserAsync(IUser user)
         {
             try
             {
                 return await updateUserAsync(user);
             }
+            catch (Grpc.Core.RpcException ex)
+            {
+                if (ex.StatusCode == Grpc.Core.StatusCode.NotFound)
+                {
+                    return await InsertUserAsync(user);
+                }
+                else
+                {
+                    Logger.Error("GRPC Error in InsertUpdateUserAsync", ex);
+                    return false;
+                }
+            }
             catch (Exception ex)
             {
-                Logger.Error("Error in UpdateTaskAsyncNoPositionCheck", ex);
+                Logger.Error("Error in InsertUpdateUserAsync", ex);
                 return false;
             }
         }
@@ -76,7 +89,7 @@ namespace HabitTrackerServices.Services
         {
             DocumentReference taskRef = this.Connector.fireStoreDb
                                                       .Collection("user")
-                                                      .Document(user.Id);
+                                                      .Document(user.UserId);
 
             var dictionnary = user.ToDictionary();
 
@@ -85,13 +98,33 @@ namespace HabitTrackerServices.Services
             return true;
         }
 
-        public async Task<bool> DeleteUserAsync(string userId)
+        public async Task<bool> InsertUserAsync(IUser user)
+        {
+            try
+            {
+                await insertUserAsync(user);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in InsertUserAsync", ex);
+                return false;
+            }
+        }
+
+        private async Task insertUserAsync(IUser user)
+        {
+            CollectionReference colRef = this.Connector.fireStoreDb.Collection("user");
+            await colRef.AddAsync(new FireUser(user));
+        }
+
+        public async Task<bool> DeleteUserAsync(string Id)
         {
             try
             {
                 DocumentReference taskRef = this.Connector.fireStoreDb
                                                           .Collection("user")
-                                                          .Document(userId);
+                                                          .Document(Id);
 
                 await taskRef.DeleteAsync();
 

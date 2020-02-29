@@ -7,6 +7,7 @@ namespace HabitTrackerCore.Models
     public interface IUser
     {
         string Id { get; set; }
+        string UserId { get; set; }
         eLanguage PreferedLanguage { get; set; }
     }
 }

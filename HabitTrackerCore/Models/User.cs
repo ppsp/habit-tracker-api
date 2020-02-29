@@ -7,6 +7,7 @@ namespace HabitTrackerCore.Models
     public class User : IUser
     {
         public string Id { get; set; }
+        public string UserId { get; set; }
         public eLanguage PreferedLanguage { get; set; }
     }
 
@@ -27,6 +28,7 @@ namespace HabitTrackerCore.Models
         }
 
         public string Id { get; set; }
+        public string UserId { get; set; }
         public eLanguage PreferedLanguage { get; set; }
     }
 }

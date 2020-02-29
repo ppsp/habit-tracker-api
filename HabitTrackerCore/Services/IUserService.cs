@@ -5,7 +5,7 @@ namespace HabitTrackerCore.Services
 {
     public interface IUserService
     {
-        Task<bool> UpdateUserAsync(IUser user);
+        Task<bool> InsertUpdateUserAsync(IUser user);
         Task<IUser> GetUserAsync(string userId);
     }
 }

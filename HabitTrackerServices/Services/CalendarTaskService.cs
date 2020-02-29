@@ -86,13 +86,8 @@ namespace HabitTrackerServices.Services
 
         private async Task<string> insertTaskAsync(ICalendarTask task)
         {
-            GuardAgainstInvalidTask(task);
-
-            await ReorderTasks(task);
-
-            task.InsertDate = DateTime.UtcNow;
-            if (task.AssignedDate != null)
-                task.AssignedDate = task.AssignedDate.Value.ToUniversalTime();
+            if (task.InsertDate == null)
+                task.InsertDate = DateTime.UtcNow;
 
             CollectionReference colRef = this.Connector.fireStoreDb.Collection("task_todo");
             var reference = await colRef.AddAsync(new FireCalendarTask(task));

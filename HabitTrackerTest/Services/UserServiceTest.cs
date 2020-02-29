@@ -15,10 +15,13 @@ namespace HabitTrackerTest
             var testUser = getTestUser();
 
             // ACT
-            var success = userService.UpdateUserAsync(testUser).Result;
+            var success = userService.InsertUpdateUserAsync(testUser).Result;
 
             // ASSERT
             Assert.IsTrue(success);
+
+            // Cleanup
+            DeleteUser(testUser);
         }
 
         [TestMethod]
@@ -26,13 +29,16 @@ namespace HabitTrackerTest
         {
             // ARRANGE
             var testUser = getTestUser();
-            var success = userService.UpdateUserAsync(testUser).Result;
+            var success = userService.InsertUpdateUserAsync(testUser).Result;
 
             // ACT
-            var user = userService.GetUserAsync(testUser.Id).Result;
+            var user = userService.GetUserAsync(testUser.UserId).Result;
 
             // ASSERT
             AssertValuesAreTheSame(testUser, user);
+
+            // Cleanup
+            DeleteUser(testUser);
         }
 
         [TestMethod]
@@ -40,16 +46,19 @@ namespace HabitTrackerTest
         {
             // ARRANGE
             var testUser = getTestUser();
-            var success = userService.UpdateUserAsync(testUser).Result;
-            var insertedUser = userService.GetUserAsync(testUser.Id).Result;
+            var success = userService.InsertUpdateUserAsync(testUser).Result;
+            var insertedUser = userService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
             insertedUser.PreferedLanguage = eLanguage.English;
-            success = userService.UpdateUserAsync(testUser).Result;
-            var updatedUser = userService.GetUserAsync(testUser.Id).Result;
+            success = userService.InsertUpdateUserAsync(insertedUser).Result;
+            var updatedUser = userService.GetUserAsync(testUser.UserId).Result;
 
             // ASSERT
             AssertValuesAreTheSame(insertedUser, updatedUser);
+
+            // Cleanup
+            DeleteUser(testUser);
         }
 
         [TestMethod]
@@ -57,13 +66,17 @@ namespace HabitTrackerTest
         {
             // ARRANGE
             var testUser = getTestUser();
-            var successInsert = userService.UpdateUserAsync(testUser).Result;
+            var successInsert = userService.InsertUpdateUserAsync(testUser).Result;
+            var insertedUser = userService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
-            var successDelete = userService.DeleteUserAsync(testUser.Id).Result;
+            var successDelete = userService.DeleteUserAsync(insertedUser.Id).Result;
 
             // ASSERT
             Assert.IsTrue(successDelete);
+
+            // Cleanup
+            DeleteUser(testUser);
         }
 
         [TestMethod]
@@ -71,19 +84,23 @@ namespace HabitTrackerTest
         {
             // ARRANGE
             var testUser = getTestUser();
-            var successInsert = userService.UpdateUserAsync(testUser).Result;
+            var successInsert = userService.InsertUpdateUserAsync(testUser).Result;
+            var insertedUser = userService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
-            var successDelete = userService.DeleteUserAsync(testUser.Id).Result;
-            var insertedUser = userService.GetUserAsync(testUser.Id).Result;
+            var successDelete = userService.DeleteUserAsync(insertedUser.Id).Result;
+            insertedUser = userService.GetUserAsync(testUser.UserId).Result;
 
             // ASSERT
-            Assert.IsTrue(insertedUser == null);
+            Assert.IsTrue(insertedUser is NULLUser);
+
+            // Cleanup
+            DeleteUser(testUser);
         }
 
         private static void AssertValuesAreTheSame(IUser user1, IUser user2)
         {
-            Assert.AreEqual(user1.Id, user2.Id);
+            Assert.AreEqual(user1.UserId, user2.UserId);
             Assert.AreEqual(user1.PreferedLanguage, user2.PreferedLanguage);
         }
 
@@ -91,10 +108,15 @@ namespace HabitTrackerTest
         {
             var testUser = new User();
 
-            testUser.Id = Guid.NewGuid().ToString();
+            testUser.UserId = Guid.NewGuid().ToString();
             testUser.PreferedLanguage = eLanguage.French;
             
             return testUser;
+        }
+
+        private void DeleteUser(IUser user)
+        {
+            var result = userService.DeleteUserAsync(user.UserId).Result;
         }
     }
 }

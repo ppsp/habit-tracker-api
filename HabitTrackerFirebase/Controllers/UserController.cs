@@ -38,7 +38,7 @@ namespace HabitTrackerWebApi.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody]DTOUser user)
         {
-            var result = await UserService.UpdateUserAsync(user);
+            var result = await UserService.InsertUpdateUserAsync(user);
             return Ok(result);
         }
     }
