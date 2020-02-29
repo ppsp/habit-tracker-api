@@ -85,7 +85,6 @@ namespace HabitTrackerServices.Services
             return true;
         }
 
-
         public async Task<bool> DeleteUserAsync(string userId)
         {
             try

@@ -19,11 +19,9 @@ namespace HabitTrackerWebApi.Controllers
     {
         private ITaskHistoryService TaskHistoryService { get; set; }
 
-        public TaskHistoryController(CachingManager cachingManager,
-                                     IDALTaskHistory dalTaskHistory,
-                                     TaskHistoryCache taskHistoryCache)
+        public TaskHistoryController(IDALTaskHistory dalTaskHistory)
         {
-            TaskHistoryService = new TaskHistoryService(dalTaskHistory, taskHistoryCache);
+            TaskHistoryService = new TaskHistoryService(dalTaskHistory);
         }
 
         // GET

@@ -27,30 +27,18 @@ namespace HabitTrackerWebApi.Controllers
 
         // GET
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]DTOGetCalendarTaskRequest dtoRequest)
+        public async Task<IActionResult> Get(string userId)
         {
-            var tasks = await CalendarTaskService.GetTasksAsync(dtoRequest.userId);
-            var histories = await TaskHistoryService.GetHistoriesAsync(dtoRequest.ToCalendarTaskRequest());
+            var user = await UserService.GetUserAsync(userId);
 
-            foreach (var task in tasks)
-                task.Histories = histories.Where(p => p.CalendarTaskId == task.CalendarTaskId);
-
-            return Ok(tasks.Select(p => new DTOCalendarTask(p)).ToList());
-        }
-
-        // POST
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody]DTOCalendarTask task)
-        {
-            var result = await CalendarTaskService.InsertTaskAsync(task);
-            return Ok(result);
+            return Ok(new DTOUser(user));
         }
 
         // PUT
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody]DTOCalendarTask task)
+        public async Task<IActionResult> Put([FromBody]DTOUser user)
         {
-            var result = await CalendarTaskService.UpdateTaskAsync(task);
+            var result = await UserService.UpdateUserAsync(user);
             return Ok(result);
         }
     }
