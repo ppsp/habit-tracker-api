@@ -7,6 +7,12 @@ namespace HabitTrackerServices.Models.DTO
         public string Id { get; set; }
         public string UserId { get; set; }
         public eLanguage PreferedLanguage { get; set; }
+
+        public DTOUser()
+        {
+
+        }
+
         public DTOUser(IUser user)
         {
             this.Id = user.Id;

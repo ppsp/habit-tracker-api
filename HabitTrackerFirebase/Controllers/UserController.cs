@@ -1,13 +1,9 @@
-﻿using HabitTrackerCore.DAL;
-using HabitTrackerCore.Services;
-using HabitTrackerServices.Caching;
-using HabitTrackerServices.DAL;
+﻿using HabitTrackerCore.Services;
 using HabitTrackerServices.Models.DTO;
 using HabitTrackerServices.Services;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HabitTrackerWebApi.Controllers
