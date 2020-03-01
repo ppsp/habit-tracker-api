@@ -96,6 +96,7 @@ namespace HabitTrackerServices.Models.Firestore
             task.VoidDate = this.VoidDate;
             task.AssignedDate = this.AssignedDate;
             task.StatType = this.StatType;
+            task.InitialAbsolutePosition = this.AbsolutePosition;
 
             return task;
         }

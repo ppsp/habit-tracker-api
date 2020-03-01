@@ -27,11 +27,13 @@ namespace HabitTrackerServices.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         public async Task<List<ICalendarTask>> GetTasksAsync(string userId, 
-                                                             bool includeVoid = false)
+                                                             bool includeVoid = false,
+                                                             int? firstPosition = null,
+                                                             int? lastPosition = null)
         {
             try
             {
-                return await getTasksAsync(userId, includeVoid);
+                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition);
             }
             catch (Exception ex)
             {
@@ -40,35 +42,54 @@ namespace HabitTrackerServices.Services
             }
         }
 
-        private async Task<List<ICalendarTask>> getTasksAsync(string userId, bool includeVoid)
+        private async Task<List<ICalendarTask>> getTasksAsync(string userId, 
+                                                              bool includeVoid,
+                                                              int? firstPosition,
+                                                              int? lastPosition)
         {
-            Query query = getGetTasksQuery(userId, includeVoid);
-
-            QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
-            List<ICalendarTask> tasks = new List<ICalendarTask>();
-
-            foreach (var document in tasksQuerySnapshot.Documents)
+            Query query = getGetTasksQuery(userId, includeVoid, firstPosition, lastPosition);
+            try
             {
-                if (document.Exists)
+                QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
+                List<ICalendarTask> tasks = new List<ICalendarTask>();
+
+                foreach (var document in tasksQuerySnapshot.Documents)
                 {
-                    var newFireTask = document.ConvertTo<FireCalendarTask>();
-                    var newTask = newFireTask.ToCalendarTask();
-                    newTask.CalendarTaskId = document.Id;
-                    tasks.Add(newTask);
+                    if (document.Exists)
+                    {
+                        var newFireTask = document.ConvertTo<FireCalendarTask>();
+                        var newTask = newFireTask.ToCalendarTask();
+                        newTask.CalendarTaskId = document.Id;
+                        tasks.Add(newTask);
+                    }
                 }
+                return tasks;
             }
-            return tasks;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        private Query getGetTasksQuery(string userId, bool includeVoid)
+        private Query getGetTasksQuery(string userId, 
+                                       bool includeVoid,
+                                       int? firstPosition,
+                                       int? lastPosition)
         {
-            return includeVoid ? this.Connector.fireStoreDb
-                                               .Collection("task_todo")
-                                               .WhereEqualTo("UserId", userId) :
-                                 this.Connector.fireStoreDb
-                                               .Collection("task_todo")
-                                               .WhereEqualTo("UserId", userId)
-                                               .WhereEqualTo("Void", false);
+            var query = this.Connector.fireStoreDb
+                                      .Collection("task_todo")
+                                      .WhereEqualTo("UserId", userId);
+
+            if (!includeVoid)
+                query = query.WhereEqualTo("Void", false);
+
+            if (firstPosition != null)
+                query = query.WhereGreaterThanOrEqualTo("AbsolutePosition", firstPosition.Value);
+
+            if (lastPosition != null)
+                query = query.WhereLessThanOrEqualTo("AbsolutePosition", lastPosition.Value);
+
+            return query;
         }
 
         public async Task<string> InsertTaskAsync(ICalendarTask task)
@@ -129,12 +150,18 @@ namespace HabitTrackerServices.Services
         private async Task reorderTasks(ICalendarTask task)
         {
             int difference = task.AbsolutePosition - task.InitialAbsolutePosition;
+            int lowest = Math.Min(task.AbsolutePosition, task.InitialAbsolutePosition);
+            int highest = Math.Max(task.AbsolutePosition, task.InitialAbsolutePosition);
 
-            var tasks = await GetTasksAsync(task.UserId);
+            var tasks = await GetTasksAsync(task.UserId, 
+                                            false,
+                                            lowest,
+                                            highest);
 
             foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
                                                                                       task.InitialAbsolutePosition) &&
-                                                         !p.Void && p.CalendarTaskId != task.CalendarTaskId))
+                                                         !p.Void && 
+                                                         p.CalendarTaskId != task.CalendarTaskId))
             {
                 currentTask.AbsolutePosition = difference < 0 ?
                                                 currentTask.AbsolutePosition + 1 :
