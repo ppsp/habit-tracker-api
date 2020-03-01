@@ -13,13 +13,9 @@ namespace HabitTrackerServices.Services
     {
         private IDALTaskHistory DALTaskHistory { get; set; }
 
-        private TaskHistoryCache TaskHistoryCache { get; set; }
-
-        public TaskHistoryService(IDALTaskHistory dalTaskHistory,
-                                  TaskHistoryCache cacheTaskHistory)
+        public TaskHistoryService(IDALTaskHistory dalTaskHistory)
         {
             this.DALTaskHistory = dalTaskHistory;
-            this.TaskHistoryCache = cacheTaskHistory;
         }
 
         public async Task<List<ITaskHistory>> GetHistoriesAsync(GetCalendarTaskRequest request)

@@ -22,11 +22,10 @@ namespace HabitTrackerWebApi.Controllers
         private ITaskHistoryService TaskHistoryService { get; set; }
 
         public CalendarTaskController(FirebaseConnector connector,
-                                      TaskHistoryCache taskHistoryCache,
                                       IDALTaskHistory dalTaskHistory)
         {
             CalendarTaskService = new CalendarTaskService(connector);
-            TaskHistoryService = new TaskHistoryService(dalTaskHistory, taskHistoryCache);
+            TaskHistoryService = new TaskHistoryService(dalTaskHistory);
         }
 
         // GET
