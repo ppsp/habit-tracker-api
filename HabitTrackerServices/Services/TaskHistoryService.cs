@@ -18,31 +18,6 @@ namespace HabitTrackerServices.Services
             this.DALTaskHistory = dalTaskHistory;
         }
 
-        public async Task<List<ITaskHistory>> GetHistoriesAsync(GetCalendarTaskRequest request)
-        {
-            try
-            {
-                return await getHistoriesAsync(request);
-            }
-            catch (Exception ex)
-            {
-                // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
-                Logger.Error("Error in GetHistoriesAsync", ex);
-                return new List<ITaskHistory>();
-            }
-        }
-
-        private async Task<List<ITaskHistory>> getHistoriesAsync(GetCalendarTaskRequest request)
-        {
-            SetDefaultDateValues(request);
-
-            var historiesFromDatabase = await this.DALTaskHistory.GetHistoriesAsync(request);
-
-            //this.TaskHistoryCache.AddToCache(new CachedTaskHistories(request, historiesFromDatabase));
-
-            return historiesFromDatabase;
-        }
-
         private static void SetDefaultDateValues(GetCalendarTaskRequest request)
         {
             if (request.DateStart == null)
