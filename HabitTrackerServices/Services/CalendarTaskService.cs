@@ -194,7 +194,7 @@ namespace HabitTrackerServices.Services
                                                       .Collection("task_todo")
                                                       .Document(task.CalendarTaskId);
 
-            var dictionnary = task.ToDictionary();
+            var dictionnary = new FireCalendarTask(task).ToDictionary();
 
             await taskRef.UpdateAsync(dictionnary);
         }

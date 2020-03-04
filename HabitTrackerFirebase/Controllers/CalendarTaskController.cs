@@ -33,10 +33,6 @@ namespace HabitTrackerWebApi.Controllers
         public async Task<IActionResult> Get([FromQuery]DTOGetCalendarTaskRequest dtoRequest)
         {
             var tasks = await CalendarTaskService.GetTasksAsync(dtoRequest.userId);
-            var histories = await TaskHistoryService.GetHistoriesAsync(dtoRequest.ToCalendarTaskRequest());
-
-            foreach (var task in tasks)
-                task.Histories = histories.Where(p => p.CalendarTaskId == task.CalendarTaskId);
 
             return Ok(tasks.Select(p => new DTOCalendarTask(p)).ToList());
         }

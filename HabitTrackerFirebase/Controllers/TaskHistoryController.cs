@@ -24,18 +24,6 @@ namespace HabitTrackerWebApi.Controllers
             TaskHistoryService = new TaskHistoryService(dalTaskHistory);
         }
 
-        // GET
-        [HttpGet]
-        public async Task<IActionResult> Get(string userId)
-        {
-            var tasks = await TaskHistoryService.GetHistoriesAsync(new GetCalendarTaskRequest()
-            {
-                UserId = userId,
-                IncludeVoid = false
-            });
-            return Ok(tasks);
-        }
-
         // POST
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]TaskHistory task)
