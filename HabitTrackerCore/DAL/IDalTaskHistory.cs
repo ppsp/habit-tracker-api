@@ -14,9 +14,9 @@ namespace HabitTrackerCore.DAL
     /// </summary>
     public interface IDALTaskHistory
     {
-        Task<bool> DeleteHistoryAsync(string taskHistoryId);
-        Task<List<ITaskHistory>> GetHistoriesAsync(GetCalendarTaskRequest request);
-        Task<ITaskHistory> GetHistoryAsync(string taskHistoryId);
+        /*Task<bool> DeleteHistoryAsync(string taskHistoryId);*/
+        /*Task<List<ITaskHistory>> GetHistoriesAsync(GetCalendarTaskRequest request);*/
+        /*Task<ITaskHistory> GetHistoryAsync(string taskHistoryId);*/
         Task<string> InsertHistoryAsync(ITaskHistory history);
         Task<bool> UpdateHistoryAsync(ITaskHistory history);
     }

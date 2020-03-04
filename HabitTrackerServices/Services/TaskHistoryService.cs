@@ -56,7 +56,7 @@ namespace HabitTrackerServices.Services
 
             return taskHistoryId;
         }
-
+        /*
         public async Task<ITaskHistory> GetHistoryAsync(string taskHistoryId)
         {
             try
@@ -73,8 +73,8 @@ namespace HabitTrackerServices.Services
                 Logger.Error("Error in GetAsync", ex);
                 return null;
             }
-        }
-
+        }*/
+        /*
         public async Task<bool> DeleteHistoryAsync(string taskHistoryId)
         {
             try
@@ -91,7 +91,7 @@ namespace HabitTrackerServices.Services
                 Logger.Error("Error in DeleteTaskAsync", ex);
                 return false;
             }
-        }
+        }*/
 
         public async Task<bool> UpdateHistoryAsync(ITaskHistory history)
         {

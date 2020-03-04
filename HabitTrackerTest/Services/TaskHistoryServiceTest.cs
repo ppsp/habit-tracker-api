@@ -21,7 +21,7 @@ namespace HabitTrackerTest
             // ASSERT
             Assert.IsTrue(id != null && id.Length > 0);
         }
-
+        /*
         [TestMethod]
         public void GetHistoryAsync_ShouldReturnSameValuesAsInsert()
         {
@@ -37,7 +37,7 @@ namespace HabitTrackerTest
 
             // ASSERT
             AssertValuesAreTheSame(testHistory, history);
-        }
+        }*/
 
         private static TaskHistory getDoneTestTaskHistory(CalendarTask testTask)
         {
