@@ -23,7 +23,7 @@ namespace HabitTrackerCore.Models
         public DateTime? AssignedDate { get; set; }
         public eStatType StatType { get; set; }
 
-        public IEnumerable<ITaskHistory> Histories { get; set; } = new List<ITaskHistory>();
+        public List<ITaskHistory> Histories { get; set; } = new List<ITaskHistory>();
 
         public bool HasBeenVoided()
         {

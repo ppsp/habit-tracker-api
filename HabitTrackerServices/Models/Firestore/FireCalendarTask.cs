@@ -102,7 +102,7 @@ namespace HabitTrackerServices.Models.Firestore
             task.AssignedDate = this.AssignedDate;
             task.StatType = this.StatType;
             task.InitialAbsolutePosition = this.AbsolutePosition;
-            task.Histories = this.Histories.Select(p => p.ToTaskHistory());
+            task.Histories = this.Histories.Select(p => p.ToTaskHistory() as ITaskHistory).ToList();
 
             return task;
         }

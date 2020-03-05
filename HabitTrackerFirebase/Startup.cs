@@ -1,5 +1,3 @@
-using HabitTrackerCore.DAL;
-using HabitTrackerServices.DAL;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Builder;
@@ -82,12 +80,6 @@ namespace HabitTrackerWebApi
                 return azureDevopsConnector;
             });
 
-            // Add DALTaskHistory which depends on FirebaseConnector
-            services.AddSingleton<IDALTaskHistory>(serviceProvider => {
-                var firebaseConnector = serviceProvider.GetService<FirebaseConnector>();
-                var dalTaskHistory = new DALTaskHistory(firebaseConnector);
-                return dalTaskHistory;
-            });
 
             services.AddScoped<AuthorizeJwt>();
 

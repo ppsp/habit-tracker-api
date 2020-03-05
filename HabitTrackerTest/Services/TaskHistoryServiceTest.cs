@@ -13,32 +13,16 @@ namespace HabitTrackerTest
         {
             // ARRANGE
             var testTask = getTestTask();
+            var result = this.calendarTaskService.InsertTaskAsync(testTask).Result;
             TaskHistory testHistory = getDoneTestTaskHistory(testTask);
-
+            testHistory.CalendarTaskId = result;
             // ACT
             var id = taskHistoryService.InsertHistoryAsync(testHistory).Result;
 
             // ASSERT
             Assert.IsTrue(id != null && id.Length > 0);
         }
-        /*
-        [TestMethod]
-        public void GetHistoryAsync_ShouldReturnSameValuesAsInsert()
-        {
-            // ARRANGE
-            CalendarTask testTask = getTestTask();
-            testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
-
-            TaskHistory testHistory = getTestTaskHistory(testTask);
-            testHistory.TaskHistoryId = taskHistoryService.InsertHistoryAsync(testHistory).Result;
-
-            // ACT
-            var history = taskHistoryService.GetHistoryAsync(testHistory.TaskHistoryId).Result;
-
-            // ASSERT
-            AssertValuesAreTheSame(testHistory, history);
-        }*/
-
+        
         private static TaskHistory getDoneTestTaskHistory(CalendarTask testTask)
         {
             var testHistory = new TaskHistory(testTask);

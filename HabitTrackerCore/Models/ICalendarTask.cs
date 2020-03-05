@@ -47,7 +47,7 @@ namespace HabitTrackerCore.Models
 
         public DateTime? AssignedDate { get; set; }
 
-        public IEnumerable<ITaskHistory> Histories { get; set; }
+        public List<ITaskHistory> Histories { get; set; }
 
         public eStatType StatType { get; set; }
 

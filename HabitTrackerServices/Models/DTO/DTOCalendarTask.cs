@@ -43,7 +43,7 @@ namespace HabitTrackerServices.Models.DTO
 
         public DateTime? UpdateDate { get; set; }
         public DateTime? VoidDate { get; set; }
-        public IEnumerable<ITaskHistory> Histories { get; set; } = new List<ITaskHistory>();
+        public List<ITaskHistory> Histories { get; set; } = new List<ITaskHistory>();
         public eStatType StatType { get; set; }
         public DateTime? AssignedDate { get; set; }
 
