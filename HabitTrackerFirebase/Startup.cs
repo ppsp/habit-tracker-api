@@ -1,3 +1,5 @@
+using HabitTrackerCore.Services;
+using HabitTrackerServices.Services;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Builder;
@@ -80,6 +82,12 @@ namespace HabitTrackerWebApi
                 return azureDevopsConnector;
             });
 
+            // Add CalendarTaskService
+            services.AddSingleton<CalendarTaskService>(serviceProvider => {
+                var firebaseConnector = serviceProvider.GetService<FirebaseConnector>();
+                var calendarTaskService= new CalendarTaskService(firebaseConnector);
+                return calendarTaskService;
+            });
 
             services.AddScoped<AuthorizeJwt>();
 
