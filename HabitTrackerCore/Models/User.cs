@@ -13,9 +13,7 @@ namespace HabitTrackerCore.Models
 
     public class NULLUser : IUser
     {
-        private static NULLUser _instance;
-        private NULLUser()
-        { }
+        private static NULLUser _instance = new NULLUser();
 
         public static NULLUser Instance
         {
