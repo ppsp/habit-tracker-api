@@ -48,6 +48,8 @@ namespace HabitTrackerServices.Models.Firestore
         public DateTime? AssignedDate { get; set; }
         [FirestoreProperty]
         public eStatType StatType { get; set; }
+        [FirestoreProperty]
+        public DateTime? SkipUntil { get; set; }
 
         [FirestoreProperty]
         public FireTaskHistory[] Histories { get; set; } = new FireTaskHistory[0];
@@ -76,6 +78,7 @@ namespace HabitTrackerServices.Models.Firestore
                 this.AssignedDate = task.AssignedDate;
                 this.StatType = task.StatType;
                 this.Histories = task.Histories.Select(p => new FireTaskHistory(p)).ToArray();
+                this.SkipUntil = task.SkipUntil;
             }
             catch (Exception ex)
             {
@@ -103,6 +106,7 @@ namespace HabitTrackerServices.Models.Firestore
             task.StatType = this.StatType;
             task.InitialAbsolutePosition = this.AbsolutePosition;
             task.Histories = this.Histories.Select(p => p.ToTaskHistory() as ITaskHistory).ToList();
+            task.SkipUntil = this.SkipUntil;
 
             return task;
         }
