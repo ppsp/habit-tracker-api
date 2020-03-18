@@ -51,6 +51,8 @@ namespace HabitTrackerCore.Models
 
         public eStatType StatType { get; set; }
 
+        public DateTime? SkipUntil { get; set; }
+
         public bool HasBeenVoided();
         public bool PositionHasBeenModified();
     }

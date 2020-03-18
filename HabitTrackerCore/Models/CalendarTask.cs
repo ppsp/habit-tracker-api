@@ -22,6 +22,7 @@ namespace HabitTrackerCore.Models
         public DateTime? VoidDate { get ; set ; }
         public DateTime? AssignedDate { get; set; }
         public eStatType StatType { get; set; }
+        public DateTime? SkipUntil { get; set; }
 
         public List<ITaskHistory> Histories { get; set; } = new List<ITaskHistory>();
 

@@ -46,6 +46,7 @@ namespace HabitTrackerServices.Models.DTO
         public List<ITaskHistory> Histories { get; set; } = new List<ITaskHistory>();
         public eStatType StatType { get; set; }
         public DateTime? AssignedDate { get; set; }
+        public DateTime? SkipUntil { get; set; }
 
         /// <summary>
         /// This is needed in order to know if the position has to be updated
@@ -88,6 +89,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.VoidDate = task.VoidDate;
                 this.AssignedDate = task.AssignedDate;
                 this.StatType = task.StatType;
+                this.SkipUntil = task.SkipUntil;
             }
             catch (Exception ex)
             {
@@ -115,6 +117,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.Histories = task.Histories;
                 this.AssignedDate = task.AssignedDate;
                 this.StatType = task.StatType;
+                this.SkipUntil = task.SkipUntil;
             }
             catch (Exception ex)
             {
@@ -142,6 +145,7 @@ namespace HabitTrackerServices.Models.DTO
             task.Histories = this.Histories;
             task.AssignedDate = this.AssignedDate;
             task.StatType = this.StatType;
+            task.SkipUntil = this.SkipUntil;
 
             return task;
         }
