@@ -153,16 +153,37 @@ namespace HabitTrackerServices.Services
                                             lowest,
                                             highest);
 
-            foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
-                                                                                      task.InitialAbsolutePosition) &&
-                                                         !p.Void && 
-                                                         p.CalendarTaskId != task.CalendarTaskId))
+            // Reorder all tasks
+            if (tasks.Count > Math.Abs(difference))
             {
-                currentTask.AbsolutePosition = difference < 0 ?
-                                                currentTask.AbsolutePosition + 1 :
-                                                currentTask.AbsolutePosition - 1;
+                var allTasks = await GetTasksAsync(task.UserId, false);
 
-                await UpdateTaskAsyncNoPositionCheck(currentTask);
+                int initialPosition = allTasks[0].AbsolutePosition;
+                int positionIterator = 0;
+                foreach (var currentTask in allTasks.OrderBy(p => p.AbsolutePosition))
+                {
+                    currentTask.AbsolutePosition = difference < 0 ?
+                                                initialPosition + positionIterator :
+                                                initialPosition - positionIterator;
+
+                    positionIterator++;
+
+                    await UpdateTaskAsyncNoPositionCheck(currentTask);
+                }
+            }
+            else
+            {
+                foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
+                                                                                      task.InitialAbsolutePosition) &&
+                                                         !p.Void &&
+                                                         p.CalendarTaskId != task.CalendarTaskId))
+                {
+                    currentTask.AbsolutePosition = difference < 0 ?
+                                                    currentTask.AbsolutePosition + 1 :
+                                                    currentTask.AbsolutePosition - 1;
+
+                    await UpdateTaskAsyncNoPositionCheck(currentTask);
+                }
             }
         }
 
