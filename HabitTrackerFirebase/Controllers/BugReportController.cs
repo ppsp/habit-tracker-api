@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HabitTrackerServices.DAL;
-using HabitTrackerServices.Models.DTO;
+﻿using HabitTrackerServices.Models.DTO;
 using HabitTrackerServices.Services;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace HabitTrackerWebApi.Controllers
 {

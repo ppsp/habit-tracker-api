@@ -1,7 +1,4 @@
-﻿using HabitTrackerCore.DAL;
-using HabitTrackerCore.Services;
-using HabitTrackerServices.Caching;
-using HabitTrackerServices.DAL;
+﻿using HabitTrackerCore.Services;
 using HabitTrackerServices.Models.DTO;
 using HabitTrackerServices.Services;
 using HabitTrackerTools;
@@ -21,12 +18,10 @@ namespace HabitTrackerWebApi.Controllers
         private ICalendarTaskService CalendarTaskService { get; set; }
         private ITaskHistoryService TaskHistoryService { get; set; }
 
-        public CalendarTaskController(FirebaseConnector connector,
-                                      TaskHistoryCache taskHistoryCache,
-                                      IDALTaskHistory dalTaskHistory)
+        public CalendarTaskController(FirebaseConnector connector)
         {
             CalendarTaskService = new CalendarTaskService(connector);
-            TaskHistoryService = new TaskHistoryService(dalTaskHistory, taskHistoryCache);
+            TaskHistoryService = new TaskHistoryService(CalendarTaskService);
         }
 
         // GET
@@ -34,10 +29,6 @@ namespace HabitTrackerWebApi.Controllers
         public async Task<IActionResult> Get([FromQuery]DTOGetCalendarTaskRequest dtoRequest)
         {
             var tasks = await CalendarTaskService.GetTasksAsync(dtoRequest.userId);
-            var histories = await TaskHistoryService.GetHistoriesAsync(dtoRequest.ToCalendarTaskRequest());
-
-            foreach (var task in tasks)
-                task.Histories = histories.Where(p => p.CalendarTaskId == task.CalendarTaskId);
 
             return Ok(tasks.Select(p => new DTOCalendarTask(p)).ToList());
         }

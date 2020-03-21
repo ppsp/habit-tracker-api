@@ -3,6 +3,7 @@ using HabitTrackerCore.Models;
 using HabitTrackerTools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HabitTrackerServices.Models.Firestore
 {
@@ -45,6 +46,13 @@ namespace HabitTrackerServices.Models.Firestore
         public DateTime? VoidDate { get; set; }
         [FirestoreProperty]
         public DateTime? AssignedDate { get; set; }
+        [FirestoreProperty]
+        public eStatType StatType { get; set; }
+        [FirestoreProperty]
+        public DateTime? SkipUntil { get; set; }
+
+        [FirestoreProperty]
+        public FireTaskHistory[] Histories { get; set; } = new FireTaskHistory[0];
 
         public FireCalendarTask()
         {
@@ -68,6 +76,9 @@ namespace HabitTrackerServices.Models.Firestore
                 this.UpdateDate = task.UpdateDate;
                 this.VoidDate = task.VoidDate;
                 this.AssignedDate = task.AssignedDate;
+                this.StatType = task.StatType;
+                this.Histories = task.Histories.Select(p => new FireTaskHistory(p)).ToArray();
+                this.SkipUntil = task.SkipUntil;
             }
             catch (Exception ex)
             {
@@ -92,6 +103,10 @@ namespace HabitTrackerServices.Models.Firestore
             task.UpdateDate = this.UpdateDate;
             task.VoidDate = this.VoidDate;
             task.AssignedDate = this.AssignedDate;
+            task.StatType = this.StatType;
+            task.InitialAbsolutePosition = this.AbsolutePosition;
+            task.Histories = this.Histories.Select(p => p.ToTaskHistory() as ITaskHistory).ToList();
+            task.SkipUntil = this.SkipUntil;
 
             return task;
         }

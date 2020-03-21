@@ -1,7 +1,5 @@
-using HabitTrackerCore.DAL;
-using HabitTrackerCore.Utils;
-using HabitTrackerServices.Caching;
-using HabitTrackerServices.DAL;
+using HabitTrackerCore.Services;
+using HabitTrackerServices.Services;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Builder;
@@ -84,23 +82,14 @@ namespace HabitTrackerWebApi
                 return azureDevopsConnector;
             });
 
-            // Add DALTaskHistory which depends on FirebaseConnector
-            services.AddSingleton<IDALTaskHistory>(serviceProvider => {
+            // Add CalendarTaskService
+            services.AddSingleton<CalendarTaskService>(serviceProvider => {
                 var firebaseConnector = serviceProvider.GetService<FirebaseConnector>();
-                var dalTaskHistory = new DALTaskHistory(firebaseConnector);
-                return dalTaskHistory;
+                var calendarTaskService= new CalendarTaskService(firebaseConnector);
+                return calendarTaskService;
             });
 
             services.AddScoped<AuthorizeJwt>();
-
-            services.AddSingleton(new CachingManager());
-
-            // Add TaskHistoryCache which depends on CachingManager
-            services.AddSingleton<TaskHistoryCache>(serviceProvider => {
-                var cachingManager = serviceProvider.GetService<CachingManager>();
-                var taskHistoryCache = new TaskHistoryCache(cachingManager);
-                return taskHistoryCache;
-            });
 
             Logger.Debug("configured services");
         }

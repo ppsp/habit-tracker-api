@@ -1,10 +1,6 @@
-﻿using HabitTrackerCore.DAL;
-using HabitTrackerCore.Models;
+﻿using HabitTrackerCore.Models;
 using HabitTrackerCore.Services;
-using HabitTrackerServices.Caching;
-using HabitTrackerServices.DAL;
 using HabitTrackerServices.Services;
-using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -19,23 +15,9 @@ namespace HabitTrackerWebApi.Controllers
     {
         private ITaskHistoryService TaskHistoryService { get; set; }
 
-        public TaskHistoryController(CachingManager cachingManager,
-                                     IDALTaskHistory dalTaskHistory,
-                                     TaskHistoryCache taskHistoryCache)
+        public TaskHistoryController(CalendarTaskService calendarTaskService)
         {
-            TaskHistoryService = new TaskHistoryService(dalTaskHistory, taskHistoryCache);
-        }
-
-        // GET
-        [HttpGet]
-        public async Task<IActionResult> Get(string userId)
-        {
-            var tasks = await TaskHistoryService.GetHistoriesAsync(new GetCalendarTaskRequest()
-            {
-                UserId = userId,
-                IncludeVoid = false
-            });
-            return Ok(tasks);
+            TaskHistoryService = new TaskHistoryService(calendarTaskService);
         }
 
         // POST
