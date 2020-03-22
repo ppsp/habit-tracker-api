@@ -158,11 +158,11 @@ namespace HabitTrackerServices.Services
             {
                 var allTasks = await GetTasksAsync(task.UserId, false);
 
-                int initialPosition = allTasks[0].AbsolutePosition;
+                int initialPosition = lowest;
                 int positionIterator = 0;
                 foreach (var currentTask in allTasks.OrderBy(p => p.AbsolutePosition))
                 {
-                    currentTask.AbsolutePosition = difference < 0 ?
+                    currentTask.AbsolutePosition = difference > 0 ?
                                                 initialPosition + positionIterator :
                                                 initialPosition - positionIterator;
 
