@@ -64,7 +64,10 @@ namespace HabitTrackerServices.Services
         {
             try
             {
-                return await updateUserAsync(user);
+                if (user.Id != null)
+                    return await updateUserAsync(user);
+                else
+                    return await InsertUserAsync(user);
             }
             catch (Grpc.Core.RpcException ex)
             {
@@ -89,7 +92,7 @@ namespace HabitTrackerServices.Services
         {
             DocumentReference taskRef = this.Connector.fireStoreDb
                                                       .Collection("user")
-                                                      .Document(user.UserId);
+                                                      .Document(user.Id);
 
             var dictionnary = user.ToDictionary();
 
