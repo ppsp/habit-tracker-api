@@ -66,6 +66,48 @@ namespace HabitTrackerServices.Services
                 }
             );
 
+            if (report.BugReportType == eBugReportType.Bug)
+            {
+                patchDocument.Add(
+                    new JsonPatchOperation()
+                    {
+                        Operation = Operation.Add,
+                        Path = "/fields/System.WorkItemType",
+                        Value = "Bug"
+                    }
+                );
+
+                patchDocument.Add(
+                    new JsonPatchOperation()
+                    {
+                        Operation = Operation.Add,
+                        Path = "/fields/System.Tags",
+                        Value = "Bug"
+                    }
+                );
+            }
+
+            if (report.BugReportType == eBugReportType.Suggestion)
+            {
+                patchDocument.Add(
+                    new JsonPatchOperation()
+                    {
+                        Operation = Operation.Add,
+                        Path = "/fields/System.WorkItemType",
+                        Value = "Task"
+                    }
+                );
+
+                patchDocument.Add(
+                    new JsonPatchOperation()
+                    {
+                        Operation = Operation.Add,
+                        Path = "/fields/System.Tags",
+                        Value = "Feature"
+                    }
+                );
+            }
+
             try
             {
                 bool result = await this.Connector.InsertWorkItemAsync(patchDocument, report.BugReportType);
