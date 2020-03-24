@@ -1,5 +1,5 @@
 <update>
-  <version>000111</version>
+  <version>000112</version>
   <name>daily-habit-tracker</name>
-  <url>https://habittrackerfree.azurewebsites.net/staticfiles/daily-habit-tracker.apk</url>
+  <url>https://habittrackerprod.azurewebsites.net/staticfiles/daily-habit-tracker.apk</url>
 </update>
