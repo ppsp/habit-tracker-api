@@ -144,26 +144,24 @@ namespace HabitTrackerServices.Services
 
         private async Task reorderTasks(ICalendarTask task)
         {
-            int difference = task.AbsolutePosition - task.InitialAbsolutePosition;
-            int lowest = Math.Min(task.AbsolutePosition, task.InitialAbsolutePosition);
-            int highest = Math.Max(task.AbsolutePosition, task.InitialAbsolutePosition);
+            var tasks = await GetTasksAsync(task.UserId,
+                                            false);
 
-            var tasks = await GetTasksAsync(task.UserId, 
-                                            false,
-                                            lowest,
-                                            highest);
-
-            foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
-                                                                                      task.InitialAbsolutePosition) &&
-                                                         !p.Void && 
-                                                         p.CalendarTaskId != task.CalendarTaskId))
+            int positionIterator = 1;
+            foreach (var currentTask in tasks.Where(p => !p.Void &&
+                                                         p.CalendarTaskId != task.CalendarTaskId &&
+                                                         (IsPresentOrFuture(p)))
+                                             .OrderBy(p => p.AbsolutePosition))
             {
-                currentTask.AbsolutePosition = difference < 0 ?
-                                                currentTask.AbsolutePosition + 1 :
-                                                currentTask.AbsolutePosition - 1;
-
+                currentTask.AbsolutePosition = positionIterator++;
                 await UpdateTaskAsyncNoPositionCheck(currentTask);
             }
+        }
+
+        private static bool IsPresentOrFuture(ICalendarTask p)
+        {
+            return p.Frequency.NotIn(eTaskFrequency.Once, eTaskFrequency.UntilDone) ||
+                                     p.Histories.Any(p => p.TaskDone);
         }
 
         private async Task<bool> UpdateTaskAsyncNoPositionCheck(ICalendarTask task)
