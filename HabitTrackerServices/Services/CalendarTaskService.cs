@@ -96,6 +96,13 @@ namespace HabitTrackerServices.Services
         {
             try
             {
+                // Check if AbsolutePosition already exists
+                var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition);
+                if (existingTasks.Count > 0)
+                {
+                    await reorderTasks(task);
+                }
+
                 return await insertTaskAsync(task);
             }
             catch (Exception ex)
@@ -143,6 +150,38 @@ namespace HabitTrackerServices.Services
         }
 
         private async Task reorderTasks(ICalendarTask task)
+        {
+            int difference = task.AbsolutePosition - task.InitialAbsolutePosition;
+            int lowest = Math.Min(task.AbsolutePosition, task.InitialAbsolutePosition);
+            int highest = Math.Max(task.AbsolutePosition, task.InitialAbsolutePosition);
+
+            var tasks = await GetTasksAsync(task.UserId,
+                                            false,
+                                            lowest,
+                                            highest);
+
+            if (tasks.Count > Math.Abs(difference) + 1) // reorder all if 2 are the same
+            {
+                await reorderAllTasks(task);
+            }
+            else
+            {
+                // reorder only between current and new Id
+                foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
+                                                                                          task.InitialAbsolutePosition) &&
+                                                         !p.Void &&
+                                                         p.CalendarTaskId != task.CalendarTaskId))
+                {
+                    currentTask.AbsolutePosition = difference < 0 ?
+                                                    currentTask.AbsolutePosition + 1 :
+                                                    currentTask.AbsolutePosition - 1;
+
+                    await UpdateTaskAsyncNoPositionCheck(currentTask);
+                }
+            }
+        }
+
+        private async Task reorderAllTasks(ICalendarTask task)
         {
             var tasks = await GetTasksAsync(task.UserId,
                                             false);
