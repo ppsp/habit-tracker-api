@@ -1,5 +1,6 @@
 ﻿using Google.Cloud.Firestore;
 using HabitTrackerCore.Models;
+using HabitTrackerCore.Utils;
 using HabitTrackerTools;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,31 @@ namespace HabitTrackerServices.Models.Firestore
         public eStatType StatType { get; set; }
         [FirestoreProperty]
         public DateTime? SkipUntil { get; set; }
+        [FirestoreProperty]
+        public DateTime? DoneDate
+        {
+            get
+            {
+                if (this.Histories != null)
+                {
+                    var history = this.Histories?.FirstOrDefault(p => p.TaskDone &&
+                                                                      this.Frequency.In(eTaskFrequency.Once, eTaskFrequency.UntilDone));
+
+                    if (history != null && history.InsertDate != null)
+                        return history.InsertDate.Value.Date;
+                    else
+                        return null;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+
+            }
+        }
 
         [FirestoreProperty]
         public FireTaskHistory[] Histories { get; set; } = new FireTaskHistory[0];
@@ -79,6 +105,7 @@ namespace HabitTrackerServices.Models.Firestore
                 this.StatType = task.StatType;
                 this.Histories = task.Histories.Select(p => new FireTaskHistory(p)).ToArray();
                 this.SkipUntil = task.SkipUntil;
+                this.DoneDate = task.DoneDate;
             }
             catch (Exception ex)
             {
@@ -107,6 +134,7 @@ namespace HabitTrackerServices.Models.Firestore
             task.InitialAbsolutePosition = this.AbsolutePosition;
             task.Histories = this.Histories.Select(p => p.ToTaskHistory() as ITaskHistory).ToList();
             task.SkipUntil = this.SkipUntil;
+            task.DoneDate = this.DoneDate;
 
             return task;
         }

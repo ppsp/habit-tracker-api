@@ -1,8 +1,10 @@
 ﻿using HabitTrackerCore.Models;
+using HabitTrackerCore.Utils;
 using HabitTrackerServices.Models.Firestore;
 using HabitTrackerTools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HabitTrackerServices.Models.DTO
@@ -48,6 +50,31 @@ namespace HabitTrackerServices.Models.DTO
         public DateTime? AssignedDate { get; set; }
         public DateTime? SkipUntil { get; set; }
 
+        public DateTime? DoneDate
+        {
+            get
+            {
+                if (this.Histories != null)
+                {
+                    var history = this.Histories?.FirstOrDefault(p => p.TaskDone &&
+                                                                      this.Frequency.In(eTaskFrequency.Once, eTaskFrequency.UntilDone));
+
+                    if (history != null && history.InsertDate != null)
+                        return history.InsertDate.Value.Date;
+                    else
+                        return null;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+
+            }
+        }
+
         /// <summary>
         /// This is needed in order to know if the position has to be updated
         /// because we can't update this property alone, we need to update every 
@@ -90,6 +117,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.AssignedDate = task.AssignedDate;
                 this.StatType = task.StatType;
                 this.SkipUntil = task.SkipUntil;
+                this.DoneDate = task.DoneDate;
             }
             catch (Exception ex)
             {
@@ -118,6 +146,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.AssignedDate = task.AssignedDate;
                 this.StatType = task.StatType;
                 this.SkipUntil = task.SkipUntil;
+                this.DoneDate = task.DoneDate;
             }
             catch (Exception ex)
             {
@@ -146,6 +175,7 @@ namespace HabitTrackerServices.Models.DTO
             task.AssignedDate = this.AssignedDate;
             task.StatType = this.StatType;
             task.SkipUntil = this.SkipUntil;
+            task.DoneDate = this.DoneDate;
 
             return task;
         }

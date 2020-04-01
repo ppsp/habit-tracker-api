@@ -29,11 +29,12 @@ namespace HabitTrackerServices.Services
         public async Task<List<ICalendarTask>> GetTasksAsync(string userId, 
                                                              bool includeVoid = false,
                                                              int? firstPosition = null,
-                                                             int? lastPosition = null)
+                                                             int? lastPosition = null,
+                                                             bool includeOnceDone = true)
         {
             try
             {
-                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition);
+                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, includeOnceDone);
             }
             catch (Exception ex)
             {
@@ -45,7 +46,8 @@ namespace HabitTrackerServices.Services
         private async Task<List<ICalendarTask>> getTasksAsync(string userId, 
                                                               bool includeVoid,
                                                               int? firstPosition,
-                                                              int? lastPosition)
+                                                              int? lastPosition,
+                                                              bool includeOnceDone = true)
         {
             Query query = getGetTasksQuery(userId, includeVoid, firstPosition, lastPosition);
             try
@@ -63,7 +65,11 @@ namespace HabitTrackerServices.Services
                         tasks.Add(newTask);
                     }
                 }
-                return tasks;
+
+                if (!includeOnceDone)
+                    return tasks.Where(p => p.DoneDate == null).ToList();
+                else
+                    return tasks;
             }
             catch (Exception ex)
             {
@@ -158,7 +164,8 @@ namespace HabitTrackerServices.Services
             var tasks = await GetTasksAsync(task.UserId,
                                             false,
                                             lowest,
-                                            highest);
+                                            highest,
+                                            false);
 
             if (tasks.Count > Math.Abs(difference) + 1) // reorder all if 2 are the same
             {
@@ -240,6 +247,12 @@ namespace HabitTrackerServices.Services
         {
             try
             {
+                if (task.Histories == null || task.Histories.Count == 0)
+                {
+                    var latestTask = await GetTaskAsync(task.CalendarTaskId);
+                    task.Histories = latestTask.Histories;
+                }    
+
                 return await updateTaskAsync(task);
             }
             catch (Exception ex)
