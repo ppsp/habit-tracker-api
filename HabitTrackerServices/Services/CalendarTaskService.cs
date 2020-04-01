@@ -169,10 +169,14 @@ namespace HabitTrackerServices.Services
 
             if (tasks.Count > Math.Abs(difference) + 1) // reorder all if 2 are the same
             {
+                Logger.Debug("Update all tasks" + task.CalendarTaskId + " " + task.UserId);
+
                 await reorderAllTasks(task);
             }
             else
             {
+                Logger.Debug("Update NOT all tasks" + task.CalendarTaskId + " " + task.UserId);
+
                 // reorder only between current and new Id
                 foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
                                                                                           task.InitialAbsolutePosition) &&
