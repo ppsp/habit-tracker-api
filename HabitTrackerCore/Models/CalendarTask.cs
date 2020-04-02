@@ -2,6 +2,7 @@
 using HabitTrackerCore.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HabitTrackerCore.Models
@@ -23,6 +24,31 @@ namespace HabitTrackerCore.Models
         public DateTime? AssignedDate { get; set; }
         public eStatType StatType { get; set; }
         public DateTime? SkipUntil { get; set; }
+
+        public DateTime? DoneDate
+        {
+            get
+            {
+                if (this.Histories != null)
+                {
+                    var history = this.Histories?.FirstOrDefault(p => p.TaskDone &&
+                                                                      this.Frequency.In(eTaskFrequency.Once, eTaskFrequency.UntilDone));
+
+                    if (history != null && history.InsertDate != null)
+                        return history.InsertDate.Value.Date;
+                    else
+                        return null;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+
+            }
+        }
 
         public List<ITaskHistory> Histories { get; set; } = new List<ITaskHistory>();
 
