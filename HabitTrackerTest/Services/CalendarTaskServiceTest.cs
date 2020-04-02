@@ -104,6 +104,54 @@ namespace HabitTrackerTest
             Assert.AreEqual(1, updatedTasks.First(p => p.CalendarTaskId == tasks[3].CalendarTaskId).AbsolutePosition);
         }
 
+        [TestMethod]
+        public void InsertAbsolutePosition_ShouldIncrementOtherTasks()
+        {
+            // ARRANGE
+            var ids = new List<string>();
+            var tasks = new List<DTOCalendarTask>();
+            for (int i = 1; i < 5; i++)
+            {
+                var testTask = new DTOCalendarTask();
+
+                testTask.Name = Guid.NewGuid().ToString();
+                testTask.Frequency = eTaskFrequency.Monthly;
+                testTask.ResultType = eResultType.Decimal;
+                testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
+                testTask.UserId = testUserId;
+                testTask.AbsolutePosition = i;
+                testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
+
+                tasks.Add(testTask);
+            }
+
+            Assert.AreEqual(1, tasks[0].AbsolutePosition);
+            Assert.AreEqual(2, tasks[1].AbsolutePosition);
+            Assert.AreEqual(3, tasks[2].AbsolutePosition);
+            Assert.AreEqual(4, tasks[3].AbsolutePosition);
+
+            // ACT (Create a Fifth one, put it at position #2)
+            var testTask2 = new DTOCalendarTask();
+
+            testTask2.Name = Guid.NewGuid().ToString();
+            testTask2.Frequency = eTaskFrequency.Monthly;
+            testTask2.ResultType = eResultType.Decimal;
+            testTask2.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
+            testTask2.UserId = testUserId;
+            testTask2.AbsolutePosition = 2;
+            testTask2.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask2).Result;
+
+            tasks.Add(testTask2);
+
+            // ASSERT
+            var updatedTasks = calendarTaskService.GetTasksAsync(testUserId).Result;
+            Assert.AreEqual(1, updatedTasks.First(p => p.CalendarTaskId == tasks[0].CalendarTaskId).AbsolutePosition);
+            Assert.AreEqual(3, updatedTasks.First(p => p.CalendarTaskId == tasks[1].CalendarTaskId).AbsolutePosition);
+            Assert.AreEqual(4, updatedTasks.First(p => p.CalendarTaskId == tasks[2].CalendarTaskId).AbsolutePosition);
+            Assert.AreEqual(5, updatedTasks.First(p => p.CalendarTaskId == tasks[3].CalendarTaskId).AbsolutePosition);
+            Assert.AreEqual(2, updatedTasks.First(p => p.CalendarTaskId == tasks[4].CalendarTaskId).AbsolutePosition);
+        }
+
 
         [TestMethod]
         public void UpdateAbsolutePositionToLast_ShouldDecrementOtherTasks()

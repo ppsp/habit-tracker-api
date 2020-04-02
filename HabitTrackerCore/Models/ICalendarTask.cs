@@ -53,6 +53,11 @@ namespace HabitTrackerCore.Models
 
         public DateTime? SkipUntil { get; set; }
 
+        /// <summary>
+        /// Date completed for non-recurring tasks
+        /// </summary>
+        public DateTime? DoneDate { get; set; }
+
         public bool HasBeenVoided();
         public bool PositionHasBeenModified();
     }
