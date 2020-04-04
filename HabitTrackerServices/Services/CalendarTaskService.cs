@@ -29,11 +29,12 @@ namespace HabitTrackerServices.Services
         public async Task<List<ICalendarTask>> GetTasksAsync(string userId, 
                                                              bool includeVoid = false,
                                                              int? firstPosition = null,
-                                                             int? lastPosition = null)
+                                                             int? lastPosition = null,
+                                                             bool includeOnceDone = true)
         {
             try
             {
-                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition);
+                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, includeOnceDone);
             }
             catch (Exception ex)
             {
@@ -45,7 +46,8 @@ namespace HabitTrackerServices.Services
         private async Task<List<ICalendarTask>> getTasksAsync(string userId, 
                                                               bool includeVoid,
                                                               int? firstPosition,
-                                                              int? lastPosition)
+                                                              int? lastPosition,
+                                                              bool includeOnceDone = true)
         {
             Query query = getGetTasksQuery(userId, includeVoid, firstPosition, lastPosition);
             try
@@ -63,7 +65,11 @@ namespace HabitTrackerServices.Services
                         tasks.Add(newTask);
                     }
                 }
-                return tasks;
+
+                if (!includeOnceDone)
+                    return tasks.Where(p => p.DoneDate == null).ToList();
+                else
+                    return tasks;
             }
             catch (Exception ex)
             {
@@ -96,6 +102,13 @@ namespace HabitTrackerServices.Services
         {
             try
             {
+                // Check if AbsolutePosition already exists
+                var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition);
+                if (existingTasks.Count > 0)
+                {
+                    await reorderTasks(task);
+                }
+
                 return await insertTaskAsync(task);
             }
             catch (Exception ex)
@@ -148,22 +161,57 @@ namespace HabitTrackerServices.Services
             int lowest = Math.Min(task.AbsolutePosition, task.InitialAbsolutePosition);
             int highest = Math.Max(task.AbsolutePosition, task.InitialAbsolutePosition);
 
-            var tasks = await GetTasksAsync(task.UserId, 
+            var tasks = await GetTasksAsync(task.UserId,
                                             false,
                                             lowest,
-                                            highest);
+                                            highest,
+                                            false);
 
-            foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
-                                                                                      task.InitialAbsolutePosition) &&
-                                                         !p.Void && 
-                                                         p.CalendarTaskId != task.CalendarTaskId))
+            if (tasks.Count > Math.Abs(difference) + 1) // reorder all if 2 are the same
             {
-                currentTask.AbsolutePosition = difference < 0 ?
-                                                currentTask.AbsolutePosition + 1 :
-                                                currentTask.AbsolutePosition - 1;
+                Logger.Debug("Update all tasks" + task.CalendarTaskId + " " + task.UserId);
 
+                await reorderAllTasks(task);
+            }
+            else
+            {
+                Logger.Debug("Update NOT all tasks" + task.CalendarTaskId + " " + task.UserId);
+
+                // reorder only between current and new Id
+                foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
+                                                                                          task.InitialAbsolutePosition) &&
+                                                         !p.Void &&
+                                                         p.CalendarTaskId != task.CalendarTaskId))
+                {
+                    currentTask.AbsolutePosition = difference < 0 ?
+                                                    currentTask.AbsolutePosition + 1 :
+                                                    currentTask.AbsolutePosition - 1;
+
+                    await UpdateTaskAsyncNoPositionCheck(currentTask);
+                }
+            }
+        }
+
+        private async Task reorderAllTasks(ICalendarTask task)
+        {
+            var tasks = await GetTasksAsync(task.UserId,
+                                            false);
+
+            int positionIterator = 1;
+            foreach (var currentTask in tasks.Where(p => !p.Void &&
+                                                         p.CalendarTaskId != task.CalendarTaskId &&
+                                                         (IsPresentOrFuture(p)))
+                                             .OrderBy(p => p.AbsolutePosition))
+            {
+                currentTask.AbsolutePosition = positionIterator++;
                 await UpdateTaskAsyncNoPositionCheck(currentTask);
             }
+        }
+
+        private static bool IsPresentOrFuture(ICalendarTask p)
+        {
+            return p.Frequency.NotIn(eTaskFrequency.Once, eTaskFrequency.UntilDone) ||
+                                     p.Histories.Any(p => p.TaskDone);
         }
 
         private async Task<bool> UpdateTaskAsyncNoPositionCheck(ICalendarTask task)
@@ -203,6 +251,12 @@ namespace HabitTrackerServices.Services
         {
             try
             {
+                if (task.Histories == null || task.Histories.Count == 0)
+                {
+                    var latestTask = await GetTaskAsync(task.CalendarTaskId);
+                    task.Histories = latestTask.Histories;
+                }    
+
                 return await updateTaskAsync(task);
             }
             catch (Exception ex)
