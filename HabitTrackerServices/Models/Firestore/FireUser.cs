@@ -15,6 +15,8 @@ namespace HabitTrackerServices.Models.Firestore
         public string UserId { get; set; }
         [FirestoreProperty]
         public eLanguage PreferedLanguage { get; set; }
+        [FirestoreProperty]
+        public string EndOfDayTime { get; set; }
 
         public FireUser()
         {
@@ -26,6 +28,7 @@ namespace HabitTrackerServices.Models.Firestore
             this.Id = user.Id;
             this.UserId = user.UserId;
             this.PreferedLanguage = user.PreferedLanguage;
+            this.EndOfDayTime = user.EndOfDayTime;
         }
 
         public User ToUser()
@@ -34,6 +37,7 @@ namespace HabitTrackerServices.Models.Firestore
             user.Id = this.Id;
             user.UserId = this.UserId;
             user.PreferedLanguage = this.PreferedLanguage;
+            user.EndOfDayTime = this.EndOfDayTime;
             return user;
         }
     }
