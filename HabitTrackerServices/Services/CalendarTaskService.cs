@@ -197,13 +197,20 @@ namespace HabitTrackerServices.Services
             var tasks = await GetTasksAsync(task.UserId,
                                             false);
 
+            tasks = tasks.Where(p => !p.Void &&
+                                     p.CalendarTaskId != task.CalendarTaskId &&
+                                     (IsPresentOrFuture(p)))
+                         .OrderBy(p => p.AbsolutePosition)
+                         .ToList();
+
             int positionIterator = 1;
-            foreach (var currentTask in tasks.Where(p => !p.Void &&
-                                                         p.CalendarTaskId != task.CalendarTaskId &&
-                                                         (IsPresentOrFuture(p)))
-                                             .OrderBy(p => p.AbsolutePosition))
+            foreach (var currentTask in tasks)
             {
+                if (positionIterator == task.AbsolutePosition)
+                    positionIterator++;
+
                 currentTask.AbsolutePosition = positionIterator++;
+
                 await UpdateTaskAsyncNoPositionCheck(currentTask);
             }
         }
@@ -211,7 +218,7 @@ namespace HabitTrackerServices.Services
         private static bool IsPresentOrFuture(ICalendarTask p)
         {
             return p.Frequency.NotIn(eTaskFrequency.Once, eTaskFrequency.UntilDone) ||
-                                     p.Histories.Any(p => p.TaskDone);
+                                     !p.Histories.Any(p => p.TaskDone);
         }
 
         private async Task<bool> UpdateTaskAsyncNoPositionCheck(ICalendarTask task)
