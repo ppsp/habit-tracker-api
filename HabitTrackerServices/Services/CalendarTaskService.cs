@@ -167,7 +167,7 @@ namespace HabitTrackerServices.Services
                                             highest,
                                             false);
 
-            if (tasks.Count > Math.Abs(difference) + 1) // reorder all if 2 are the same
+            if (tasks.Count > Math.Abs(difference) + 1 || tasks.GroupBy(p => p.AbsolutePosition).Any(p => p.Count() > 1)) // reorder all if 2 are the same
             {
                 Logger.Debug("Update all tasks" + task.CalendarTaskId + " " + task.UserId);
 

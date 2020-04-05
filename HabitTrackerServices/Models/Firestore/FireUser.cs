@@ -7,16 +7,14 @@ using System.Text;
 namespace HabitTrackerServices.Models.Firestore
 {
     [FirestoreData]
-    public class FireUser : IUser
+    public class FireUser
     {
         public string Id { get; set; }
 
         [FirestoreProperty]
         public string UserId { get; set; }
         [FirestoreProperty]
-        public eLanguage PreferedLanguage { get; set; }
-        [FirestoreProperty]
-        public string EndOfDayTime { get; set; }
+        public FireUserConfig Config { get; set; }
 
         public FireUser()
         {
@@ -27,8 +25,7 @@ namespace HabitTrackerServices.Models.Firestore
         {
             this.Id = user.Id;
             this.UserId = user.UserId;
-            this.PreferedLanguage = user.PreferedLanguage;
-            this.EndOfDayTime = user.EndOfDayTime;
+            this.Config = FireUserConfig.fromConfig(user.Config ?? new UserConfig());
         }
 
         public User ToUser()
@@ -36,8 +33,7 @@ namespace HabitTrackerServices.Models.Firestore
             var user = new User();
             user.Id = this.Id;
             user.UserId = this.UserId;
-            user.PreferedLanguage = this.PreferedLanguage;
-            user.EndOfDayTime = this.EndOfDayTime;
+            user.Config = this.Config == null ? new UserConfig() : this.Config.ToConfig();
             return user;
         }
     }

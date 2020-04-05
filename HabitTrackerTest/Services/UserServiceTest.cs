@@ -50,7 +50,7 @@ namespace HabitTrackerTest
             var insertedUser = userService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
-            insertedUser.PreferedLanguage = eLanguage.English;
+            insertedUser.Config.PreferedLanguage = eLanguage.English;
             success = userService.InsertUpdateUserAsync(insertedUser).Result;
             var updatedUser = userService.GetUserAsync(testUser.UserId).Result;
 
@@ -101,7 +101,7 @@ namespace HabitTrackerTest
         private static void AssertValuesAreTheSame(IUser user1, IUser user2)
         {
             Assert.AreEqual(user1.UserId, user2.UserId);
-            Assert.AreEqual(user1.PreferedLanguage, user2.PreferedLanguage);
+            Assert.AreEqual(user1.Config.PreferedLanguage, user2.Config.PreferedLanguage);
         }
 
         private static User getTestUser()
@@ -109,7 +109,7 @@ namespace HabitTrackerTest
             var testUser = new User();
 
             testUser.UserId = Guid.NewGuid().ToString();
-            testUser.PreferedLanguage = eLanguage.French;
+            testUser.Config.PreferedLanguage = eLanguage.French;
             
             return testUser;
         }
