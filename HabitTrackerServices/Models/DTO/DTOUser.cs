@@ -6,8 +6,7 @@ namespace HabitTrackerServices.Models.DTO
     {
         public string Id { get; set; }
         public string UserId { get; set; }
-        public eLanguage PreferedLanguage { get; set; }
-        public string EndOfDayTime { get; set; }
+        public UserConfig Config { get; set; }
 
         public DTOUser()
         {
@@ -18,8 +17,7 @@ namespace HabitTrackerServices.Models.DTO
         {
             this.Id = user.Id;
             this.UserId = user.UserId;
-            this.PreferedLanguage = user.PreferedLanguage;
-            this.EndOfDayTime = user.EndOfDayTime;
+            this.Config = user.Config;
         }
 
         public User ToUser()
@@ -27,8 +25,7 @@ namespace HabitTrackerServices.Models.DTO
             var user = new User();
             user.Id = Id;
             user.UserId = this.UserId;
-            user.PreferedLanguage = this.PreferedLanguage;
-            user.EndOfDayTime = this.EndOfDayTime;
+            user.Config = this.Config;
             return user;
         }
     }

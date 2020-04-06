@@ -94,7 +94,7 @@ namespace HabitTrackerServices.Services
                                                       .Collection("user")
                                                       .Document(user.Id);
 
-            var dictionnary = user.ToDictionary();
+            var dictionnary = new FireUser(user).ToDictionary();
 
             await taskRef.UpdateAsync(dictionnary);
 
