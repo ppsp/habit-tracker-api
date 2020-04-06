@@ -8,7 +8,7 @@ namespace HabitTrackerCore.Models
     {
         public string Id { get; set; }
         public string UserId { get; set; }
-        public UserConfig Config { get; set; }
+        public UserConfig Config { get; set; } = new UserConfig();
     }
 
     public class NULLUser : IUser
