@@ -8,8 +8,7 @@ namespace HabitTrackerCore.Models
     {
         public string Id { get; set; }
         public string UserId { get; set; }
-        public eLanguage PreferedLanguage { get; set; }
-        public string EndOfDayTime { get; set; }
+        public UserConfig Config { get; set; } = new UserConfig();
     }
 
     public class NULLUser : IUser
@@ -28,7 +27,6 @@ namespace HabitTrackerCore.Models
 
         public string Id { get; set; }
         public string UserId { get; set; }
-        public eLanguage PreferedLanguage { get; set; }
-        public string EndOfDayTime { get; set; }
+        public UserConfig Config { get; set; } = new UserConfig();
     }
 }

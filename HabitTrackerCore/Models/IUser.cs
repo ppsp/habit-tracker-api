@@ -8,7 +8,6 @@ namespace HabitTrackerCore.Models
     {
         string Id { get; set; }
         string UserId { get; set; }
-        eLanguage PreferedLanguage { get; set; }
-        string EndOfDayTime { get; set; }
+        public UserConfig Config { get; set; }
     }
 }
