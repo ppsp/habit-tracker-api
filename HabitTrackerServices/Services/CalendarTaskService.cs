@@ -61,7 +61,13 @@ namespace HabitTrackerServices.Services
                     {
                         var newFireTask = document.ConvertTo<FireCalendarTask>();
                         var newTask = newFireTask.ToCalendarTask();
-                        newTask.CalendarTaskId = document.Id;
+                        
+                        // for retrocompatibility 2020-04-19
+                        if (String.IsNullOrEmpty(newTask.CalendarTaskId))
+                            newTask.CalendarTaskId = document.Id;
+
+                        // newFireTask.Id = document.Id; I don't believe this is necessary
+
                         tasks.Add(newTask);
                     }
                 }
@@ -245,13 +251,28 @@ namespace HabitTrackerServices.Services
             if (task.AssignedDate != null)
                 task.AssignedDate = task.AssignedDate.Value.ToUniversalTime();
 
-            DocumentReference taskRef = this.Connector.fireStoreDb
-                                                      .Collection("task_todo")
-                                                      .Document(task.CalendarTaskId);
+            Query query = this.Connector.fireStoreDb
+                                        .Collection("task_todo")
+                                        .WhereEqualTo("CalendarTaskId", task.CalendarTaskId);
 
-            var dictionnary = new FireCalendarTask(task).ToDictionary();
+            var firstDocument = (await query.GetSnapshotAsync()).Documents.FirstOrDefault();
 
-            await taskRef.UpdateAsync(dictionnary);
+            if (firstDocument != null && firstDocument.Exists)
+            {
+                var dictionnary = new FireCalendarTask(task).ToDictionary();
+
+                await firstDocument.Reference.UpdateAsync(dictionnary);
+            } 
+            else // this is going to be obsolete
+            {
+                DocumentReference taskRef = this.Connector.fireStoreDb
+                                                          .Collection("task_todo")
+                                                          .Document(task.CalendarTaskId);
+
+                var dictionnary = new FireCalendarTask(task).ToDictionary();
+
+                await taskRef.UpdateAsync(dictionnary);
+            }
         }
 
         public async Task<bool> UpdateTaskAsync(ICalendarTask task)
@@ -286,20 +307,65 @@ namespace HabitTrackerServices.Services
             return await UpdateTaskAsyncNoPositionCheck(task);
         }
 
-        public async Task<ICalendarTask> GetTaskAsync(string calendarTaskId)
+        // For retrocompatibility
+        private async Task<ICalendarTask> GetTaskAsyncCustomId(string Id)
         {
             try
             {
                 var reference = this.Connector.fireStoreDb
                                               .Collection("task_todo")
-                                              .Document(calendarTaskId);
+                                              .Document(Id);
 
                 var snapshot = await reference.GetSnapshotAsync();
 
                 var task = snapshot.ConvertTo<FireCalendarTask>();
-                task.CalendarTaskId = snapshot.Id;
+                task.Id = snapshot.Id;
 
                 return task.ToCalendarTask();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in GetAsync", ex);
+                return null;
+            }
+        }
+
+        public async Task<ICalendarTask> GetTaskAsync(string calendarTaskId)
+        {
+            try
+            {
+                Query query = this.Connector.fireStoreDb
+                                            .Collection("task_todo")
+                                            .WhereEqualTo("CalendarTaskId", calendarTaskId);
+
+                try
+                {
+                    QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
+
+                    foreach (var document in tasksQuerySnapshot.Documents)
+                    {
+                        if (document.Exists)
+                        {
+                            var newFireTask = document.ConvertTo<FireCalendarTask>();
+                            var newTask = newFireTask.ToCalendarTask();
+
+                            // for retrocompatibility 2020-04-19
+                            if (String.IsNullOrEmpty(newTask.CalendarTaskId))
+                                newTask.CalendarTaskId = document.Id;
+
+                            // newFireTask.Id = document.Id; I don't believe this is necessary
+
+                            return newTask;
+                        }
+                    }
+
+                    // return null;
+                    return await this.GetTaskAsyncCustomId(calendarTaskId);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
             catch (Exception ex)
             {
@@ -312,15 +378,30 @@ namespace HabitTrackerServices.Services
         {
             try
             {
-                DocumentReference taskRef = this.Connector.fireStoreDb
-                                                          .Collection("task_todo")
-                                                          .Document(calendarTaskId);
+                Query query = this.Connector.fireStoreDb
+                                            .Collection("task_todo")
+                                            .WhereEqualTo("CalendarTaskId", calendarTaskId);
 
-                await taskRef.DeleteAsync();
+                var firstDocument = (await query.GetSnapshotAsync()).Documents.FirstOrDefault();
 
-                //TODO: Delete the history (the delete history function has to be done first, or do we want to keep it and simply void the task to preserve the history ? or delete only if there is no history and void if there is one)
+                if (firstDocument != null && firstDocument.Exists)
+                {
+                    await firstDocument.Reference.DeleteAsync();
 
-                return true;
+                    return true;
+                }
+                else // this is going to be obsolete
+                {
+                    DocumentReference taskRef = this.Connector.fireStoreDb
+                                                              .Collection("task_todo")
+                                                              .Document(calendarTaskId);
+
+                    await taskRef.DeleteAsync();
+
+                    //TODO: Delete the history (the delete history function has to be done first, or do we want to keep it and simply void the task to preserve the history ? or delete only if there is no history and void if there is one)
+
+                    return true;
+                }
             }
             catch (Exception ex)
             {

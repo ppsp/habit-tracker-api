@@ -50,7 +50,8 @@ namespace HabitTrackerServices.Services
             if (history.TaskResult is DateTime)
                 history.TaskResult = ((DateTime)history.TaskResult).ToUniversalTime();
 
-            history.TaskHistoryId = Guid.NewGuid().ToString();
+            if (String.IsNullOrEmpty(history.TaskHistoryId)) // legacy, probably not necessary
+                history.TaskHistoryId = Guid.NewGuid().ToString();
 
             var calendarTask = await this.CalendarTaskService.GetTaskAsync(history.CalendarTaskId);
             calendarTask.Histories.Add(history);

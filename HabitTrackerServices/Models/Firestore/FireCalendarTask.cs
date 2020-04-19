@@ -11,6 +11,8 @@ namespace HabitTrackerServices.Models.Firestore
     [FirestoreData]
     public class FireCalendarTask
     {
+        public string Id { get; set; }
+        [FirestoreProperty]
         public string CalendarTaskId { get; set; }
 
         [FirestoreProperty]
