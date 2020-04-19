@@ -15,7 +15,7 @@ namespace HabitTrackerTest
             var testTask = getTestTask();
             var result = this.calendarTaskService.InsertTaskAsync(testTask).Result;
             TaskHistory testHistory = getDoneTestTaskHistory(testTask);
-            testHistory.CalendarTaskId = result;
+            // testHistory.CalendarTaskId = result;
             // ACT
             var id = taskHistoryService.InsertHistoryAsync(testHistory).Result;
 
@@ -70,6 +70,7 @@ namespace HabitTrackerTest
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
+            testTask.CalendarTaskId = Guid.NewGuid().ToString();
             return testTask;
         }
     }
