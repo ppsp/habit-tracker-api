@@ -24,7 +24,9 @@ namespace HabitTrackerServices.Models.Firestore
         [FirestoreProperty]
         public int TaskDurationSeconds { get; set; }
         [FirestoreProperty]
-        public DateTime DoneDate { get; set; }
+        public DateTime? DoneDate { get; set; }
+        [FirestoreProperty]
+        public DateTime? DoneWorkDate { get; set; }
         [FirestoreProperty]
         public bool Void { get; set; }
         [FirestoreProperty]
@@ -57,6 +59,7 @@ namespace HabitTrackerServices.Models.Firestore
             this.Void = history.Void;
             this.VoidDate = history.VoidDate;
             this.Comment = history.Comment;
+            this.DoneWorkDate = history.DoneWorkDate;
         }
 
         public TaskHistory ToTaskHistory()
@@ -83,6 +86,7 @@ namespace HabitTrackerServices.Models.Firestore
             
             taskHistory.TaskSkipped = this.TaskSkipped;
             taskHistory.UpdateDate = this.UpdateDate;
+            taskHistory.DoneWorkDate = this.DoneWorkDate;
             taskHistory.UserId = this.UserId;
             taskHistory.Void = this.Void;
             taskHistory.VoidDate = this.VoidDate;
