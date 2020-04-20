@@ -15,7 +15,7 @@ namespace HabitTrackerTest
             var testTask = getTestTask();
             var result = this.calendarTaskService.InsertTaskAsync(testTask).Result;
             TaskHistory testHistory = getDoneTestTaskHistory(testTask);
-            testHistory.CalendarTaskId = result;
+            // testHistory.CalendarTaskId = result;
             // ACT
             var id = taskHistoryService.InsertHistoryAsync(testHistory).Result;
 
@@ -36,10 +36,10 @@ namespace HabitTrackerTest
         private static void AssertValuesAreTheSame(ITaskHistory testHistory, ITaskHistory history)
         {
             Assert.AreEqual(testHistory.CalendarTaskId, history.CalendarTaskId);
-            Assert.AreEqual(testHistory.DoneDate.Date, history.DoneDate.Date);
-            Assert.AreEqual(testHistory.DoneDate.Hour, history.DoneDate.Hour);
-            Assert.AreEqual(testHistory.DoneDate.Minute, history.DoneDate.Minute);
-            Assert.AreEqual(testHistory.DoneDate.Second, history.DoneDate.Second);
+            Assert.AreEqual(testHistory.DoneDate.Value.Date, history.DoneDate.Value.Date);
+            Assert.AreEqual(testHistory.DoneDate.Value.Hour, history.DoneDate.Value.Hour);
+            Assert.AreEqual(testHistory.DoneDate.Value.Minute, history.DoneDate.Value.Minute);
+            Assert.AreEqual(testHistory.DoneDate.Value.Second, history.DoneDate.Value.Second);
             Assert.AreEqual(testHistory.TaskDone, history.TaskDone);
             Assert.AreEqual(testHistory.TaskDurationSeconds, history.TaskDurationSeconds);
             Assert.AreEqual(testHistory.TaskHistoryId, history.TaskHistoryId);
@@ -70,6 +70,7 @@ namespace HabitTrackerTest
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
+            testTask.CalendarTaskId = Guid.NewGuid().ToString();
             return testTask;
         }
     }

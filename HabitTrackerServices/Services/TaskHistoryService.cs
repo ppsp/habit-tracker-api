@@ -41,11 +41,17 @@ namespace HabitTrackerServices.Services
         private async Task<string> insertHistoryAsync(ITaskHistory history)
         {
             history.InsertDate = DateTime.UtcNow;
-            history.DoneDate = history.DoneDate.ToUniversalTime();
+            history.DoneDate = history.DoneDate != null ?
+                                   history.DoneDate.Value.ToUniversalTime() :
+                                   (DateTime?)null;
+            history.DoneWorkDate = history.DoneWorkDate != null ?
+                       history.DoneWorkDate.Value.ToUniversalTime() :
+                       (DateTime?)null;
             if (history.TaskResult is DateTime)
                 history.TaskResult = ((DateTime)history.TaskResult).ToUniversalTime();
 
-            history.TaskHistoryId = Guid.NewGuid().ToString();
+            if (String.IsNullOrEmpty(history.TaskHistoryId)) // legacy, probably not necessary
+                history.TaskHistoryId = Guid.NewGuid().ToString();
 
             var calendarTask = await this.CalendarTaskService.GetTaskAsync(history.CalendarTaskId);
             calendarTask.Histories.Add(history);

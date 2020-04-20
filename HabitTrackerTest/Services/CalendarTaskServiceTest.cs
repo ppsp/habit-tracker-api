@@ -28,6 +28,7 @@ namespace HabitTrackerTest
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
+            testTask.CalendarTaskId = Guid.NewGuid().ToString();
 
             // ACT
             var id = calendarTaskService.InsertTaskAsync(testTask).Result;
@@ -49,6 +50,7 @@ namespace HabitTrackerTest
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
+            testTask.CalendarTaskId = Guid.NewGuid().ToString();
 
             // ACT
             var id = calendarTaskService.InsertTaskAsync(testTask).Result;
@@ -80,7 +82,8 @@ namespace HabitTrackerTest
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
-                testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
+                testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
+                var id = calendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
             }
@@ -120,7 +123,8 @@ namespace HabitTrackerTest
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
-                testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
+                testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
+                var id2 = calendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
             }
@@ -139,7 +143,8 @@ namespace HabitTrackerTest
             testTask2.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
             testTask2.UserId = testUserId;
             testTask2.AbsolutePosition = 2;
-            testTask2.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask2).Result;
+            testTask2.CalendarTaskId = Guid.NewGuid().ToString(); 
+            var id = calendarTaskService.InsertTaskAsync(testTask2).Result;
 
             tasks.Add(testTask2);
 
@@ -169,7 +174,8 @@ namespace HabitTrackerTest
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
-                testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
+                testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
+                var id = calendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
             }
@@ -209,7 +215,8 @@ namespace HabitTrackerTest
                 testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
-                testTask.CalendarTaskId = calendarTaskService.InsertTaskAsync(testTask).Result;
+                testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
+                var id = calendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
             }

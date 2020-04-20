@@ -11,7 +11,8 @@ namespace HabitTrackerCore.Models
         public object TaskResult { get; set; }
         public bool TaskSkipped { get; set; }
         public int TaskDurationSeconds { get; set; }
-        public DateTime DoneDate { get; set; }
+        public DateTime? DoneDate { get; set; }
+        public DateTime? DoneWorkDate { get; set; }
         public bool Void { get; set; }
         public DateTime? InsertDate { get; set; }
         public DateTime? UpdateDate { get; set; }
