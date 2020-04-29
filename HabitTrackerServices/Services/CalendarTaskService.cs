@@ -255,7 +255,8 @@ namespace HabitTrackerServices.Services
                                         .Collection("task_todo")
                                         .WhereEqualTo("CalendarTaskId", task.CalendarTaskId);
 
-            var firstDocument = (await query.GetSnapshotAsync()).Documents.FirstOrDefault();
+            var allDocuments = (await query.GetSnapshotAsync()).Documents;
+            var firstDocument = allDocuments.FirstOrDefault();// change to SingleorDefault
 
             if (firstDocument != null && firstDocument.Exists)
             {
@@ -300,9 +301,10 @@ namespace HabitTrackerServices.Services
             {
                 task.AbsolutePosition = TaskPosition.MaxValue;
             }
-
-            if (task.PositionHasBeenModified())
+            else if (task.PositionHasBeenModified())
+            {
                 await this.ReorderTasks(task);
+            }
 
             return await UpdateTaskAsyncNoPositionCheck(task);
         }
