@@ -108,6 +108,14 @@ namespace HabitTrackerServices.Services
         {
             try
             {
+                // Check if task already exists
+                var alreadyExists = await CheckIfExistsAsync(task.CalendarTaskId);
+                if (alreadyExists)
+                {
+                    Logger.Error("Tasks already exists : " + task.CalendarTaskId);
+                    return null;
+                }
+
                 // Check if AbsolutePosition already exists
                 var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition);
                 if (existingTasks.Count > 0)
@@ -256,7 +264,14 @@ namespace HabitTrackerServices.Services
                                         .WhereEqualTo("CalendarTaskId", task.CalendarTaskId);
 
             var allDocuments = (await query.GetSnapshotAsync()).Documents;
-            var firstDocument = allDocuments.FirstOrDefault();// change to SingleorDefault
+            
+            // Should not occur but just in case, we delete duplicate ids
+            if (allDocuments.Count > 1)
+            {
+                await deleteDuplicates(allDocuments, task.CalendarTaskId);
+            }
+
+            var firstDocument = allDocuments.SingleOrDefault();
 
             if (firstDocument != null && firstDocument.Exists)
             {
@@ -273,6 +288,18 @@ namespace HabitTrackerServices.Services
                 var dictionnary = new FireCalendarTask(task).ToDictionary();
 
                 await taskRef.UpdateAsync(dictionnary);
+            }
+        }
+
+        private async Task deleteDuplicates(IReadOnlyList<DocumentSnapshot> allDocuments, string logText)
+        {
+            Logger.Warn("DUPLICATE DOCUMENT WHEN UPDATING, DELETING EXTRA, CalendarTaskId" + logText);
+
+            var toDeletes = allDocuments.OrderBy(p => p.CreateTime).Skip(1);
+
+            foreach (var toDelete in toDeletes)
+            {
+                await DeleteTaskWithFireBaseIdAsync(toDelete.Id);
             }
         }
 
@@ -344,6 +371,12 @@ namespace HabitTrackerServices.Services
                 {
                     QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
 
+                    // Should not occur but just in case, we delete duplicate ids
+                    if (tasksQuerySnapshot.Documents.Count > 1)
+                    {
+                        await deleteDuplicates(tasksQuerySnapshot.Documents, calendarTaskId);
+                    }
+
                     foreach (var document in tasksQuerySnapshot.Documents)
                     {
                         if (document.Exists)
@@ -376,6 +409,40 @@ namespace HabitTrackerServices.Services
             }
         }
 
+        public async Task<bool> CheckIfExistsAsync(string calendarTaskId)
+        {
+            try
+            {
+                Query query = this.Connector.fireStoreDb
+                                            .Collection("task_todo")
+                                            .WhereEqualTo("CalendarTaskId", calendarTaskId);
+
+                try
+                {
+                    QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
+
+                    foreach (var document in tasksQuerySnapshot.Documents)
+                    {
+                        if (document.Exists)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in GetAsync", ex);
+                throw ex;
+            }
+        }
+
         public async Task<bool> DeleteTaskAsync(string calendarTaskId)
         {
             try
@@ -404,6 +471,28 @@ namespace HabitTrackerServices.Services
 
                     return true;
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in DeleteTaskAsync", ex);
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteTaskWithFireBaseIdAsync(string fireBaseId)
+        {
+            try
+            {
+                var firstDocument = this.Connector.fireStoreDb
+                                        .Collection("task_todo")
+                                        .Document(fireBaseId);
+
+                if (firstDocument != null)
+                {
+                    await firstDocument.DeleteAsync();
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
