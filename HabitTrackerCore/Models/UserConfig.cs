@@ -6,8 +6,12 @@ namespace HabitTrackerCore.Models
 {
     public class UserConfig
     {
-        public eLanguage PreferedLanguage { get; set; } = eLanguage.English;
-        public string EndOfDayTime { get; set; } = "00:00";
-        public string DefaultAfterTaskName { get; set; }
+        public ConfigKeyValuePair[] Configs { get; set; } = new ConfigKeyValuePair[0];
+    }
+
+    public class ConfigKeyValuePair
+    {
+        public string key { get; set; }
+        public object value { get; set; }
     }
 }

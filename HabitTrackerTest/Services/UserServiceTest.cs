@@ -24,7 +24,7 @@ namespace HabitTrackerTest
             DeleteUser(testUser);
         }
 
-        [TestMethod]
+        /*[TestMethod]
         public void GetUserAsync_ShouldReturnSameValuesAsInsert()
         {
             // ARRANGE
@@ -39,9 +39,9 @@ namespace HabitTrackerTest
 
             // Cleanup
             DeleteUser(testUser);
-        }
+        }*/
 
-        [TestMethod]
+       /* [TestMethod]
         public void UpdateUserAsync_ShouldReturnSameValues()
         {
             // ARRANGE
@@ -59,7 +59,7 @@ namespace HabitTrackerTest
 
             // Cleanup
             DeleteUser(testUser);
-        }
+        }*/
 
         [TestMethod]
         public void DeleteUserAsync_ShouldReturnTrue()
@@ -98,18 +98,18 @@ namespace HabitTrackerTest
             DeleteUser(testUser);
         }
 
-        private static void AssertValuesAreTheSame(IUser user1, IUser user2)
+        /*private static void AssertValuesAreTheSame(IUser user1, IUser user2)
         {
             Assert.AreEqual(user1.UserId, user2.UserId);
             Assert.AreEqual(user1.Config.PreferedLanguage, user2.Config.PreferedLanguage);
-        }
+        }*/
 
         private static User getTestUser()
         {
             var testUser = new User();
 
             testUser.UserId = Guid.NewGuid().ToString();
-            testUser.Config.PreferedLanguage = eLanguage.French;
+            // testUser.Config.PreferedLanguage = eLanguage.French;
             
             return testUser;
         }
