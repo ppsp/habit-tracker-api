@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS base
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /src
 COPY ["HabitTrackerFirebase/HabitTrackerWebApi.csproj", "HabitTrackerFirebase/"]
 COPY ["HabitTrackerCore/HabitTrackerCore.csproj", "HabitTrackerCore/"]
@@ -16,7 +16,14 @@ RUN dotnet build "HabitTrackerWebApi.csproj" -c Release -o /app
 FROM build AS publish
 RUN dotnet publish "HabitTrackerWebApi.csproj" -c Release -o /app
 
-FROM base AS final
+#FROM base AS final
+#WORKDIR /app
+#COPY --from=p
+ublish /app .
+#ENTRYPOINT ["dotnet", "HabitTrackerWebApi.dll"]
+
+# final stage/image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
-COPY --from=publish /app .
+COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "HabitTrackerWebApi.dll"]
