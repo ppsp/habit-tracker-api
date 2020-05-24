@@ -73,6 +73,8 @@ namespace HabitTrackerServices.Services
         {
             try
             {
+                user.LastActivityDate = DateTime.Now.ToUniversalTime();
+
                 if (user.Id != null)
                     return await updateUserAsync(user);
                 else
