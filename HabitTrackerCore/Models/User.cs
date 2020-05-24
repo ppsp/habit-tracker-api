@@ -9,6 +9,7 @@ namespace HabitTrackerCore.Models
         public string Id { get; set; }
         public string UserId { get; set; }
         public UserConfig Config { get; set; } = new UserConfig();
+        public DateTime? LastActivityDate { get ; set; }
     }
 
     public class NULLUser : IUser
@@ -28,5 +29,6 @@ namespace HabitTrackerCore.Models
         public string Id { get; set; }
         public string UserId { get; set; }
         public UserConfig Config { get; set; } = new UserConfig();
+        public DateTime? LastActivityDate { get; set; }
     }
 }

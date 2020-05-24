@@ -1,8 +1,10 @@
 using HabitTrackerCore.Models;
 using HabitTrackerServices.Caching;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HabitTrackerTest
 {
@@ -96,6 +98,117 @@ namespace HabitTrackerTest
 
             // Cleanup
             DeleteUser(testUser);
+        }
+
+        [TestMethod]
+        public void DeleteInactiveAccounts()
+        {
+            var users = userService.GetInactiveAccounts().Result;
+            var minimumActivityDate = DateTime.Today.AddYears(-1);
+            var originalPP = userService.GetUserAsync("NSm32K4BF6Y7NFc2kwqWeGmy6KG2").Result;
+            var originalJoachim = userService.GetUserAsync("dO6TkLTit3WDMSOe3lH1gRiBQXF3").Result;
+
+            foreach (var user in users)
+            {
+                var userId = user.UserId;
+
+                if (user.LastActivityDate == null)
+                {
+                    if (user.UserId == "NSm32K4BF6Y7NFc2kwqWeGmy6KG2")
+                    {
+                        if (originalPP.Id == user.Id)
+                        {
+                            var tasks = calendarTaskService.GetTasksAsync(user.UserId, true).Result;
+
+                            var dates = tasks.SelectMany(p => p.Histories.Count == 0 ?
+                                     new List<DateTime>()
+                                     {
+                                                                     p.InsertDate == null ?
+                                                                        DateTime.MinValue :
+                                                                        p.InsertDate.Value
+                                     } :
+                                     p.Histories.Select(t => t.InsertDate == null ?
+                                                                 DateTime.MinValue :
+                                                                 t.InsertDate.Value));
+
+                            var maxInsertDate = dates.Count() == 0 ? null : (DateTime?)dates.OrderByDescending(p => p).First();
+
+                            user.LastActivityDate = maxInsertDate.Value.Date.ToUniversalTime();
+                            var result = userService.InsertUpdateUserAsync(user).Result;
+                        }
+                        else
+                        {
+                            var result = userService.DeleteUserWithFireBaseIdAsync(user.Id).Result;
+                        }
+                    } 
+                    else if (user.UserId == "dO6TkLTit3WDMSOe3lH1gRiBQXF3")
+                    {
+                        if (originalJoachim.Id == user.Id)
+                        {
+                            var tasks = calendarTaskService.GetTasksAsync(user.UserId, true).Result;
+
+                            var dates = tasks.SelectMany(p => p.Histories.Count == 0 ?
+                                     new List<DateTime>()
+                                     {
+                                                                     p.InsertDate == null ?
+                                                                        DateTime.MinValue :
+                                                                        p.InsertDate.Value
+                                     } :
+                                     p.Histories.Select(t => t.InsertDate == null ?
+                                                                 DateTime.MinValue :
+                                                                 t.InsertDate.Value));
+
+                            var maxInsertDate = dates.Count() == 0 ? null : (DateTime?)dates.OrderByDescending(p => p).First();
+
+                            if (maxInsertDate != null)
+                            {
+                                user.LastActivityDate = maxInsertDate.Value.Date.ToUniversalTime();
+                                var result = userService.InsertUpdateUserAsync(user).Result;
+                            }
+                        }
+                        else
+                        {
+                            var result = userService.DeleteUserWithFireBaseIdAsync(user.Id).Result;
+                        }
+                    }
+                    else
+                    {
+                        var tasks = calendarTaskService.GetTasksAsync(user.UserId, true).Result;
+
+                        if (tasks.Count == 0)
+                        {
+                            // DELETE ZERO TASK INSERTED
+                            var result = userService.PermaDeleteUser(user).Result;
+                        }
+                        else
+                        {
+                            var dates = tasks.SelectMany(p => p.Histories.Count == 0 ?
+                                                                 new List<DateTime>() 
+                                                                 { 
+                                                                     p.InsertDate == null ? 
+                                                                        DateTime.MinValue : 
+                                                                        p.InsertDate.Value 
+                                                                 } :
+                                                                 p.Histories.Select(t => t.InsertDate == null ?
+                                                                                             DateTime.MinValue :
+                                                                                             t.InsertDate.Value));
+
+                            var maxInsertDate = dates.Count() == 0 ? null : (DateTime?)dates.OrderByDescending(p => p).First();
+
+                            if (maxInsertDate < minimumActivityDate)
+                            {
+                                // DELETE EXPIRED
+                                var result = userService.PermaDeleteUser(user).Result;
+                            }
+                            else
+                            {
+                                user.LastActivityDate = maxInsertDate.Value.Date.ToUniversalTime();
+                                var result = userService.InsertUpdateUserAsync(user).Result;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /*private static void AssertValuesAreTheSame(IUser user1, IUser user2)

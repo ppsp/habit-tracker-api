@@ -16,9 +16,10 @@ namespace HabitTrackerWebApi.Controllers
     {
         private IUserService UserService { get; set; }
 
-        public UserController(FirebaseConnector connector)
+        public UserController(FirebaseConnector connector,
+                              CalendarTaskService calendarTaskService)
         {
-            UserService = new UserService(connector);
+            UserService = new UserService(connector, calendarTaskService);
         }
 
         // GET

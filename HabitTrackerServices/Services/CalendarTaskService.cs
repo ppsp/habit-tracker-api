@@ -127,7 +127,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in InsertTaskAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return null;
             }
         }
@@ -164,7 +164,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in ReorderTasks", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }
@@ -244,7 +244,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in UpdateTaskAsyncNoPositionCheck", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }
@@ -317,7 +317,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in UpdateTaskAsyncNoPositionCheck", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }
@@ -354,7 +354,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in GetAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return null;
             }
         }
@@ -404,7 +404,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in GetAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return null;
             }
         }
@@ -438,7 +438,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in GetAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 throw ex;
             }
         }
@@ -474,7 +474,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in DeleteTaskAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }
@@ -496,7 +496,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in DeleteTaskAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }
