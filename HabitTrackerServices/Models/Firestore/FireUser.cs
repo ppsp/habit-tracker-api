@@ -15,6 +15,8 @@ namespace HabitTrackerServices.Models.Firestore
         public string UserId { get; set; }
         [FirestoreProperty]
         public FireUserConfig Config { get; set; }
+        [FirestoreProperty]
+        public DateTime? LastActivityDate { get; set; }
 
         public FireUser()
         {
@@ -25,6 +27,7 @@ namespace HabitTrackerServices.Models.Firestore
         {
             this.Id = user.Id;
             this.UserId = user.UserId;
+            this.LastActivityDate = user.LastActivityDate;
             this.Config = FireUserConfig.fromConfig(user.Config ?? new UserConfig());
         }
 
@@ -33,6 +36,7 @@ namespace HabitTrackerServices.Models.Firestore
             var user = new User();
             user.Id = this.Id;
             user.UserId = this.UserId;
+            user.LastActivityDate = this.LastActivityDate;
             user.Config = this.Config == null ? new UserConfig() : this.Config.ToConfig();
             return user;
         }

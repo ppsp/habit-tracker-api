@@ -33,7 +33,7 @@ namespace HabitTrackerServices.Services
             {
                 // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
 
-                Logger.Error("Error in InsertHistoryAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return null;
             }
         }
@@ -72,7 +72,7 @@ namespace HabitTrackerServices.Services
             catch (Exception ex)
             {
                 // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
-                Logger.Error("Error in UpdateHistoryAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }

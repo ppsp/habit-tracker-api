@@ -108,6 +108,14 @@ namespace HabitTrackerServices.Services
         {
             try
             {
+                // Check if task already exists
+                var alreadyExists = await CheckIfExistsAsync(task.CalendarTaskId);
+                if (alreadyExists)
+                {
+                    Logger.Error("Tasks already exists : " + task.CalendarTaskId);
+                    return null;
+                }
+
                 // Check if AbsolutePosition already exists
                 var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition);
                 if (existingTasks.Count > 0)
@@ -119,7 +127,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in InsertTaskAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return null;
             }
         }
@@ -156,7 +164,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in ReorderTasks", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }
@@ -236,7 +244,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in UpdateTaskAsyncNoPositionCheck", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }
@@ -255,7 +263,15 @@ namespace HabitTrackerServices.Services
                                         .Collection("task_todo")
                                         .WhereEqualTo("CalendarTaskId", task.CalendarTaskId);
 
-            var firstDocument = (await query.GetSnapshotAsync()).Documents.FirstOrDefault();
+            var allDocuments = (await query.GetSnapshotAsync()).Documents;
+            
+            // Should not occur but just in case, we delete duplicate ids
+            if (allDocuments.Count > 1)
+            {
+                await deleteDuplicates(allDocuments, task.CalendarTaskId);
+            }
+
+            var firstDocument = allDocuments.SingleOrDefault();
 
             if (firstDocument != null && firstDocument.Exists)
             {
@@ -275,6 +291,18 @@ namespace HabitTrackerServices.Services
             }
         }
 
+        private async Task deleteDuplicates(IReadOnlyList<DocumentSnapshot> allDocuments, string logText)
+        {
+            Logger.Warn("DUPLICATE DOCUMENT WHEN UPDATING, DELETING EXTRA, CalendarTaskId" + logText);
+
+            var toDeletes = allDocuments.OrderBy(p => p.CreateTime).Skip(1);
+
+            foreach (var toDelete in toDeletes)
+            {
+                await DeleteTaskWithFireBaseIdAsync(toDelete.Id);
+            }
+        }
+
         public async Task<bool> UpdateTaskAsync(ICalendarTask task)
         {
             try
@@ -289,7 +317,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in UpdateTaskAsyncNoPositionCheck", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }
@@ -300,9 +328,10 @@ namespace HabitTrackerServices.Services
             {
                 task.AbsolutePosition = TaskPosition.MaxValue;
             }
-
-            if (task.PositionHasBeenModified())
+            else if (task.PositionHasBeenModified())
+            {
                 await this.ReorderTasks(task);
+            }
 
             return await UpdateTaskAsyncNoPositionCheck(task);
         }
@@ -325,7 +354,7 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in GetAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return null;
             }
         }
@@ -341,6 +370,12 @@ namespace HabitTrackerServices.Services
                 try
                 {
                     QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
+
+                    // Should not occur but just in case, we delete duplicate ids
+                    if (tasksQuerySnapshot.Documents.Count > 1)
+                    {
+                        await deleteDuplicates(tasksQuerySnapshot.Documents, calendarTaskId);
+                    }
 
                     foreach (var document in tasksQuerySnapshot.Documents)
                     {
@@ -369,8 +404,42 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in GetAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return null;
+            }
+        }
+
+        public async Task<bool> CheckIfExistsAsync(string calendarTaskId)
+        {
+            try
+            {
+                Query query = this.Connector.fireStoreDb
+                                            .Collection("task_todo")
+                                            .WhereEqualTo("CalendarTaskId", calendarTaskId);
+
+                try
+                {
+                    QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
+
+                    foreach (var document in tasksQuerySnapshot.Documents)
+                    {
+                        if (document.Exists)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                throw ex;
             }
         }
 
@@ -405,7 +474,29 @@ namespace HabitTrackerServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in DeleteTaskAsync", ex);
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteTaskWithFireBaseIdAsync(string fireBaseId)
+        {
+            try
+            {
+                var firstDocument = this.Connector.fireStoreDb
+                                        .Collection("task_todo")
+                                        .Document(fireBaseId);
+
+                if (firstDocument != null)
+                {
+                    await firstDocument.DeleteAsync();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }

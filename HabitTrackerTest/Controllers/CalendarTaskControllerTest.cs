@@ -37,7 +37,7 @@ namespace HabitTrackerTest
             this.calendarTaskController = new CalendarTaskController(firebaseConnector);
             this.calendarTaskService = new CalendarTaskService(firebaseConnector);
             this.taskHistoryService = new TaskHistoryService(calendarTaskService);
-            this.userService = new UserService(firebaseConnector);
+            this.userService = new UserService(firebaseConnector,calendarTaskService);
 
             DeleteTests();
         }

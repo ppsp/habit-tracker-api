@@ -1,4 +1,5 @@
 ﻿using HabitTrackerCore.Models;
+using System;
 
 namespace HabitTrackerServices.Models.DTO
 {
@@ -7,6 +8,7 @@ namespace HabitTrackerServices.Models.DTO
         public string Id { get; set; }
         public string UserId { get; set; }
         public UserConfig Config { get; set; }
+        public DateTime? LastActivityDate { get; set; }
 
         public DTOUser()
         {
@@ -17,6 +19,7 @@ namespace HabitTrackerServices.Models.DTO
         {
             this.Id = user.Id;
             this.UserId = user.UserId;
+            this.LastActivityDate = user.LastActivityDate;
             this.Config = user.Config;
         }
 
@@ -25,6 +28,7 @@ namespace HabitTrackerServices.Models.DTO
             var user = new User();
             user.Id = Id;
             user.UserId = this.UserId;
+            user.LastActivityDate = this.LastActivityDate;
             user.Config = this.Config;
             return user;
         }

@@ -60,5 +60,20 @@ namespace HabitTrackerTools
                 throw new InvalidJwtTokenException("Error in ValidateJwt", ex);
             }
         }
+
+        public async Task<bool> DeleteUser(string userId)
+        {
+            try
+            {
+                await FirebaseAuth.DefaultInstance.DeleteUserAsync(userId);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in ValidateJwt", ex);
+                throw new InvalidJwtTokenException("Error in ValidateJwt", ex);
+            }
+        }
     }
 }
