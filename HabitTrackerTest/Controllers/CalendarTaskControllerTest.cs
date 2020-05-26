@@ -19,9 +19,11 @@ namespace HabitTrackerTest
     {
         private DependencyResolverHelper ServiceProvider;
         private CalendarTaskService calendarTaskService;
+        private TaskGroupService taskGroupService;
         private TaskHistoryService taskHistoryService;
         private UserService userService;
         private CalendarTaskController calendarTaskController;
+        private TaskGroupController taskGroupController;
         private static string testUserId = "testUser";
 
         public CalendarTaskApiTest()
@@ -37,7 +39,9 @@ namespace HabitTrackerTest
             this.calendarTaskController = new CalendarTaskController(firebaseConnector);
             this.calendarTaskService = new CalendarTaskService(firebaseConnector);
             this.taskHistoryService = new TaskHistoryService(calendarTaskService);
-            this.userService = new UserService(firebaseConnector,calendarTaskService);
+            this.userService = new UserService(firebaseConnector, calendarTaskService);
+            this.taskGroupService = new TaskGroupService(firebaseConnector);
+            this.taskGroupController = new TaskGroupController(firebaseConnector);
 
             DeleteTests();
         }

@@ -54,6 +54,8 @@ namespace HabitTrackerServices.Models.Firestore
         [FirestoreProperty]
         public DateTime? SkipUntil { get; set; }
         [FirestoreProperty]
+        public string GroupId { get; set; }
+        [FirestoreProperty]
         public DateTime? DoneDate
         {
             get
