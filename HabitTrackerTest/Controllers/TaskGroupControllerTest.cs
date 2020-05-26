@@ -1,12 +1,4 @@
-﻿using HabitTrackerCore.Models;
-using HabitTrackerServices.Caching;
-using HabitTrackerServices.Models.DTO;
-using HabitTrackerServices.Services;
-using HabitTrackerTools;
-using HabitTrackerWebApi;
-using HabitTrackerWebApi.Controllers;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using HabitTrackerServices.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
