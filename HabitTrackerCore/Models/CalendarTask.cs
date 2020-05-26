@@ -24,6 +24,7 @@ namespace HabitTrackerCore.Models
         public DateTime? AssignedDate { get; set; }
         public eStatType StatType { get; set; }
         public DateTime? SkipUntil { get; set; }
+        public string GroupId { get; set; }
 
         public DateTime? DoneDate
         {
