@@ -58,6 +58,11 @@ namespace HabitTrackerCore.Models
         /// </summary>
         public DateTime? DoneDate { get; set; }
 
+        /// <summary>
+        /// We can group tasks together in Groups
+        /// </summary>
+        public string GroupId { get; set; }
+
         public bool HasBeenVoided();
         public bool PositionHasBeenModified();
     }
