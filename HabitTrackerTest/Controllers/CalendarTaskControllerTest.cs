@@ -1,4 +1,5 @@
-﻿using HabitTrackerCore.Models;
+﻿using HabitTrackerCore.Exceptions;
+using HabitTrackerCore.Models;
 using HabitTrackerServices.Caching;
 using HabitTrackerServices.Models.DTO;
 using HabitTrackerServices.Services;
@@ -8,9 +9,15 @@ using HabitTrackerWebApi.Controllers;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Reflection;
+using System.Text;
 
 namespace HabitTrackerTest
 {
@@ -25,6 +32,8 @@ namespace HabitTrackerTest
         private CalendarTaskController calendarTaskController;
         private TaskGroupController taskGroupController;
         private static string testUserId = "testUser";
+
+        private HttpClient TestClient;
 
         public CalendarTaskApiTest()
         {
@@ -161,6 +170,56 @@ namespace HabitTrackerTest
             Assert.AreEqual(DTOtask.Frequency, taskUpdated.Frequency);
             Assert.AreEqual(DTOtask.ResultType, taskUpdated.ResultType);
             CollectionAssert.AreEqual(DTOtask.RequiredDays, taskUpdated.RequiredDays);
+        }
+
+        [TestMethod]
+        public void Post_Name200chars_ShouldReturnError()
+        {
+            // ARRANGE
+            var testTask = new DTOCalendarTask();
+
+            testTask.Name = "TestTask" + Guid.NewGuid().ToString();
+
+            for (int i = 0; i < 200; i++)
+            {
+                testTask.Name += "A";
+            }
+
+            testTask.Frequency = eTaskFrequency.Daily;
+            testTask.ResultType = eResultType.Binary;
+            testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
+            testTask.UserId = testUserId;
+            testTask.AbsolutePosition = 1;
+
+            Assert.ThrowsException<AggregateException>(() => calendarTaskController.Post(testTask).Result);
+        }
+
+        [TestMethod]
+        public void Post_Comment1001chars_ShouldReturnError()
+        {
+            // ARRANGE
+            var testTask = new DTOCalendarTask();
+
+            testTask.Name = "TestTask" + Guid.NewGuid().ToString();
+            testTask.CalendarTaskId = Guid.NewGuid().ToString();
+            testTask.Frequency = eTaskFrequency.Daily;
+            testTask.ResultType = eResultType.Binary;
+            testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
+            testTask.UserId = testUserId;
+            testTask.AbsolutePosition = 1;
+            testTask.Histories.Add(new TaskHistory()
+            {
+                 CalendarTaskId = testTask.CalendarTaskId,
+                 UserId = testTask.UserId,
+                 TaskHistoryId = Guid.NewGuid().ToString(),
+            });
+
+            for (int i = 0; i < 2001; i++)
+            {
+                testTask.Histories[0].Comment += "A";
+            }
+
+            Assert.ThrowsException<AggregateException>(() => calendarTaskController.Post(testTask).Result);
         }
 
         private void DeleteTests()
