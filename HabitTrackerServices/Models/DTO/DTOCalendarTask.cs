@@ -40,16 +40,14 @@ namespace HabitTrackerServices.Models.DTO
         /// ignored and will only be used for historical purposes
         /// </summary>
         public bool Void { get; set; }
-
         public DateTime? InsertDate { get; set; }
-
         public DateTime? UpdateDate { get; set; }
         public DateTime? VoidDate { get; set; }
         public List<ITaskHistory> Histories { get; set; } = new List<ITaskHistory>();
         public eStatType StatType { get; set; }
         public DateTime? AssignedDate { get; set; }
         public DateTime? SkipUntil { get; set; }
-
+        public string GroupId { get; set; }
         public DateTime? DoneDate
         {
             get
@@ -118,6 +116,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.StatType = task.StatType;
                 this.SkipUntil = task.SkipUntil;
                 this.DoneDate = task.DoneDate;
+                this.GroupId = task.GroupId;
             }
             catch (Exception ex)
             {
@@ -147,6 +146,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.StatType = task.StatType;
                 this.SkipUntil = task.SkipUntil;
                 this.DoneDate = task.DoneDate;
+                this.GroupId = task.GroupId;
             }
             catch (Exception ex)
             {
@@ -176,6 +176,7 @@ namespace HabitTrackerServices.Models.DTO
             task.StatType = this.StatType;
             task.SkipUntil = this.SkipUntil;
             task.DoneDate = this.DoneDate;
+            task.GroupId = this.GroupId;
 
             return task;
         }
