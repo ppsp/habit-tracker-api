@@ -4,6 +4,8 @@ using HabitTrackerServices.Models.Firestore;
 using HabitTrackerTools;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -179,6 +181,18 @@ namespace HabitTrackerServices.Models.DTO
             task.GroupId = this.GroupId;
 
             return task;
+        }
+
+        public void Validate()
+        {
+            if (this.Name.Length > 200)
+                throw new InvalidDataException("Task Name should not be over 200 characters");
+
+            foreach (var history in this.Histories)
+                if (history.Comment != null && history.Comment.Length > 2000)
+                    throw new InvalidDataException("History Comment should not be over 2000 characters");
+
+            return;
         }
     }
 }

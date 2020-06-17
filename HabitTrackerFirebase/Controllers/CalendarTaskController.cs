@@ -5,6 +5,7 @@ using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace HabitTrackerWebApi.Controllers
@@ -37,6 +38,8 @@ namespace HabitTrackerWebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]DTOCalendarTask task)
         {
+            task.Validate();
+
             var result = await CalendarTaskService.InsertTaskAsync(task);
             return Ok(result);
         }
@@ -45,6 +48,8 @@ namespace HabitTrackerWebApi.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody]DTOCalendarTask task)
         {
+            task.Validate();
+
             var result = await CalendarTaskService.UpdateTaskAsync(task);
             return Ok(result);
         }
