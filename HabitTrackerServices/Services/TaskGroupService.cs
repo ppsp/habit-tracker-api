@@ -167,6 +167,13 @@ namespace HabitTrackerServices.Services
 
                 var allDocuments = (await query.GetSnapshotAsync()).Documents;
 
+                // Should not occur but just in case, we delete duplicate ids
+                if (allDocuments.Count > 1)
+                {
+                    await deleteDuplicates(allDocuments, group);
+                    allDocuments = new List<DocumentSnapshot>() { allDocuments[0] };
+                }
+
                 var firstDocument = allDocuments.SingleOrDefault();
 
                 if (firstDocument != null && firstDocument.Exists)
@@ -210,6 +217,41 @@ namespace HabitTrackerServices.Services
             {
                 Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
+            }
+        }
+
+
+        public async Task<bool> DeleteGroupWithFireBaseIdAsync(string firebaseGroupId)
+        {
+            try
+            {
+                var firstDocument = this.Connector.fireStoreDb
+                                        .Collection(table_name)
+                                        .Document(firebaseGroupId);
+
+                if (firstDocument != null)
+                {
+                    await firstDocument.DeleteAsync();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                return false;
+            }
+        }
+
+        private async Task deleteDuplicates(IReadOnlyList<DocumentSnapshot> allDocuments, TaskGroup group)
+        {
+            Logger.Warn("DUPLICATE DOCUMENT WHEN UPDATING, DELETING EXTRA, GroupId" + group.GroupId);
+
+            var toDeletes = allDocuments.OrderBy(p => p.CreateTime).Skip(1);
+
+            foreach (var toDelete in toDeletes)
+            {
+                await DeleteGroupWithFireBaseIdAsync(toDelete.Id);
             }
         }
     }

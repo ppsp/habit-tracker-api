@@ -73,8 +73,8 @@ namespace HabitTrackerTest
 
             // ACT
             var updatedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
-            updatedGroup.GroupName = "NewName2";
-            updatedGroup.GroupPosition = 32;
+            updatedGroup.Name = "NewName2";
+            updatedGroup.Position = 32;
             updatedGroup.Void = true;
             updatedGroup.ColorHex = "ABBABC";
 

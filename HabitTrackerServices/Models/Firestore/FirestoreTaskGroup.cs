@@ -33,8 +33,8 @@ namespace HabitTrackerServices.Models.Firestore
             var newGroup = new TaskGroup();
             newGroup.ColorHex = this.ColorHex;
             newGroup.GroupId = this.GroupId;
-            newGroup.GroupName = this.GroupName;
-            newGroup.GroupPosition = this.GroupPosition;
+            newGroup.Name = this.GroupName;
+            newGroup.Position = this.GroupPosition;
             newGroup.Id = this.Id;
             newGroup.InsertDate = this.InsertDate;
             newGroup.UpdateDate = this.UpdateDate;
@@ -51,8 +51,8 @@ namespace HabitTrackerServices.Models.Firestore
             var newGroup = new FireTaskGroup();
             newGroup.ColorHex = group.ColorHex;
             newGroup.GroupId = group.GroupId;
-            newGroup.GroupName = group.GroupName;
-            newGroup.GroupPosition = group.GroupPosition;
+            newGroup.GroupName = group.Name;
+            newGroup.GroupPosition = group.Position;
             newGroup.Id = group.Id;
             newGroup.InsertDate = group.InsertDate;
             newGroup.UpdateDate = group.UpdateDate;
