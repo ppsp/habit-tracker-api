@@ -17,6 +17,7 @@ namespace HabitTrackerServices.Models.DTO
         public string ColorHex { get; set; }
         public string Name { get; set; }
         public int Position { get; set; }
+        public int InitialPosition { get; set; }
         public DateTime? InsertDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public bool Void { get; set; }
@@ -29,6 +30,7 @@ namespace HabitTrackerServices.Models.DTO
             newGroup.GroupId = this.GroupId;
             newGroup.Name = this.Name;
             newGroup.Position = this.Position;
+            newGroup.InitialPosition = this.InitialPosition;
             newGroup.Id = this.Id;
             newGroup.InsertDate = this.InsertDate;
             newGroup.UpdateDate = this.UpdateDate;
@@ -47,6 +49,7 @@ namespace HabitTrackerServices.Models.DTO
             newGroup.GroupId = group.GroupId;
             newGroup.Name = group.Name;
             newGroup.Position = group.Position;
+            newGroup.InitialPosition = group.InitialPosition;
             newGroup.Id = group.Id;
             newGroup.InsertDate = group.InsertDate;
             newGroup.UpdateDate = group.UpdateDate;

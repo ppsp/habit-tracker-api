@@ -12,6 +12,7 @@ namespace HabitTrackerCore.Models
         public string ColorHex { get; set; }
         public string Name { get; set; }
         public int Position { get; set; }
+        public int InitialPosition { get; set; }
         public DateTime? InsertDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public bool Void { get; set; }
@@ -20,6 +21,11 @@ namespace HabitTrackerCore.Models
         public bool HasBeenVoided()
         {
             return this.Void && this.VoidDate == null;
+        }
+
+        public bool PositionHasBeenModified()
+        {
+            return this.Position != this.InitialPosition;
         }
     }
 }

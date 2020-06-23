@@ -18,7 +18,9 @@ namespace HabitTrackerServices.Models.Firestore
         [FirestoreProperty]
         public string GroupName { get; set; }
         [FirestoreProperty]
-        public int GroupPosition { get; set; }
+        public int Position { get; set; }
+        [FirestoreProperty]
+        public int InitialPosition { get; set; }
         [FirestoreProperty]
         public DateTime? InsertDate { get; set; }
         [FirestoreProperty]
@@ -34,7 +36,8 @@ namespace HabitTrackerServices.Models.Firestore
             newGroup.ColorHex = this.ColorHex;
             newGroup.GroupId = this.GroupId;
             newGroup.Name = this.GroupName;
-            newGroup.Position = this.GroupPosition;
+            newGroup.Position = this.Position;
+            newGroup.InitialPosition = this.InitialPosition;
             newGroup.Id = this.Id;
             newGroup.InsertDate = this.InsertDate;
             newGroup.UpdateDate = this.UpdateDate;
@@ -52,7 +55,8 @@ namespace HabitTrackerServices.Models.Firestore
             newGroup.ColorHex = group.ColorHex;
             newGroup.GroupId = group.GroupId;
             newGroup.GroupName = group.Name;
-            newGroup.GroupPosition = group.Position;
+            newGroup.Position = group.Position;
+            newGroup.InitialPosition = group.InitialPosition;
             newGroup.Id = group.Id;
             newGroup.InsertDate = group.InsertDate;
             newGroup.UpdateDate = group.UpdateDate;
