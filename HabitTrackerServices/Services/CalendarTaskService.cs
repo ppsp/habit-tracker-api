@@ -192,10 +192,11 @@ namespace HabitTrackerServices.Services
                 Logger.Debug("Update NOT all tasks" + task.CalendarTaskId + " " + task.UserId);
 
                 // reorder only between current and new Id
-                foreach (var currentTask in tasks.Where(p => p.AbsolutePosition.IsBetween(task.AbsolutePosition,
+                foreach (var currentTask in tasks.Where(p => p.GroupId == task.GroupId &&
+                                                             p.AbsolutePosition.IsBetween(task.AbsolutePosition,
                                                                                           task.InitialAbsolutePosition) &&
-                                                         !p.Void &&
-                                                         p.CalendarTaskId != task.CalendarTaskId))
+                                                             !p.Void &&
+                                                             p.CalendarTaskId != task.CalendarTaskId))
                 {
                     currentTask.AbsolutePosition = difference < 0 ?
                                                     currentTask.AbsolutePosition + 1 :
@@ -211,7 +212,8 @@ namespace HabitTrackerServices.Services
             var tasks = await GetTasksAsync(task.UserId,
                                             false);
 
-            tasks = tasks.Where(p => !p.Void &&
+            tasks = tasks.Where(p => p.GroupId == task.GroupId &&
+                                     !p.Void &&
                                      p.CalendarTaskId != task.CalendarTaskId &&
                                      (IsPresentOrFuture(p)))
                          .OrderBy(p => p.AbsolutePosition)
