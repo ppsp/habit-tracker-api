@@ -113,7 +113,9 @@ namespace HabitTrackerTest
             // ARRANGE
             var testGroup1 = getTestTaskGroup();
             var testGroup2 = getTestTaskGroup();
+            testGroup2.Position = 2;
             var testGroup3 = getTestTaskGroup();
+            testGroup3.Position = 3;
             testGroup1.Id = this.taskGroupService.InsertGroupAsync(testGroup1).Result;
             testGroup2.Id = this.taskGroupService.InsertGroupAsync(testGroup2).Result;
             testGroup3.Id = this.taskGroupService.InsertGroupAsync(testGroup3).Result;

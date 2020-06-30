@@ -23,6 +23,11 @@ namespace HabitTrackerServices.Models.DTO
         public bool Void { get; set; }
         public DateTime? VoidDate { get; set; }
 
+        public DTOTaskGroup()
+        {
+            this.InitialPosition = TaskPosition.MaxValue;
+        }
+
         public TaskGroup ToTaskGroup()
         {
             var newGroup = new TaskGroup();

@@ -18,6 +18,11 @@ namespace HabitTrackerCore.Models
         public bool Void { get; set; }
         public DateTime? VoidDate { get; set; }
 
+        public TaskGroup()
+        {
+            this.InitialPosition = TaskPosition.MaxValue;
+        }
+
         public bool HasBeenVoided()
         {
             return this.Void && this.VoidDate == null;
