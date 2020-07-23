@@ -46,8 +46,8 @@ namespace HabitTrackerTest
         {
             Assert.AreEqual(taskGroup1.ColorHex, taskGroup2.ColorHex);
             Assert.AreEqual(taskGroup1.GroupId, taskGroup2.GroupId);
-            Assert.AreEqual(taskGroup1.GroupName, taskGroup2.GroupName);
-            Assert.AreEqual(taskGroup1.GroupPosition, taskGroup2.GroupPosition);
+            Assert.AreEqual(taskGroup1.Name, taskGroup2.Name);
+            Assert.AreEqual(taskGroup1.Position, taskGroup2.Position);
             Assert.AreEqual(taskGroup1.Id, taskGroup2.Id);
             Assert.AreEqual(taskGroup1.UserId, taskGroup2.UserId);
             Assert.AreEqual(taskGroup1.Void, taskGroup2.Void);
@@ -66,8 +66,8 @@ namespace HabitTrackerTest
 
             // ACT
             var updatedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
-            updatedGroup.GroupName = "NewName2";
-            updatedGroup.GroupPosition = 32;
+            updatedGroup.Name = "NewName2";
+            updatedGroup.Position = 32;
             updatedGroup.Void = true;
             updatedGroup.ColorHex = "ABBABC";
 
@@ -90,8 +90,8 @@ namespace HabitTrackerTest
 
             // ACT
             var updatedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
-            updatedGroup.GroupName = "NewName2";
-            updatedGroup.GroupPosition = 32;
+            updatedGroup.Name = "NewName2";
+            updatedGroup.Position = 32;
             updatedGroup.Void = true;
             updatedGroup.ColorHex = "ABBABC";
 
@@ -113,7 +113,9 @@ namespace HabitTrackerTest
             // ARRANGE
             var testGroup1 = getTestTaskGroup();
             var testGroup2 = getTestTaskGroup();
+            testGroup2.Position = 2;
             var testGroup3 = getTestTaskGroup();
+            testGroup3.Position = 3;
             testGroup1.Id = this.taskGroupService.InsertGroupAsync(testGroup1).Result;
             testGroup2.Id = this.taskGroupService.InsertGroupAsync(testGroup2).Result;
             testGroup3.Id = this.taskGroupService.InsertGroupAsync(testGroup3).Result;
@@ -144,10 +146,10 @@ namespace HabitTrackerTest
         {
             var testGroup = new TaskGroup();
 
-            testGroup.GroupName = Guid.NewGuid().ToString(); ;
+            testGroup.Name = Guid.NewGuid().ToString(); ;
             testGroup.GroupId = Guid.NewGuid().ToString();
             testGroup.ColorHex = "FFFFFF";
-            testGroup.GroupPosition = 1;
+            testGroup.Position = 1;
             testGroup.UserId = testUserId;
 
             return testGroup;

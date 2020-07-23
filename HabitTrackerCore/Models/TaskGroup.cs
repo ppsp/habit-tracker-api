@@ -10,16 +10,27 @@ namespace HabitTrackerCore.Models
         public string UserId { get; set; }
         public string GroupId { get; set; }
         public string ColorHex { get; set; }
-        public string GroupName { get; set; }
-        public int GroupPosition { get; set; }
+        public string Name { get; set; }
+        public int Position { get; set; }
+        public int InitialPosition { get; set; }
         public DateTime? InsertDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public bool Void { get; set; }
         public DateTime? VoidDate { get; set; }
 
+        public TaskGroup()
+        {
+            this.InitialPosition = TaskPosition.MaxValue;
+        }
+
         public bool HasBeenVoided()
         {
             return this.Void && this.VoidDate == null;
+        }
+
+        public bool PositionHasBeenModified()
+        {
+            return this.Position != this.InitialPosition;
         }
     }
 }

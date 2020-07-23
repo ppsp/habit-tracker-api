@@ -110,6 +110,7 @@ namespace HabitTrackerServices.Models.Firestore
                 this.Histories = task.Histories.Select(p => new FireTaskHistory(p)).ToArray();
                 this.SkipUntil = task.SkipUntil;
                 this.DoneDate = task.DoneDate;
+                this.GroupId = task.GroupId;
             }
             catch (Exception ex)
             {
@@ -139,6 +140,7 @@ namespace HabitTrackerServices.Models.Firestore
             task.Histories = this.Histories.Select(p => p.ToTaskHistory() as ITaskHistory).ToList();
             task.SkipUntil = this.SkipUntil;
             task.DoneDate = this.DoneDate;
+            task.GroupId = this.GroupId;
 
             return task;
         }
