@@ -63,6 +63,9 @@ namespace HabitTrackerCore.Models
         /// </summary>
         public string GroupId { get; set; }
 
+        public int? NotificationId { get; set; }
+        public string NotificationTime { get; set; }
+
         public bool HasBeenVoided();
         public bool PositionHasBeenModified();
     }

@@ -56,6 +56,10 @@ namespace HabitTrackerServices.Models.Firestore
         [FirestoreProperty]
         public string GroupId { get; set; }
         [FirestoreProperty]
+        public int? NotificationId { get; set; }
+        [FirestoreProperty]
+        public string NotificationTime { get; set; }
+        [FirestoreProperty]
         public DateTime? DoneDate
         {
             get
@@ -105,6 +109,8 @@ namespace HabitTrackerServices.Models.Firestore
                 this.InsertDate = task.InsertDate;
                 this.UpdateDate = task.UpdateDate;
                 this.VoidDate = task.VoidDate;
+                this.NotificationId = task.NotificationId;
+                this.NotificationTime = task.NotificationTime;
                 this.AssignedDate = task.AssignedDate;
                 this.StatType = task.StatType;
                 this.Histories = task.Histories.Select(p => new FireTaskHistory(p)).ToArray();
@@ -135,6 +141,8 @@ namespace HabitTrackerServices.Models.Firestore
             task.UpdateDate = this.UpdateDate;
             task.VoidDate = this.VoidDate;
             task.AssignedDate = this.AssignedDate;
+            task.NotificationTime = this.NotificationTime;
+            task.NotificationId = this.NotificationId;
             task.StatType = this.StatType;
             task.InitialAbsolutePosition = this.AbsolutePosition;
             task.Histories = this.Histories.Select(p => p.ToTaskHistory() as ITaskHistory).ToList();

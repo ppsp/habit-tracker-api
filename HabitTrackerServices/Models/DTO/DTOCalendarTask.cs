@@ -49,6 +49,8 @@ namespace HabitTrackerServices.Models.DTO
         public eStatType StatType { get; set; }
         public DateTime? AssignedDate { get; set; }
         public DateTime? SkipUntil { get; set; }
+        public int? NotificationId { get; set; }
+        public string NotificationTime { get; set; }
         public string GroupId { get; set; }
         public DateTime? DoneDate
         {
@@ -117,6 +119,8 @@ namespace HabitTrackerServices.Models.DTO
                 this.AssignedDate = task.AssignedDate;
                 this.StatType = task.StatType;
                 this.SkipUntil = task.SkipUntil;
+                this.NotificationId = task.NotificationId;
+                this.NotificationTime = task.NotificationTime;
                 this.DoneDate = task.DoneDate;
                 this.GroupId = task.GroupId;
             }
@@ -147,6 +151,7 @@ namespace HabitTrackerServices.Models.DTO
                 this.AssignedDate = task.AssignedDate;
                 this.StatType = task.StatType;
                 this.SkipUntil = task.SkipUntil;
+                this.CalendarTaskId = task.CalendarTaskId;
                 this.DoneDate = task.DoneDate;
                 this.GroupId = task.GroupId;
             }
@@ -177,6 +182,8 @@ namespace HabitTrackerServices.Models.DTO
             task.AssignedDate = this.AssignedDate;
             task.StatType = this.StatType;
             task.SkipUntil = this.SkipUntil;
+            task.NotificationTime = this.NotificationTime;
+            task.NotificationId = this.NotificationId;
             task.DoneDate = this.DoneDate;
             task.GroupId = this.GroupId;
 
