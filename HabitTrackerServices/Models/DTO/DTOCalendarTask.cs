@@ -149,6 +149,8 @@ namespace HabitTrackerServices.Models.DTO
                 this.VoidDate = task.VoidDate;
                 this.Histories = task.Histories;
                 this.AssignedDate = task.AssignedDate;
+                this.NotificationId = task.NotificationId;
+                this.NotificationTime = task.NotificationTime;
                 this.StatType = task.StatType;
                 this.SkipUntil = task.SkipUntil;
                 this.CalendarTaskId = task.CalendarTaskId;
