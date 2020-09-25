@@ -4,6 +4,7 @@ using HabitTrackerServices.Services;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -16,13 +17,13 @@ namespace HabitTrackerWebApi.Controllers
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class CalendarTaskController : ControllerBase
     {
-        private ICalendarTaskService CalendarTaskService { get; set; }
-        private ITaskHistoryService TaskHistoryService { get; set; }
+        private CalendarTaskService CalendarTaskService { get; set; }
+        private UserService UserService { get; set; }
 
         public CalendarTaskController(FirebaseConnector connector)
         {
             CalendarTaskService = new CalendarTaskService(connector);
-            TaskHistoryService = new TaskHistoryService(CalendarTaskService);
+            UserService = new UserService(connector, CalendarTaskService);
         }
 
         // GET
@@ -40,6 +41,8 @@ namespace HabitTrackerWebApi.Controllers
         {
             task.Validate();
 
+            await UserService.UpdateLastActivityDate(task.UserId);
+
             var result = await CalendarTaskService.InsertTaskAsync(task);
             return Ok(result);
         }
@@ -49,6 +52,8 @@ namespace HabitTrackerWebApi.Controllers
         public async Task<IActionResult> Put([FromBody]DTOCalendarTask task)
         {
             task.Validate();
+
+            await UserService.UpdateLastActivityDate(task.UserId);
 
             var result = await CalendarTaskService.UpdateTaskAsync(task);
             return Ok(result);

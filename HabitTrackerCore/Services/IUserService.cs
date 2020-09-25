@@ -10,5 +10,6 @@ namespace HabitTrackerCore.Services
         Task<IUser> GetUserAsync(string userId);
         Task<List<IUser>> GetInactiveAccounts();
         Task<bool> PermaDeleteUser(IUser user);
+        Task UpdateLastActivityDate(string userId);
     }
 }

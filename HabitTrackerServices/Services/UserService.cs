@@ -249,5 +249,12 @@ namespace HabitTrackerServices.Services
                 return false;
             }
         }
+
+        public async Task UpdateLastActivityDate(string userId)
+        {
+            var user = await this.GetUserAsync(userId);
+            user.LastActivityDate = DateTime.Now.ToUniversalTime();
+            await this.InsertUpdateUserAsync(user);
+        }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using HabitTrackerCore.Models;
-using HabitTrackerCore.Services;
 using HabitTrackerServices.Services;
+using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace HabitTrackerWebApi.Controllers
@@ -13,17 +14,22 @@ namespace HabitTrackerWebApi.Controllers
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class TaskHistoryController : ControllerBase
     {
-        private ITaskHistoryService TaskHistoryService { get; set; }
+        private TaskHistoryService TaskHistoryService { get; set; }
+        private UserService UserService { get; set; }
 
-        public TaskHistoryController(CalendarTaskService calendarTaskService)
+        public TaskHistoryController(FirebaseConnector connector,
+                                     CalendarTaskService calendarTaskService)
         {
             TaskHistoryService = new TaskHistoryService(calendarTaskService);
+            UserService = new UserService(connector, calendarTaskService);
         }
 
         // POST
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]TaskHistory task)
         {
+            await UserService.UpdateLastActivityDate(task.UserId);
+
             var result = await TaskHistoryService.InsertHistoryAsync(task);
             return Ok(result);
         }
@@ -32,6 +38,8 @@ namespace HabitTrackerWebApi.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody]TaskHistory task)
         {
+            await UserService.UpdateLastActivityDate(task.UserId);
+
             var result = await TaskHistoryService.UpdateHistoryAsync(task);
             return Ok(result);
         }
