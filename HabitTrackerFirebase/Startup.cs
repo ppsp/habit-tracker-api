@@ -3,12 +3,15 @@ using HabitTrackerServices.Services;
 using HabitTrackerTools;
 using HabitTrackerWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
@@ -97,10 +100,22 @@ namespace HabitTrackerWebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            /*if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
+            }*/
+
+            app.UseExceptionHandler(a => a.Run(async context =>
+            {
+                var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                var exception = exceptionHandlerPathFeature.Error;
+
+                Logger.Error("Error", exception);
+
+                var result = JsonConvert.SerializeObject(new { error = exception.Message });
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(result);
+            }));
 
             app.UseHttpsRedirection();
 
