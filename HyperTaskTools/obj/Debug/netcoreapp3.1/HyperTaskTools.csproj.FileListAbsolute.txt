@@ -1,0 +1,12 @@
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\bin\Debug\netcoreapp3.1\HyperTaskTools.deps.json
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\bin\Debug\netcoreapp3.1\HyperTaskTools.dll
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\bin\Debug\netcoreapp3.1\HyperTaskTools.pdb
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\bin\Debug\netcoreapp3.1\HyperTaskCore.dll
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\bin\Debug\netcoreapp3.1\HyperTaskCore.pdb
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\obj\Debug\netcoreapp3.1\HyperTaskTools.csprojAssemblyReference.cache
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\obj\Debug\netcoreapp3.1\HyperTaskTools.AssemblyInfoInputs.cache
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\obj\Debug\netcoreapp3.1\HyperTaskTools.AssemblyInfo.cs
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\obj\Debug\netcoreapp3.1\HyperTaskTools.csproj.CoreCompileInputs.cache
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\obj\Debug\netcoreapp3.1\HyperTaskTools.csproj.CopyComplete
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\obj\Debug\netcoreapp3.1\HyperTaskTools.dll
+F:\GIT\HabitTrackerFirebase\HyperTaskTools\obj\Debug\netcoreapp3.1\HyperTaskTools.pdb
