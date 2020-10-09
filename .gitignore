@@ -2,21 +2,21 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/HabitTrackerFirebase
-/HabitTrackerCore/bin
-/HabitTrackerCore/obj
-/HabitTrackerFirebase/bin
-/HabitTrackerFirebase/obj
-/HabitTrackerFirebase/pp-app-1893d-a10a5bc8bf7a.json
-/HabitTrackerServices/bin
-/HabitTrackerServices/obj
-/HabitTrackerFirebase/logs
-/HabitTrackerTest/bin
-/HabitTrackerTest/obj
-/HabitTrackerTools/obj
-/HabitTrackerTools/bin
+/.vs/HyperTaskApi
+/HyperTaskCore/bin
+/HyperTaskCore/obj
+/HyperTaskFirebase/bin
+/HyperTaskFirebase/obj
+/HyperTaskFirebase/pp-app-1893d-a10a5bc8bf7a.json
+/HyperTaskServices/bin
+/HyperTaskServices/obj
+/HyperTaskFirebase/logs
+/HyperTaskTest/bin
+/HyperTaskTest/obj
+/HyperTaskTools/obj
+/HyperTaskTools/bin
 /.vscode
-/HabitTrackerFirebase/app
+/HyperTask/app
 /node_modules
 /package-lock.json
 /.vs/HyperTaskApi
