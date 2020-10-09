@@ -14,3 +14,13 @@ System.ArgumentException: ID token must not be null or empty.
    at FirebaseAdmin.Auth.FirebaseAuth.VerifyIdTokenAsync(String idToken, CancellationToken cancellationToken)
    at FirebaseAdmin.Auth.FirebaseAuth.VerifyIdTokenAsync(String idToken)
    at HyperTaskTools.FirebaseConnector.ValidateJwt(String jwt) in F:\GIT\HabitTrackerFirebase\HyperTaskTools\FirebaseConnector.cs:line 50
+2020-10-06 00:57:22,759 [1] DEBUG Logger - Starting HyperTask
+2020-10-06 00:57:24,381 [1] DEBUG Logger - configuring services
+2020-10-06 00:57:24,583 [1] DEBUG Logger - from config, KeyVaultName : habittrackervaultuseast2
+2020-10-06 00:57:24,584 [1] DEBUG Logger - from config, KeyVaultFirebaseSecretName : firebase-pp-app
+2020-10-06 00:57:24,585 [1] DEBUG Logger - configured services
+2020-10-09 14:56:20,504 [1] DEBUG Logger - Starting HyperTask
+2020-10-09 14:56:21,323 [1] DEBUG Logger - configuring services
+2020-10-09 14:56:21,526 [1] DEBUG Logger - from config, KeyVaultName : habittrackervaultuseast2
+2020-10-09 14:56:21,526 [1] DEBUG Logger - from config, KeyVaultFirebaseSecretName : firebase-pp-app
+2020-10-09 14:56:21,526 [1] DEBUG Logger - configured services
