@@ -3,6 +3,7 @@ using HyperTaskServices.Services;
 using HyperTaskTools;
 using HyperTaskWebApi.ActionFilterAttributes;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,10 +16,13 @@ namespace HyperTaskWebApi.Controllers
     public class TaskGroupController : ControllerBase
     {
         private TaskGroupService _TaskGroupService { get; set; }
+        private UserService UserService { get; set; }
 
-        public TaskGroupController(FirebaseConnector connector)
+        public TaskGroupController(FirebaseConnector connector,
+                                   CalendarTaskService calendarTaskService)
         {
             _TaskGroupService = new TaskGroupService(connector);
+            UserService = new UserService(connector, calendarTaskService);
         }
 
         // GET
@@ -34,6 +38,8 @@ namespace HyperTaskWebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]DTOTaskGroup group)
         {
+            await UserService.UpdateLastActivityDate(group.UserId, group.InsertDate ?? DateTime.Now);
+
             var result = await _TaskGroupService.InsertGroupAsync(group.ToTaskGroup());
             return Ok(result);
         }
@@ -42,6 +48,8 @@ namespace HyperTaskWebApi.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] DTOTaskGroup group)
         {
+            await UserService.UpdateLastActivityDate(group.UserId, group.InsertDate ?? DateTime.Now);
+
             var result = await _TaskGroupService.UpdateGroupAsync(group.ToTaskGroup());
             return Ok(result);
         }
