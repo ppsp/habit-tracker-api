@@ -28,7 +28,7 @@ namespace HyperTaskWebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]TaskHistory task)
         {
-            await UserService.UpdateLastActivityDate(task.UserId);
+            await UserService.UpdateLastActivityDate(task.UserId, task.InsertDate ?? DateTime.Now);
 
             var result = await TaskHistoryService.InsertHistoryAsync(task);
             return Ok(result);
@@ -38,7 +38,7 @@ namespace HyperTaskWebApi.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody]TaskHistory task)
         {
-            await UserService.UpdateLastActivityDate(task.UserId);
+            await UserService.UpdateLastActivityDate(task.UserId, task.UpdateDate ?? DateTime.Now);
 
             var result = await TaskHistoryService.UpdateHistoryAsync(task);
             return Ok(result);

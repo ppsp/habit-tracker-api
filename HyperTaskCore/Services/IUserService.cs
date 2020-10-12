@@ -1,4 +1,5 @@
 ﻿using HyperTaskCore.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +11,6 @@ namespace HyperTaskCore.Services
         Task<IUser> GetUserAsync(string userId);
         Task<List<IUser>> GetInactiveAccounts();
         Task<bool> PermaDeleteUser(IUser user);
-        Task UpdateLastActivityDate(string userId);
+        Task UpdateLastActivityDate(string userId, DateTime updateDate);
     }
 }

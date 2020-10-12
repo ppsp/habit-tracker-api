@@ -250,10 +250,12 @@ namespace HyperTaskServices.Services
             }
         }
 
-        public async Task UpdateLastActivityDate(string userId)
+        public async Task UpdateLastActivityDate(string userId, DateTime updateDate)
         {
             var user = await this.GetUserAsync(userId);
-            user.LastActivityDate = DateTime.Now.ToUniversalTime();
+            if (updateDate > user.LastActivityDate)
+                user.LastActivityDate = updateDate.ToUniversalTime();
+            
             await this.InsertUpdateUserAsync(user);
         }
     }
