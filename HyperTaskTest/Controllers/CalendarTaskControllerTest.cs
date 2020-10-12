@@ -50,7 +50,7 @@ namespace HyperTaskTest
             this.taskHistoryService = new TaskHistoryService(calendarTaskService);
             this.userService = new UserService(firebaseConnector, calendarTaskService);
             this.taskGroupService = new TaskGroupService(firebaseConnector);
-            this.taskGroupController = new TaskGroupController(firebaseConnector);
+            this.taskGroupController = new TaskGroupController(firebaseConnector, calendarTaskService);
 
             DeleteTests();
         }
