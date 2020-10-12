@@ -73,7 +73,8 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                user.LastActivityDate = DateTime.Now.ToUniversalTime();
+                if (user.LastActivityDate == null)
+                    user.LastActivityDate = DateTime.Now.ToUniversalTime();
 
                 if (user.Id != null)
                     return await updateUserAsync(user);
