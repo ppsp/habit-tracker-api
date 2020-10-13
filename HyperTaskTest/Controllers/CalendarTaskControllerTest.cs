@@ -31,6 +31,7 @@ namespace HyperTaskTest
         private UserService userService;
         private CalendarTaskController calendarTaskController;
         private TaskGroupController taskGroupController;
+        private ReportService reportService;
         private static string testUserId = "testUser";
 
         private HttpClient TestClient;
@@ -51,6 +52,7 @@ namespace HyperTaskTest
             this.userService = new UserService(firebaseConnector, calendarTaskService);
             this.taskGroupService = new TaskGroupService(firebaseConnector);
             this.taskGroupController = new TaskGroupController(firebaseConnector, calendarTaskService);
+            this.reportService = new ReportService(calendarTaskService, taskGroupService);
 
             DeleteTests();
         }

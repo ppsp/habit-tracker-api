@@ -88,6 +88,21 @@ namespace HyperTaskWebApi
                 return calendarTaskService;
             });
 
+            // Add GroupService
+            services.AddSingleton<TaskGroupService>(serviceProvider => {
+                var firebaseConnector = serviceProvider.GetService<FirebaseConnector>();
+                var groupService = new TaskGroupService(firebaseConnector);
+                return groupService;
+            });
+
+            // Add ReportService
+            services.AddSingleton<ReportService>(serviceProvider => {
+                var taskService = serviceProvider.GetService<CalendarTaskService>();
+                var groupService = serviceProvider.GetService<TaskGroupService>();
+                var reportService = new ReportService(taskService, groupService);
+                return reportService;
+            });
+
             services.AddScoped<AuthorizeJwt>();
 
             Logger.Debug("configured services");
