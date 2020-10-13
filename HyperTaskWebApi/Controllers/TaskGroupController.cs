@@ -38,7 +38,7 @@ namespace HyperTaskWebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]DTOTaskGroup group)
         {
-            await UserService.UpdateLastActivityDate(group.UserId, group.InsertDate ?? DateTime.Now);
+            await UserService.UpdateLastActivityDate(group.UserId, group.UpdateDate ?? DateTime.Now);
 
             var result = await _TaskGroupService.InsertGroupAsync(group.ToTaskGroup());
             return Ok(result);
@@ -48,7 +48,7 @@ namespace HyperTaskWebApi.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] DTOTaskGroup group)
         {
-            await UserService.UpdateLastActivityDate(group.UserId, group.InsertDate ?? DateTime.Now);
+            await UserService.UpdateLastActivityDate(group.UserId, group.UpdateDate ?? DateTime.Now);
 
             var result = await _TaskGroupService.UpdateGroupAsync(group.ToTaskGroup());
             return Ok(result);

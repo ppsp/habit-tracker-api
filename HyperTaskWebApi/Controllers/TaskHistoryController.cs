@@ -28,7 +28,7 @@ namespace HyperTaskWebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]TaskHistory task)
         {
-            await UserService.UpdateLastActivityDate(task.UserId, task.InsertDate ?? DateTime.Now);
+            await UserService.UpdateLastActivityDate(task.UserId, task.UpdateDate ?? DateTime.Now);
 
             var result = await TaskHistoryService.InsertHistoryAsync(task);
             return Ok(result);

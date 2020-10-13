@@ -41,7 +41,7 @@ namespace HyperTaskWebApi.Controllers
         {
             task.Validate();
 
-            await UserService.UpdateLastActivityDate(task.UserId, task.InsertDate ?? DateTime.Now);
+            await UserService.UpdateLastActivityDate(task.UserId, task.UpdateDate ?? DateTime.Now);
 
             var result = await CalendarTaskService.InsertTaskAsync(task);
             return Ok(result);
