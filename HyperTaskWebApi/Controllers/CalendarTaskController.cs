@@ -20,10 +20,11 @@ namespace HyperTaskWebApi.Controllers
         private CalendarTaskService CalendarTaskService { get; set; }
         private UserService UserService { get; set; }
 
-        public CalendarTaskController(FirebaseConnector connector)
+        public CalendarTaskController(FirebaseConnector connector,
+                                      TaskGroupService taskGroupService)
         {
             CalendarTaskService = new CalendarTaskService(connector);
-            UserService = new UserService(connector, CalendarTaskService);
+            UserService = new UserService(connector, CalendarTaskService, taskGroupService);
         }
 
         // GET

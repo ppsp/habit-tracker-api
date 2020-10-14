@@ -16,12 +16,15 @@ namespace HyperTaskServices.Services
     {
         private FirebaseConnector Connector { get; set; }
         private CalendarTaskService CalendarTaskService { get; set; }
+        private TaskGroupService TaskGroupService { get; set; }
 
         public UserService(FirebaseConnector connector,
-                           CalendarTaskService calendarTaskService)
+                           CalendarTaskService calendarTaskService,
+                           TaskGroupService taskGroupService)
         {
             this.Connector = connector;
             this.CalendarTaskService = calendarTaskService;
+            this.TaskGroupService = taskGroupService;
         }
 
         public async Task<IUser> GetUserAsync(string userId)
@@ -210,6 +213,21 @@ namespace HyperTaskServices.Services
                     foreach (var task in tasks)
                     {
                         var result2 = await CalendarTaskService.DeleteTaskWithFireBaseIdAsync(task.CalendarTaskId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Error deleting calendartask table in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                }
+
+                // DELETE FROM GROUP TABLE
+                try
+                {
+                    var groups = await TaskGroupService.GetGroupsAsync(user.UserId, true);
+
+                    foreach (var group in groups)
+                    {
+                        var result2 = await TaskGroupService.DeleteGroupWithFireBaseIdAsync(group.Id);
                     }
                 }
                 catch (Exception ex)

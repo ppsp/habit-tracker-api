@@ -22,7 +22,7 @@ namespace HyperTaskWebApi.Controllers
                                    CalendarTaskService calendarTaskService)
         {
             _TaskGroupService = new TaskGroupService(connector);
-            UserService = new UserService(connector, calendarTaskService);
+            UserService = new UserService(connector, calendarTaskService, _TaskGroupService);
         }
 
         // GET

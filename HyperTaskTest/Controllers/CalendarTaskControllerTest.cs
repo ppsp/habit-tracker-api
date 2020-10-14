@@ -46,11 +46,11 @@ namespace HyperTaskTest
 
             ServiceProvider = new DependencyResolverHelper(webHost);
             var firebaseConnector = ServiceProvider.GetService<FirebaseConnector>();
-            this.calendarTaskController = new CalendarTaskController(firebaseConnector);
+            this.taskGroupService = new TaskGroupService(firebaseConnector);
+            this.calendarTaskController = new CalendarTaskController(firebaseConnector, taskGroupService);
             this.calendarTaskService = new CalendarTaskService(firebaseConnector);
             this.taskHistoryService = new TaskHistoryService(calendarTaskService);
-            this.userService = new UserService(firebaseConnector, calendarTaskService);
-            this.taskGroupService = new TaskGroupService(firebaseConnector);
+            this.userService = new UserService(firebaseConnector, calendarTaskService, taskGroupService);
             this.taskGroupController = new TaskGroupController(firebaseConnector, calendarTaskService);
             this.reportService = new ReportService(calendarTaskService, taskGroupService);
 
