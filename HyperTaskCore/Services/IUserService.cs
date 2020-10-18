@@ -12,5 +12,6 @@ namespace HyperTaskCore.Services
         Task<List<IUser>> GetInactiveAccounts();
         Task<bool> PermaDeleteUser(IUser user);
         Task UpdateLastActivityDate(string userId, DateTime updateDate);
+        Task<bool> ValidateUserId(string userId, string jwt);
     }
 }

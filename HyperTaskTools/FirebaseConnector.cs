@@ -75,5 +75,22 @@ namespace HyperTaskTools
                 throw new InvalidJwtTokenException("Error in ValidateJwt", ex);
             }
         }
+
+        public async Task<bool> ValidateUserId(string userId, string jwt)
+        {
+            try
+            {
+                FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance
+                                                               .VerifyIdTokenAsync(jwt);
+                string uid = decodedToken.Uid;
+
+                return uid == userId;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in ValidateJwt", ex);
+                throw new InvalidJwtTokenException("Error in ValidateJwt", ex);
+            }
+        }
     }
 }

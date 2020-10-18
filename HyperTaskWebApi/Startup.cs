@@ -103,6 +103,7 @@ namespace HyperTaskWebApi
                 return reportService;
             });
 
+            // Add Action Filter
             services.AddScoped<AuthorizeJwt>();
 
             Logger.Debug("configured services");

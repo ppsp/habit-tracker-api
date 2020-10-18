@@ -274,5 +274,13 @@ namespace HyperTaskServices.Services
             
             await this.InsertUpdateUserAsync(user);
         }
+
+        public async Task<bool> ValidateUserId(string userId, string jwt)
+        {
+            if (jwt == null) // For tests we don't use jwt
+                return true;
+
+            return await this.Connector.ValidateUserId(userId, jwt);
+        }
     }
 }
