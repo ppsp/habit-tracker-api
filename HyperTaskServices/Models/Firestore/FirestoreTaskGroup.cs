@@ -8,8 +8,6 @@ namespace HyperTaskServices.Models.Firestore
     public class FireTaskGroup
     {
         [FirestoreProperty]
-        public string Id { get; set; }
-        [FirestoreProperty]
         public string UserId { get; set; }
         [FirestoreProperty]
         public string GroupId { get; set; }
@@ -38,7 +36,6 @@ namespace HyperTaskServices.Models.Firestore
             newGroup.Name = this.GroupName;
             newGroup.Position = this.Position;
             newGroup.InitialPosition = this.InitialPosition;
-            newGroup.Id = this.Id;
             newGroup.InsertDate = this.InsertDate;
             newGroup.UpdateDate = this.UpdateDate;
             newGroup.UserId = this.UserId;
@@ -57,7 +54,6 @@ namespace HyperTaskServices.Models.Firestore
             newGroup.GroupName = group.Name;
             newGroup.Position = group.Position;
             newGroup.InitialPosition = group.InitialPosition;
-            newGroup.Id = group.Id;
             newGroup.InsertDate = group.InsertDate;
             newGroup.UpdateDate = group.UpdateDate;
             newGroup.UserId = group.UserId;

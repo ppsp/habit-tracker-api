@@ -36,7 +36,8 @@ namespace HyperTaskServices.Services
                     if (document.Exists)
                     {
                         var newTaskGroup = document.ConvertTo<FireTaskGroup>();
-                        newTaskGroup.Id = document.Id;
+                        var taskGroup = newTaskGroup.ToTaskGroup();
+                        taskGroup.Id = document.Id;
 
                         return newTaskGroup.ToTaskGroup();
                     }
@@ -91,10 +92,10 @@ namespace HyperTaskServices.Services
             try
             {
                 // Check if task already exists
-                bool alreadyExists = await CheckIfExistsAsync(group.Id);
+                bool alreadyExists = await CheckIfExistsAsync(group.GroupId);
                 if (alreadyExists)
                 {
-                    Logger.Error("Group already exists : " + group.Id);
+                    Logger.Error("Group already exists : " + group.GroupId);
                     return null;
                 }
 

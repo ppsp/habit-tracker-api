@@ -31,7 +31,7 @@ namespace HyperTaskTest
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            testGroup.Id = this.taskGroupService.InsertGroupAsync(testGroup).Result;
+            var firebaseId = this.taskGroupService.InsertGroupAsync(testGroup).Result;
 
             // ACT
             var retrievedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
