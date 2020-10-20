@@ -17,6 +17,8 @@ namespace HyperTaskServices.Models.Firestore
         public FireUserConfig Config { get; set; }
         [FirestoreProperty]
         public DateTime? LastActivityDate { get; set; }
+        [FirestoreProperty]
+        public DateTime InsertDate { get; set; }
 
         public FireUser()
         {
@@ -29,6 +31,7 @@ namespace HyperTaskServices.Models.Firestore
             this.UserId = user.UserId;
             this.LastActivityDate = user.LastActivityDate;
             this.Config = FireUserConfig.fromConfig(user.Config ?? new UserConfig());
+            this.InsertDate = user.InsertDate;
         }
 
         public User ToUser()
@@ -38,6 +41,7 @@ namespace HyperTaskServices.Models.Firestore
             user.UserId = this.UserId;
             user.LastActivityDate = this.LastActivityDate;
             user.Config = this.Config == null ? new UserConfig() : this.Config.ToConfig();
+            user.InsertDate = this.InsertDate;
             return user;
         }
     }

@@ -100,7 +100,7 @@ namespace HyperTaskTest
             DeleteUser(testUser);
         }
 
-        [TestMethod]
+        /*[TestMethod]
         public void DeleteInactiveAccounts()
         {
             var users = userService.GetInactiveAccounts().Result;
@@ -209,7 +209,7 @@ namespace HyperTaskTest
                     }
                 }
             }
-        }
+        }*/
 
         /*private static void AssertValuesAreTheSame(IUser user1, IUser user2)
         {

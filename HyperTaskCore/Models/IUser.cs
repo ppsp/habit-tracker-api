@@ -10,5 +10,6 @@ namespace HyperTaskCore.Models
         string UserId { get; set; }
         public UserConfig Config { get; set; }
         public DateTime? LastActivityDate { get; set; }
+        public DateTime InsertDate { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace HyperTaskServices.Models.DTO
         public string UserId { get; set; }
         public UserConfig Config { get; set; }
         public DateTime? LastActivityDate { get; set; }
+        public DateTime InsertDate { get; set; }
 
         public DTOUser()
         {
@@ -21,6 +22,7 @@ namespace HyperTaskServices.Models.DTO
             this.UserId = user.UserId;
             this.LastActivityDate = user.LastActivityDate;
             this.Config = user.Config;
+            this.InsertDate = user.InsertDate;
         }
 
         public User ToUser()
@@ -30,6 +32,7 @@ namespace HyperTaskServices.Models.DTO
             user.UserId = this.UserId;
             user.LastActivityDate = this.LastActivityDate;
             user.Config = this.Config;
+            user.InsertDate = this.InsertDate;
             return user;
         }
     }

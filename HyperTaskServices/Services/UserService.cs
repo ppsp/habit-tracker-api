@@ -14,6 +14,7 @@ namespace HyperTaskServices.Services
 {
     public class UserService : IUserService
     {
+        private const string table_name = "user";
         private FirebaseConnector Connector { get; set; }
         private CalendarTaskService CalendarTaskService { get; set; }
         private TaskGroupService TaskGroupService { get; set; }
@@ -62,24 +63,32 @@ namespace HyperTaskServices.Services
         private Query getGetUserQuery(string userId)
         {
             return this.Connector.fireStoreDb
-                                 .Collection("user")
+                                 .Collection(table_name)
                                  .WhereEqualTo("UserId", userId);
         }
 
         private Query getGetUsersQuery()
         {
             return this.Connector.fireStoreDb
-                                 .Collection("user");
+                                 .Collection(table_name);
         }
 
         public async Task<bool> InsertUpdateUserAsync(IUser user)
         {
             try
             {
-                if (user.Id != null)
+                if (user.InsertDate == DateTime.MinValue)
+                    user.InsertDate = DateTime.Now.ToUniversalTime();
+
+                bool alreadyExists = await CheckIfExistsAsync(user.UserId);
+                if (alreadyExists)
+                {
                     return await updateUserAsync(user);
+                }
                 else
+                {
                     return await InsertUserAsync(user);
+                }
             }
             catch (Grpc.Core.RpcException ex)
             {
@@ -100,17 +109,79 @@ namespace HyperTaskServices.Services
             }
         }
 
+        private async Task<bool> CheckIfExistsAsync(string userId)
+        {
+            try
+            {
+                Query query = this.Connector.fireStoreDb
+                                            .Collection(table_name)
+                                            .WhereEqualTo("UserId", userId);
+
+                try
+                {
+                    QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
+
+                    foreach (var document in tasksQuerySnapshot.Documents)
+                    {
+                        if (document.Exists)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                throw ex;
+            }
+        }
+
         private async Task<bool> updateUserAsync(IUser user)
         {
-            DocumentReference taskRef = this.Connector.fireStoreDb
-                                                      .Collection("user")
-                                                      .Document(user.Id);
+            Query query = this.Connector.fireStoreDb
+                                        .Collection(table_name)
+                                        .WhereEqualTo("UserId", user.UserId);
 
-            var dictionnary = new FireUser(user).ToDictionary();
+            var allDocuments = (await query.GetSnapshotAsync()).Documents;
 
-            await taskRef.UpdateAsync(dictionnary);
+            // Should not occur but just in case, we delete duplicate ids
+            if (allDocuments.Count > 1)
+            {
+                await deleteDuplicates(allDocuments, user);
+                allDocuments = new List<DocumentSnapshot>() { allDocuments[0] };
+            }
 
-            return true;
+            var firstDocument = allDocuments.SingleOrDefault();
+
+            if (firstDocument != null && firstDocument.Exists)
+            {
+                var dictionnary = new FireUser(user).ToDictionary();
+
+                await firstDocument.Reference.UpdateAsync(dictionnary);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task deleteDuplicates(IReadOnlyList<DocumentSnapshot> allDocuments, IUser user)
+        {
+            Logger.Warn("DUPLICATE DOCUMENT WHEN UPDATING, DELETING EXTRA, UserId" + user.UserId);
+
+            var toDeletes = allDocuments.OrderBy(p => p.CreateTime).Skip(1);
+
+            foreach (var toDelete in toDeletes)
+            {
+                await DeleteUserWithFireBaseIdAsync(toDelete.Id);
+            }
         }
 
         public async Task<bool> InsertUserAsync(IUser user)
@@ -129,7 +200,7 @@ namespace HyperTaskServices.Services
 
         private async Task insertUserAsync(IUser user)
         {
-            CollectionReference colRef = this.Connector.fireStoreDb.Collection("user");
+            CollectionReference colRef = this.Connector.fireStoreDb.Collection(table_name);
             await colRef.AddAsync(new FireUser(user));
         }
 
@@ -138,7 +209,7 @@ namespace HyperTaskServices.Services
             try
             {
                 DocumentReference taskRef = this.Connector.fireStoreDb
-                                                          .Collection("user")
+                                                          .Collection(table_name)
                                                           .Document(Id);
 
                 await taskRef.DeleteAsync();
@@ -249,7 +320,7 @@ namespace HyperTaskServices.Services
             try
             {
                 var firstDocument = this.Connector.fireStoreDb
-                                        .Collection("user")
+                                        .Collection(table_name)
                                         .Document(fireBaseId);
 
                 if (firstDocument != null)

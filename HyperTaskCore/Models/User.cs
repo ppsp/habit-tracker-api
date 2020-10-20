@@ -10,6 +10,7 @@ namespace HyperTaskCore.Models
         public string UserId { get; set; }
         public UserConfig Config { get; set; } = new UserConfig();
         public DateTime? LastActivityDate { get ; set; }
+        public DateTime InsertDate { get; set; }
     }
 
     public class NULLUser : IUser
@@ -30,5 +31,6 @@ namespace HyperTaskCore.Models
         public string UserId { get; set; }
         public UserConfig Config { get; set; } = new UserConfig();
         public DateTime? LastActivityDate { get; set; }
+        public DateTime InsertDate { get; set; }
     }
 }

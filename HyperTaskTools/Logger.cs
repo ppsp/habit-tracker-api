@@ -11,12 +11,22 @@ namespace HyperTaskTools
         private static ILog Log = LogManager.GetLogger(Assembly.GetEntryAssembly(), "Logger");
 
         /// <summary>
-        /// Configure the logger and it will depend of the config file in : Application.StartupPath + @"\log4netConfig.xml"
+        /// Configure the logger and it will depend of the config file in : Application.StartupPath + @"\log4net.config"
         /// </summary>
-        static public void ConfigLogger()
+        static public void ConfigLogger() 
         {
-            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            var entryAssembly = Assembly.GetEntryAssembly();
+            var logRepository = LogManager.GetRepository(entryAssembly);
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+
+            if (!logRepository.Configured)
+            {
+                // log4net not configured
+                foreach (log4net.Util.LogLog message in logRepository.ConfigurationMessages)
+                {
+                    // evaluate configuration message
+                }
+            }
         }
 
         static public void Debug(object message)
