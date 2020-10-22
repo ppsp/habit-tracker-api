@@ -33,6 +33,11 @@ namespace HyperTaskCore.Utils
 
         private static bool IsOfType<T>(object value)
         {
+            if (value == null)
+            {
+                return true;
+            }
+
             return value is T;
         }
 

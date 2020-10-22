@@ -253,7 +253,7 @@ namespace HyperTaskServices.Services
 
         private async Task updateTaskAsyncNoPositionCheck(ICalendarTask task)
         {
-            task.UpdateDate = DateTime.UtcNow;
+            // task.UpdateDate = DateTime.UtcNow;
 
             if (task.HasBeenVoided())
                 task.VoidDate = DateTime.UtcNow;
