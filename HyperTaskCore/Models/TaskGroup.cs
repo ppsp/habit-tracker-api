@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HyperTaskCore.Utils;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,12 +11,18 @@ namespace HyperTaskCore.Models
         public string UserId { get; set; }
         public string GroupId { get; set; }
         public string ColorHex { get; set; }
+        [ReportInclude]
         public string Name { get; set; }
+        [ReportInclude]
         public int Position { get; set; }
         public int InitialPosition { get; set; }
+        [ReportInclude]
         public DateTime? InsertDate { get; set; }
+        [ReportInclude]
         public DateTime? UpdateDate { get; set; }
+        [ReportInclude]
         public bool Void { get; set; }
+        [ReportInclude]
         public DateTime? VoidDate { get; set; }
 
         public TaskGroup()

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 
 namespace HyperTaskCore.Utils
@@ -56,6 +57,13 @@ namespace HyperTaskCore.Utils
         {
             var serialized = JsonConvert.SerializeObject(source);
             return JsonConvert.DeserializeObject<T>(serialized);
+        }
+
+        public static object GetPropertyValue(this object car, string propertyName)
+        {
+            return car.GetType().GetProperties()
+               .Single(pi => pi.Name == propertyName)
+               .GetValue(car, null);
         }
     }
 }
