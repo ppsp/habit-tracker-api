@@ -27,11 +27,6 @@ namespace HyperTaskServices.Models.Firestore
         [FirestoreProperty]
         public eTaskFrequency Frequency { get; set; }
 
-        /// <summary>
-        /// Workaround because custom type conversion doesn't work
-        /// </summary>
-        public int absolutePosition { get; set; }
-
         [FirestoreProperty]
         public int AbsolutePosition { get; set; }
 

@@ -49,17 +49,22 @@ namespace HyperTaskWebApi.ActionFilterAttributes
             var ipAddress = context.HttpContext.Request.HttpContext.Connection.RemoteIpAddress;
             var memoryCacheKey = $"{Name}-{ipAddress}";
             Cache.TryGetValue(memoryCacheKey, out int prevReqCount);
-            if (prevReqCount >= NoOfRequest)
+            if (prevReqCount >= NoOfRequest * 10) // *10 for safety
             {
                 context.Result = new ContentResult
                 {
                     Content = $"Request limit is exceeded. Try again in {Seconds} seconds.",
                 };
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-                Logger.Warn($"Request limit is exceeded for {Name} ip = {ipAddress}");
+                Logger.Error($"Request limit is exceeded for {Name} ip = {ipAddress}");
             }
             else
             {
+                if (prevReqCount == NoOfRequest * 5)
+                {
+                    Logger.Warn($"Request limit reached half for {Name} ip = {ipAddress}");
+                }
+
                 var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(Seconds));
                 Cache.Set(memoryCacheKey, (prevReqCount + 1), cacheEntryOptions);
             }
