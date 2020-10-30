@@ -1,0 +1,38 @@
+2020-10-03 18:14:16,894 [1] DEBUG Logger - Starting HyperTask
+2020-10-03 18:14:18,473 [1] DEBUG Logger - configuring services
+2020-10-03 18:14:18,886 [1] DEBUG Logger - from config, KeyVaultName : HyperTaskvaultuseast2
+2020-10-03 18:14:18,886 [1] DEBUG Logger - from config, KeyVaultFirebaseSecretName : firebase-pp-app
+2020-10-03 18:14:18,886 [1] DEBUG Logger - configured services
+2020-10-03 18:21:21,067 [1] DEBUG Logger - Starting HyperTask
+2020-10-03 18:21:21,820 [1] DEBUG Logger - configuring services
+2020-10-03 18:21:22,017 [1] DEBUG Logger - from config, KeyVaultName : habittrackervaultuseast2
+2020-10-03 18:21:22,018 [1] DEBUG Logger - from config, KeyVaultFirebaseSecretName : firebase-pp-app
+2020-10-03 18:21:22,018 [1] DEBUG Logger - configured services
+2020-10-03 18:21:34,967 [4] ERROR Logger - Error in ValidateJwt
+System.ArgumentException: ID token must not be null or empty.
+   at FirebaseAdmin.Auth.FirebaseTokenVerifier.VerifyTokenAsync(String token, CancellationToken cancellationToken)
+   at FirebaseAdmin.Auth.FirebaseAuth.VerifyIdTokenAsync(String idToken, CancellationToken cancellationToken)
+   at FirebaseAdmin.Auth.FirebaseAuth.VerifyIdTokenAsync(String idToken)
+   at HyperTaskTools.FirebaseConnector.ValidateJwt(String jwt) in F:\GIT\HabitTrackerFirebase\HyperTaskTools\FirebaseConnector.cs:line 50
+2020-10-06 00:57:22,759 [1] DEBUG Logger - Starting HyperTask
+2020-10-06 00:57:24,381 [1] DEBUG Logger - configuring services
+2020-10-06 00:57:24,583 [1] DEBUG Logger - from config, KeyVaultName : habittrackervaultuseast2
+2020-10-06 00:57:24,584 [1] DEBUG Logger - from config, KeyVaultFirebaseSecretName : firebase-pp-app
+2020-10-06 00:57:24,585 [1] DEBUG Logger - configured services
+2020-10-09 14:56:20,504 [1] DEBUG Logger - Starting HyperTask
+2020-10-09 14:56:21,323 [1] DEBUG Logger - configuring services
+2020-10-09 14:56:21,526 [1] DEBUG Logger - from config, KeyVaultName : habittrackervaultuseast2
+2020-10-09 14:56:21,526 [1] DEBUG Logger - from config, KeyVaultFirebaseSecretName : firebase-pp-app
+2020-10-09 14:56:21,526 [1] DEBUG Logger - configured services
+2020-10-14 14:45:44,213 [1] DEBUG Logger - Starting HyperTask
+2020-10-14 14:45:44,823 [1] DEBUG Logger - configuring services
+2020-10-14 14:45:45,128 [1] DEBUG Logger - from config, KeyVaultName : habittrackervaultuseast2
+2020-10-14 14:45:45,129 [1] DEBUG Logger - from config, KeyVaultFirebaseSecretName : firebase-pp-app
+2020-10-14 14:45:45,129 [1] DEBUG Logger - configured services
+2020-10-14 14:55:17,944 [1] DEBUG Logger - Starting HyperTask
+2020-10-14 14:55:18,352 [1] DEBUG Logger - configuring services
+2020-10-14 14:55:18,438 [1] DEBUG Logger - from config, KeyVaultName : habittrackervaultuseast2
+2020-10-14 14:55:18,438 [1] DEBUG Logger - from config, KeyVaultFirebaseSecretName : firebase-pp-app
+2020-10-14 14:55:18,438 [1] DEBUG Logger - configured services
+2020-10-14 14:57:43,413 [31] DEBUG Logger - Update NOT all tasks0.et75u3rjddq0.s5qvdl0456j BSHYPZNUQHV3V05XtsFKGWeSy7h1
+2020-10-14 14:57:44,030 [39] DEBUG Logger - Update NOT all tasks0.0uurtyi48rz0.3sb8avibbrp BSHYPZNUQHV3V05XtsFKGWeSy7h1
