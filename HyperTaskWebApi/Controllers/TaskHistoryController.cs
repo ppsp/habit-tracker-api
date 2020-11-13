@@ -16,14 +16,15 @@ namespace HyperTaskWebApi.Controllers
     public class TaskHistoryController : ControllerBase
     {
         private TaskHistoryService TaskHistoryService { get; set; }
-        private FireUserService UserService { get; set; }
+        private MongoUserService UserService { get; set; }
 
-        public TaskHistoryController(FirebaseConnector connector,
-                                     FireCalendarTaskService calendarTaskService,
-                                     FireTaskGroupService taskGroupService)
+        public TaskHistoryController(FirebaseConnector fireConnector,
+                                     MongoConnector mongoConnector,
+                                     MongoCalendarTaskService calendarTaskService,
+                                     MongoTaskGroupService taskGroupService)
         {
             TaskHistoryService = new TaskHistoryService(calendarTaskService);
-            UserService = new FireUserService(connector, calendarTaskService, taskGroupService);
+            UserService = new MongoUserService(mongoConnector, calendarTaskService, taskGroupService, fireConnector);
         }
 
         // POST

@@ -18,11 +18,12 @@ namespace HyperTaskWebApi.Controllers
     {
         private IUserService UserService { get; set; }
 
-        public UserController(FirebaseConnector connector,
-                              FireCalendarTaskService calendarTaskService,
-                              FireTaskGroupService taskGroupService)
+        public UserController(FirebaseConnector fireConnector,
+                              MongoConnector mongoConnector,
+                              MongoCalendarTaskService calendarTaskService,
+                              MongoTaskGroupService taskGroupService)
         {
-            UserService = new FireUserService(connector, calendarTaskService, taskGroupService);
+            UserService = new MongoUserService(mongoConnector, calendarTaskService, taskGroupService, fireConnector);
         }
 
         // GET

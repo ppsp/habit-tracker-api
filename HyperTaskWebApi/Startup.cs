@@ -98,10 +98,24 @@ namespace HyperTaskWebApi
                 return calendarTaskService;
             });
 
+            // Add CalendarTaskService
+            services.AddSingleton<MongoCalendarTaskService>(serviceProvider => {
+                var mongoConnector = serviceProvider.GetService<MongoConnector>();
+                var calendarTaskService = new MongoCalendarTaskService(mongoConnector);
+                return calendarTaskService;
+            });
+
             // Add GroupService
             services.AddSingleton<FireTaskGroupService>(serviceProvider => {
                 var firebaseConnector = serviceProvider.GetService<FirebaseConnector>();
                 var groupService = new FireTaskGroupService(firebaseConnector);
+                return groupService;
+            });
+
+            // Add GroupService
+            services.AddSingleton<MongoTaskGroupService>(serviceProvider => {
+                var mongoConnector = serviceProvider.GetService<MongoConnector>();
+                var groupService = new MongoTaskGroupService(mongoConnector);
                 return groupService;
             });
 

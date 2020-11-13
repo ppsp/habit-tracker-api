@@ -18,14 +18,15 @@ namespace HyperTaskWebApi.Controllers
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class CalendarTaskController : ControllerBase
     {
-        private FireCalendarTaskService CalendarTaskService { get; set; }
-        private FireUserService UserService { get; set; }
+        private MongoCalendarTaskService CalendarTaskService { get; set; }
+        private MongoUserService UserService { get; set; }
 
-        public CalendarTaskController(FirebaseConnector connector,
-                                      FireTaskGroupService taskGroupService)
+        public CalendarTaskController(FirebaseConnector fireConnector,
+                                      MongoConnector mongoConnector,
+                                      MongoTaskGroupService taskGroupService)
         {
-            CalendarTaskService = new FireCalendarTaskService(connector);
-            UserService = new FireUserService(connector, CalendarTaskService, taskGroupService);
+            CalendarTaskService = new MongoCalendarTaskService(mongoConnector);
+            UserService = new MongoUserService(mongoConnector, CalendarTaskService, taskGroupService, fireConnector);
         }
 
         // GET

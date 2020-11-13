@@ -149,6 +149,7 @@ namespace HyperTaskServices.Services
 
             if (firstDocument != null)
             {
+                user.Id = users[0].Id; // might be put into the mobile app instead
                 var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
                 var result = await this.Connector.mongoClient
                                                  .GetDatabase(DBHyperTask)

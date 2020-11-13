@@ -16,14 +16,15 @@ namespace HyperTaskWebApi.Controllers
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class TaskGroupController : ControllerBase
     {
-        private FireTaskGroupService _TaskGroupService { get; set; }
-        private FireUserService UserService { get; set; }
+        private MongoTaskGroupService _TaskGroupService { get; set; }
+        private MongoUserService UserService { get; set; }
 
-        public TaskGroupController(FirebaseConnector connector,
-                                   FireCalendarTaskService calendarTaskService)
+        public TaskGroupController(FirebaseConnector fireConnector,
+                                   MongoConnector mongoConnector,
+                                   MongoCalendarTaskService calendarTaskService)
         {
-            _TaskGroupService = new FireTaskGroupService(connector);
-            UserService = new FireUserService(connector, calendarTaskService, _TaskGroupService);
+            _TaskGroupService = new MongoTaskGroupService(mongoConnector);
+            UserService = new MongoUserService(mongoConnector, calendarTaskService, _TaskGroupService, fireConnector);
         }
 
         // GET
