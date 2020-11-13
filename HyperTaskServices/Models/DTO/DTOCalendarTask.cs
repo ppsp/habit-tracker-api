@@ -13,6 +13,7 @@ namespace HyperTaskServices.Models.DTO
 {
     public class DTOCalendarTask : ICalendarTask
     {
+        public string Id { get; set; }
         public string CalendarTaskId { get; set; }
 
         public string UserId { get; set; }
@@ -123,6 +124,7 @@ namespace HyperTaskServices.Models.DTO
                 this.NotificationTime = task.NotificationTime;
                 this.DoneDate = task.DoneDate;
                 this.GroupId = task.GroupId;
+                this.Id = task.Id;
             }
             catch (Exception ex)
             {
@@ -156,6 +158,7 @@ namespace HyperTaskServices.Models.DTO
                 this.CalendarTaskId = task.CalendarTaskId;
                 this.DoneDate = task.DoneDate;
                 this.GroupId = task.GroupId;
+                this.Id = task.Id;
             }
             catch (Exception ex)
             {
@@ -188,6 +191,7 @@ namespace HyperTaskServices.Models.DTO
             task.NotificationId = this.NotificationId;
             task.DoneDate = this.DoneDate;
             task.GroupId = this.GroupId;
+            task.Id = this.Id;
 
             return task;
         }

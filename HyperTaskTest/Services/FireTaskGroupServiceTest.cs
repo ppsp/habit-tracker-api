@@ -10,36 +10,36 @@ namespace HyperTaskTest
         [TestMethod]
         public void InsertTaskGroupAsync_ShouldReturnId()
         {
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
             
             // ACT
-            var id = this.taskGroupService.InsertGroupAsync(testGroup).Result;
+            var id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // ASSERT
             Assert.IsTrue(id != null && id.Length > 0);
 
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
         }
 
         [TestMethod]
         public void GetTaskGroupAsync_ShouldReturnSameValuesAsInsert()
         {
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            var firebaseId = this.taskGroupService.InsertGroupAsync(testGroup).Result;
+            var firebaseId = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // ACT
-            var retrievedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var retrievedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
             // ASSERT
             Assert.IsTrue(AssertValuesAreTheSame(testGroup, retrievedGroup));
 
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
         }
 
         private static bool AssertValuesAreTheSame(TaskGroup taskGroup1, TaskGroup taskGroup2)
@@ -58,57 +58,57 @@ namespace HyperTaskTest
         [TestMethod]
         public void UpdateTaskGroupAsync_ShouldReturnTrue()
         {
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            var id = this.taskGroupService.InsertGroupAsync(testGroup).Result;
+            var id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // ACT
-            var updatedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var updatedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
             updatedGroup.Name = "NewName2";
             updatedGroup.Position = 32;
             updatedGroup.Void = true;
             updatedGroup.ColorHex = "ABBABC";
 
-            var success1 = this.taskGroupService.UpdateGroupAsync(updatedGroup).Result;
+            var success1 = this.fireTaskGroupService.UpdateGroupAsync(updatedGroup).Result;
 
             // ASSERT
             Assert.IsTrue(success1);
 
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
         }
 
         [TestMethod]
         public void UpdateTaskGroupAsync_ShouldUpdateValues()
         {
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            var id = this.taskGroupService.InsertGroupAsync(testGroup).Result;
+            var id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // ACT
-            var updatedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var updatedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
             updatedGroup.Name = "NewName2";
             updatedGroup.Position = 32;
             updatedGroup.Void = true;
             updatedGroup.ColorHex = "ABBABC";
 
-            var success1 = this.taskGroupService.UpdateGroupAsync(updatedGroup).Result;
-            var retrievedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var success1 = this.fireTaskGroupService.UpdateGroupAsync(updatedGroup).Result;
+            var retrievedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
             // ASSERT
             Assert.IsTrue(AssertValuesAreTheSame(updatedGroup, retrievedGroup));
 
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
         }
 
 
         [TestMethod]
         public void GetTaskGroupsAsync_ShouldReturnSameValuesAsInsert()
         {
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
 
             // ARRANGE
             var testGroup1 = getTestTaskGroup();
@@ -116,12 +116,12 @@ namespace HyperTaskTest
             testGroup2.Position = 2;
             var testGroup3 = getTestTaskGroup();
             testGroup3.Position = 3;
-            testGroup1.Id = this.taskGroupService.InsertGroupAsync(testGroup1).Result;
-            testGroup2.Id = this.taskGroupService.InsertGroupAsync(testGroup2).Result;
-            testGroup3.Id = this.taskGroupService.InsertGroupAsync(testGroup3).Result;
+            testGroup1.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup1).Result;
+            testGroup2.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup2).Result;
+            testGroup3.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup3).Result;
 
             // ACT
-            var retrievedGroups = this.taskGroupService.GetGroupsAsync(testUserId, true).Result;
+            var retrievedGroups = this.fireTaskGroupService.GetGroupsAsync(testUserId, true).Result;
 
             // ASSERT
             Assert.IsTrue(retrievedGroups.Count == 3);
@@ -129,16 +129,26 @@ namespace HyperTaskTest
             Assert.IsTrue(AssertValuesAreTheSame(testGroup2, retrievedGroups.Single(p => p.GroupId == testGroup2.GroupId)));
             Assert.IsTrue(AssertValuesAreTheSame(testGroup3, retrievedGroups.Single(p => p.GroupId == testGroup3.GroupId)));
 
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
         }
 
-        private void DeleteAllGroups()
+        private void FirebaseDeleteAllGroups()
         {
-            var groups = this.taskGroupService.GetGroupsAsync(testUserId, true).Result;
+            var groups = this.fireTaskGroupService.GetGroupsAsync(testUserId, true).Result;
 
             foreach (var group in groups)
             {
-                var result = this.taskGroupService.DeleteGroupAsync(group.GroupId).Result;
+                var result = this.fireTaskGroupService.DeleteGroupAsync(group.GroupId).Result;
+            }
+        }
+
+        private void MongoDeleteAllGroups()
+        {
+            var groups = this.mongoTaskGroupService.GetGroupsAsync(testUserId, true).Result;
+
+            foreach (var group in groups)
+            {
+                var result = this.mongoTaskGroupService.DeleteGroupAsync(group.GroupId).Result;
             }
         }
 

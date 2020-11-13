@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace HyperTaskServices.Services
 {
-    public class CalendarTaskService : ICalendarTaskService
+    public class FireCalendarTaskService : ICalendarTaskService
     {
         private FirebaseConnector Connector { get; set; }
 
-        public CalendarTaskService(FirebaseConnector connector)
+        public FireCalendarTaskService(FirebaseConnector connector)
         {
             this.Connector = connector;
         }

@@ -3,7 +3,9 @@ using HyperTaskCore.Models;
 using HyperTaskCore.Services;
 using HyperTaskCore.Utils;
 using HyperTaskServices.Models.Firestore;
+using HyperTaskServices.Models.Mongo;
 using HyperTaskTools;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +13,13 @@ using System.Threading.Tasks;
 
 namespace HyperTaskServices.Services
 {
-    public class TaskGroupService : ITaskGroupService
+    public class MongoTaskGroupService : ITaskGroupService
     {
-        private const string table_name = "task_group";
-        private FirebaseConnector Connector { get; set; }
+        private readonly string DBHyperTask = "hypertask";
+        private const string CollectionGroups = "task_group";
+        private MongoConnector Connector { get; set; }
 
-        public TaskGroupService(FirebaseConnector connector)
+        public MongoTaskGroupService(MongoConnector connector)
         {
             this.Connector = connector;
         }
@@ -25,21 +28,21 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                Query query = this.Connector.fireStoreDb
-                                            .Collection(table_name)
-                                            .WhereEqualTo("GroupId", groupId);
+                var filter = Builders<MongoTaskGroup>.Filter.Eq(p => p.GroupId, groupId);
+                var tasksQuery = await this.Connector.mongoClient
+                                                     .GetDatabase(DBHyperTask)
+                                                     .GetCollection<MongoTaskGroup>(CollectionGroups)
+                                                     .FindAsync<MongoTaskGroup>(filter);
+                var tasks = tasksQuery.ToList();
 
-                QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
-
-                foreach (var document in tasksQuerySnapshot.Documents)
+                foreach (var document in tasks)
                 {
-                    if (document.Exists)
+                    if (document != null)
                     {
-                        var newTaskGroup = document.ConvertTo<FireTaskGroup>();
-                        var taskGroup = newTaskGroup.ToTaskGroup();
+                        var taskGroup = document.ToTaskGroup();
                         taskGroup.Id = document.Id;
 
-                        return newTaskGroup.ToTaskGroup();
+                        return taskGroup;
                     }
                 }
 
@@ -56,27 +59,19 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                Query query = this.Connector.fireStoreDb
-                                            .Collection(table_name)
-                                            .WhereEqualTo("UserId", userId);
+                var filter = Builders<MongoTaskGroup>.Filter.Eq(p => p.UserId, userId);
 
                 if (!includeVoid)
-                    query = query.WhereEqualTo("Void", false);
+                    filter = filter & Builders<MongoTaskGroup>.Filter.Eq(p => p.Void, false);
 
-                QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
-                List<TaskGroup> groups = new List<TaskGroup>();
+                var groupsQuery = await this.Connector.mongoClient
+                                                     .GetDatabase(DBHyperTask)
+                                                     .GetCollection<MongoTaskGroup>(CollectionGroups)
+                                                     .FindAsync<MongoTaskGroup>(filter);
 
-                foreach (var document in tasksQuerySnapshot.Documents)
-                {
-                    if (document.Exists)
-                    {
-                        var newFireTaskGroup = document.ConvertTo<FireTaskGroup>();
-                        var newTask = newFireTaskGroup.ToTaskGroup();
-                        newTask.Id = document.Id;
-                        
-                        groups.Add(newTask);
-                    }
-                }
+                List<TaskGroup> groups = groupsQuery.ToList()
+                                                    .Select(p => p.ToTaskGroup())
+                                                    .ToList();
 
                 return groups;
             }
@@ -120,23 +115,15 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                Query query = this.Connector.fireStoreDb
-                                            .Collection(table_name)
-                                            .WhereEqualTo("GroupId", groupId);
+                var filter = Builders<MongoTaskGroup>.Filter.Eq(p => p.GroupId, groupId);
+                var tasksQuery = await this.Connector.mongoClient
+                                                     .GetDatabase(DBHyperTask)
+                                                     .GetCollection<MongoTaskGroup>(CollectionGroups)
+                                                     .FindAsync<MongoTaskGroup>(filter);
 
                 try
                 {
-                    QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
-
-                    foreach (var document in tasksQuerySnapshot.Documents)
-                    {
-                        if (document.Exists)
-                        {
-                            return true;
-                        }
-                    }
-
-                    return false;
+                    return tasksQuery.ToList().Count > 0;
                 }
                 catch (Exception ex)
                 {
@@ -155,10 +142,14 @@ namespace HyperTaskServices.Services
             if (group.InsertDate == null)
                 group.InsertDate = DateTime.UtcNow;
 
-            CollectionReference colRef = this.Connector.fireStoreDb.Collection(table_name);
-            var reference = await colRef.AddAsync(FireTaskGroup.FromTaskGroup(group));
+            var mongoGroup = MongoTaskGroup.FromTaskGroup(group);
+            await this.Connector.mongoClient
+                                .GetDatabase(DBHyperTask)
+                                .GetCollection<MongoTaskGroup>(CollectionGroups)
+                                .InsertOneAsync(mongoGroup);
+            group.Id = mongoGroup.Id;
 
-            return reference.Id;
+            return mongoGroup.Id;
         }
 
         public async Task<bool> UpdateGroupAsync(TaskGroup group)
@@ -172,7 +163,9 @@ namespace HyperTaskServices.Services
                 else if (group.PositionHasBeenModified())
                     await this.ReorderGroups(group);
 
-                return await updateGroupNoPositionCheckAsync(group);
+                await updateGroupNoPositionCheckAsync(group);
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -181,53 +174,45 @@ namespace HyperTaskServices.Services
             }
         }
 
-        private async Task<bool> updateGroupNoPositionCheckAsync(TaskGroup group)
+        private async Task updateGroupNoPositionCheckAsync(TaskGroup group)
         {
-            Query query = this.Connector.fireStoreDb
-                                        .Collection(table_name)
-                                        .WhereEqualTo("GroupId", group.GroupId);
+            var filter = Builders<MongoTaskGroup>.Filter.Eq(p => p.GroupId, group.GroupId);
+            var groupQuery = await this.Connector.mongoClient
+                                            .GetDatabase(DBHyperTask)
+                                            .GetCollection<MongoTaskGroup>(CollectionGroups)
+                                            .FindAsync<MongoTaskGroup>(filter);
 
-            var allDocuments = (await query.GetSnapshotAsync()).Documents;
+            var groups = groupQuery.ToList();
 
             // Should not occur but just in case, we delete duplicate ids
-            if (allDocuments.Count > 1)
+            if (groups.Count > 1)
             {
-                await deleteDuplicates(allDocuments, group);
-                allDocuments = new List<DocumentSnapshot>() { allDocuments[0] };
+                await deleteDuplicates(groups, group);
             }
 
-            var firstDocument = allDocuments.SingleOrDefault();
+            var firstDocument = groups.SingleOrDefault();
 
-            if (firstDocument != null && firstDocument.Exists)
+            if (firstDocument != null)
             {
-                var dictionnary = FireTaskGroup.FromTaskGroup(group).ToDictionary();
+                var mongoGroup = MongoTaskGroup.FromTaskGroup(group);
 
-                await firstDocument.Reference.UpdateAsync(dictionnary);
-
-                return true;
+                var result = await this.Connector.mongoClient
+                                                 .GetDatabase(DBHyperTask)
+                                                 .GetCollection<MongoTaskGroup>(CollectionGroups)
+                                                 .ReplaceOneAsync(filter, mongoGroup);
             }
-
-            return false;
         }
 
         public async Task<bool> DeleteGroupAsync(string groupId)
         {
             try
             {
-                Query query = this.Connector.fireStoreDb
-                                            .Collection(table_name)
-                                            .WhereEqualTo("GroupId", groupId);
-
-                var firstDocument = (await query.GetSnapshotAsync()).Documents.FirstOrDefault();
-
-                if (firstDocument != null && firstDocument.Exists)
-                {
-                    await firstDocument.Reference.DeleteAsync();
-
-                    return true;
-                }
-
-                return false;
+                var filter = Builders<MongoTaskGroup>.Filter.Eq(p => p.GroupId, groupId);
+                var deleteResult = await this.Connector.mongoClient
+                                                       .GetDatabase(DBHyperTask)
+                                                       .GetCollection<MongoTaskGroup>(CollectionGroups)
+                                                       .DeleteOneAsync(filter);
+                return deleteResult.IsAcknowledged;
             }
             catch (Exception ex)
             {
@@ -240,16 +225,12 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                var firstDocument = this.Connector.fireStoreDb
-                                        .Collection(table_name)
-                                        .Document(firebaseGroupId);
-
-                if (firstDocument != null)
-                {
-                    await firstDocument.DeleteAsync();
-                }
-
-                return true;
+                var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.Id, firebaseGroupId);
+                var deleteResult = await this.Connector.mongoClient
+                                                       .GetDatabase(DBHyperTask)
+                                                       .GetCollection<MongoCalendarTask>(CollectionGroups)
+                                                       .DeleteOneAsync(filter);
+                return deleteResult.IsAcknowledged;
             }
             catch (Exception ex)
             {
@@ -258,11 +239,11 @@ namespace HyperTaskServices.Services
             }
         }
 
-        private async Task deleteDuplicates(IReadOnlyList<DocumentSnapshot> allDocuments, TaskGroup group)
+        private async Task deleteDuplicates(List<MongoTaskGroup> groups, TaskGroup group)
         {
             Logger.Warn("DUPLICATE DOCUMENT WHEN UPDATING, DELETING EXTRA, GroupId" + group.GroupId);
 
-            var toDeletes = allDocuments.OrderBy(p => p.CreateTime).Skip(1);
+            var toDeletes = groups.OrderBy(p => p.InsertDate).Skip(1);
 
             foreach (var toDelete in toDeletes)
             {

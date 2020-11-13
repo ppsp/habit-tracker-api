@@ -17,10 +17,10 @@ namespace HyperTaskWebApi.Controllers
     public class ReportController : ControllerBase
     {
         private ReportService ReportService { get; set; }
-        private UserService UserService { get; set; }
+        private FireUserService UserService { get; set; }
 
         public ReportController(ReportService reportService,
-                                UserService userService)
+                                FireUserService userService)
         {
             ReportService = reportService;
             UserService = userService;

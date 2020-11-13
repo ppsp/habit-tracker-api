@@ -1,23 +1,18 @@
 using HyperTaskCore.Models;
-using HyperTaskServices.Caching;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace HyperTaskTest
 {
     public partial class CalendarTaskApiTest
     {
         [TestMethod]
-        public void UpdateUserAsync_ShouldReturnTrue()
+        public void Mongo_UpdateUserAsync_ShouldReturnTrue()
         {
             // ARRANGE
             var testUser = getTestUser();
 
             // ACT
-            var success = userService.InsertUpdateUserAsync(testUser).Result;
+            var success = mongoUserService.InsertUpdateUserAsync(testUser).Result;
 
             // ASSERT
             Assert.IsTrue(success);
@@ -64,15 +59,15 @@ namespace HyperTaskTest
         }*/
 
         [TestMethod]
-        public void DeleteUserAsync_ShouldReturnTrue()
+        public void Mongo_DeleteUserAsync_ShouldReturnTrue()
         {
             // ARRANGE
             var testUser = getTestUser();
-            var successInsert = userService.InsertUpdateUserAsync(testUser).Result;
-            var insertedUser = userService.GetUserAsync(testUser.UserId).Result;
+            var successInsert = mongoUserService.InsertUpdateUserAsync(testUser).Result;
+            var insertedUser = mongoUserService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
-            var successDelete = userService.DeleteUserAsync(insertedUser.Id).Result;
+            var successDelete = mongoUserService.DeleteUserAsync(insertedUser.Id).Result;
 
             // ASSERT
             Assert.IsTrue(successDelete);
@@ -82,16 +77,16 @@ namespace HyperTaskTest
         }
 
         [TestMethod]
-        public void DeleteUserAsync_ShouldDeleteUser()
+        public void Mongo_DeleteUserAsync_ShouldDeleteUser()
         {
             // ARRANGE
             var testUser = getTestUser();
-            var successInsert = userService.InsertUpdateUserAsync(testUser).Result;
-            var insertedUser = userService.GetUserAsync(testUser.UserId).Result;
+            var successInsert = mongoUserService.InsertUpdateUserAsync(testUser).Result;
+            var insertedUser = mongoUserService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
-            var successDelete = userService.DeleteUserAsync(insertedUser.Id).Result;
-            insertedUser = userService.GetUserAsync(testUser.UserId).Result;
+            var successDelete = mongoUserService.DeleteUserAsync(insertedUser.Id).Result;
+            insertedUser = mongoUserService.GetUserAsync(testUser.UserId).Result;
 
             // ASSERT
             Assert.IsTrue(insertedUser is NULLUser);
@@ -216,20 +211,5 @@ namespace HyperTaskTest
             Assert.AreEqual(user1.UserId, user2.UserId);
             Assert.AreEqual(user1.Config.PreferedLanguage, user2.Config.PreferedLanguage);
         }*/
-
-        private static User getTestUser()
-        {
-            var testUser = new User();
-
-            testUser.UserId = Guid.NewGuid().ToString();
-            // testUser.Config.PreferedLanguage = eLanguage.French;
-            
-            return testUser;
-        }
-
-        private void DeleteUser(IUser user)
-        {
-            var result = userService.DeleteUserAsync(user.UserId).Result;
-        }
     }
 }
