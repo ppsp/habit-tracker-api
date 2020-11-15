@@ -217,7 +217,7 @@ namespace HyperTaskServices.Services
             }
         }
 
-        public async Task<List<IUser>> GetInactiveAccounts()
+        public async Task<List<IUser>> GetAllUsersAsync()
         {
             try
             {

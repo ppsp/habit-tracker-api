@@ -223,11 +223,11 @@ namespace HyperTaskServices.Services
             }
         }
 
-        public async Task<List<IUser>> GetInactiveAccounts()
+        public async Task<List<IUser>> GetAllUsersAsync()
         {
             try
             {
-                var result = await getInactiveAccounts();
+                var result = await getAllUsersAsync();
                 return result;
             }
             catch (Exception ex)
@@ -237,7 +237,7 @@ namespace HyperTaskServices.Services
             }
         }
 
-        private async Task<List<IUser>> getInactiveAccounts()
+        private async Task<List<IUser>> getAllUsersAsync()
         {
             // TODO : Get only Activity Date older than one year
 
