@@ -208,7 +208,7 @@ namespace HyperTaskServices.Services
                                                  .GetCollection<MongoUser>(CollectionUser)
                                                  .DeleteOneAsync(filter);
 
-                return result.IsAcknowledged;
+                return result.DeletedCount == 1;
             }
             catch (Exception ex)
             {
@@ -316,7 +316,7 @@ namespace HyperTaskServices.Services
                                                  .GetCollection<MongoUser>(CollectionUser)
                                                  .DeleteOneAsync(filter);
 
-                return result.IsAcknowledged;
+                return result.DeletedCount == 1;
             }
             catch (Exception ex)
             {

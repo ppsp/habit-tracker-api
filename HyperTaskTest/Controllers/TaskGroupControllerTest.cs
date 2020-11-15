@@ -39,11 +39,13 @@ namespace HyperTaskTest
         [TestMethod]
         public void TaskGroup_Get_ShouldReturnTaskGroup()
         {
-            FirebaseDeleteAllGroups();
+            // FirebaseDeleteAllGroups();
+            MongoDeleteAllGroups();
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            testGroup.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            // testGroup.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            testGroup.Id = this.mongoTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // var retrievedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
@@ -67,12 +69,14 @@ namespace HyperTaskTest
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            testGroup.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            // testGroup.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            testGroup.Id = this.mongoTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // var retrievedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
             // ACT
-            var updatedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            // var updatedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var updatedGroup = this.mongoTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
             updatedGroup.Name = "NewName2";
             updatedGroup.Position = 32;
             updatedGroup.Void = true;

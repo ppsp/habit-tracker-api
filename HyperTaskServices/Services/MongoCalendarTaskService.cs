@@ -63,10 +63,6 @@ namespace HyperTaskServices.Services
                     {
                         var newTask = document.ToCalendarTask();
                         
-                        // for retrocompatibility 2020-04-19
-                        if (String.IsNullOrEmpty(newTask.CalendarTaskId))
-                            newTask.CalendarTaskId = document.Id;
-
                         tasks.Add(newTask);
                     }
                 }
@@ -451,7 +447,7 @@ namespace HyperTaskServices.Services
                                                        .GetDatabase(DBHyperTask)
                                                        .GetCollection<MongoCalendarTask>(CollectionTasks)
                                                        .DeleteOneAsync(filter);
-                return deleteResult.IsAcknowledged;
+                return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)
             {
@@ -469,7 +465,7 @@ namespace HyperTaskServices.Services
                                                        .GetDatabase(DBHyperTask)
                                                        .GetCollection<MongoCalendarTask>(CollectionTasks)
                                                        .DeleteOneAsync(filter);
-                return deleteResult.IsAcknowledged;
+                return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)
             {

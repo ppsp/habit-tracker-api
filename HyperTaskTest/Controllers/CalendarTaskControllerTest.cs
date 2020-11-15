@@ -103,7 +103,8 @@ namespace HyperTaskTest
                 testTask.AbsolutePosition = i;
                 testTask.InitialAbsolutePosition = i;
                 testTask.CalendarTaskId = Guid.NewGuid().ToString();
-                var id = fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+                //var id = fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+                var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
             }
 
             // ACT
@@ -131,11 +132,13 @@ namespace HyperTaskTest
             testTask.RequiredDays = new List<DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
-            testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
-            var id = fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+            testTask.CalendarTaskId = Guid.NewGuid().ToString();
+            // var id = fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+            var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
             // ACT
-            var task = fireCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            //var task = fireCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            var task = mongoCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
             var DTOtask = new DTOCalendarTask(task);
             var response = calendarTaskController.Put(DTOtask).Result;
             var okResult = response as OkObjectResult;
@@ -158,11 +161,13 @@ namespace HyperTaskTest
             testTask.RequiredDays = new List<DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
-            testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
-            var id = fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+            testTask.CalendarTaskId = Guid.NewGuid().ToString();
+            // var id = fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+            var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
             // ACT
-            var task = fireCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            // var task = fireCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            var task = mongoCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
             var DTOtask = new DTOCalendarTask(task);
             DTOtask.Name = "new task name";
             DTOtask.AbsolutePosition = 2;
@@ -171,7 +176,8 @@ namespace HyperTaskTest
             DTOtask.ResultType = eResultType.Time;
             calendarTaskController.Put(DTOtask).Wait();
 
-            var taskUpdated = fireCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            // var taskUpdated = fireCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            var taskUpdated = mongoCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
 
             // ASSERT
             Assert.AreEqual(DTOtask.Name, taskUpdated.Name);

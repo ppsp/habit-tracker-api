@@ -212,7 +212,7 @@ namespace HyperTaskServices.Services
                                                        .GetDatabase(DBHyperTask)
                                                        .GetCollection<MongoTaskGroup>(CollectionGroups)
                                                        .DeleteOneAsync(filter);
-                return deleteResult.IsAcknowledged;
+                return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)
             {
@@ -230,7 +230,7 @@ namespace HyperTaskServices.Services
                                                        .GetDatabase(DBHyperTask)
                                                        .GetCollection<MongoCalendarTask>(CollectionGroups)
                                                        .DeleteOneAsync(filter);
-                return deleteResult.IsAcknowledged;
+                return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)
             {

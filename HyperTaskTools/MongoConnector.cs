@@ -21,7 +21,7 @@ namespace HyperTaskTools
             }
             catch (Exception ex)
             {
-                Logger.Error("Unable to create FirestoreConnector", ex);
+                Logger.Error("Unable to create MongoConnector", ex);
             }
         }
     }
