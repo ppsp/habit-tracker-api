@@ -51,13 +51,13 @@ namespace HyperTaskTest
             var mongoConnector = ServiceProvider.GetService<MongoConnector>();
             this.fireTaskGroupService = new FireTaskGroupService(firebaseConnector);
             this.mongoTaskGroupService = new MongoTaskGroupService(mongoConnector);
-            this.calendarTaskController = new CalendarTaskController(firebaseConnector, fireTaskGroupService);
+            this.calendarTaskController = new CalendarTaskController(firebaseConnector, mongoConnector, mongoTaskGroupService);
             this.fireCalendarTaskService = new FireCalendarTaskService(firebaseConnector);
             this.mongoCalendarTaskService = new MongoCalendarTaskService(mongoConnector);
             this.taskHistoryService = new TaskHistoryService(fireCalendarTaskService);
             this.fireUserService = new FireUserService(firebaseConnector, fireCalendarTaskService, fireTaskGroupService);
             this.mongoUserService = new MongoUserService(mongoConnector, mongoCalendarTaskService, mongoTaskGroupService, firebaseConnector);
-            this.taskGroupController = new TaskGroupController(firebaseConnector, fireCalendarTaskService);
+            this.taskGroupController = new TaskGroupController(firebaseConnector, mongoConnector, mongoCalendarTaskService);
             this.reportService = new ReportService(fireCalendarTaskService, fireTaskGroupService);
 
             DeleteTestsFirebase();
