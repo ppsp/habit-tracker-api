@@ -42,6 +42,8 @@ namespace HyperTaskTest
         {
             Logger.ConfigLogger();
 
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+
             var webHost = WebHost.CreateDefaultBuilder()
                                  .UseStartup<Startup>()
                                  .Build();

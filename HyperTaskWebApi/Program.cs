@@ -19,7 +19,8 @@ namespace HyperTaskWebApi
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ENV")}.json");
+                    // config.AddEnvironmentVariables();
+                    // config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ENV")}.json");
                     if (context.HostingEnvironment.IsProduction())
                     {
                         var builtConfig = config.Build();
