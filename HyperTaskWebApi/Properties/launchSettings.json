@@ -13,6 +13,7 @@
       "commandName": "IISExpress",
       "launchUrl": "index",
       "environmentVariables": {
+        "ENV": "Dev",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
