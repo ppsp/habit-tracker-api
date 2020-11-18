@@ -18,6 +18,7 @@ namespace HyperTaskTools
                 settings.SslSettings =
                   new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
                 mongoClient = new MongoClient(settings);
+                settings.RetryWrites = false;
             }
             catch (Exception ex)
             {
