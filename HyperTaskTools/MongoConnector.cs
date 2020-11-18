@@ -15,10 +15,11 @@ namespace HyperTaskTools
                 MongoClientSettings settings = MongoClientSettings.FromUrl(
                   new MongoUrl(mongoConnectionString)
                 );
-                settings.SslSettings =
-                  new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
-                mongoClient = new MongoClient(settings);
+                settings.SslSettings = new SslSettings() { 
+                    EnabledSslProtocols = SslProtocols.Tls12,
+                };
                 settings.RetryWrites = false;
+                mongoClient = new MongoClient(settings);
             }
             catch (Exception ex)
             {
