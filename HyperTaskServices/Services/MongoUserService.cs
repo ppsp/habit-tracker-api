@@ -131,6 +131,7 @@ namespace HyperTaskServices.Services
         private async Task replaceUserAsync(IUser user)
         {
             var mongoUser = new MongoUser(user);
+            user.Id = null;
             var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
             var result = await this.Connector.mongoClient
                                              .GetDatabase(DBHyperTask)
