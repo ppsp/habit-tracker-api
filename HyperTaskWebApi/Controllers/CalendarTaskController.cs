@@ -46,13 +46,19 @@ namespace HyperTaskWebApi.Controllers
         [RequestLimit("PostTask", NoOfRequest = 100, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]DTOCalendarTask task)
         {
+            var dateStart = DateTime.Now;
             await ValidateUserId(task.UserId);
+            Logger.Debug("Post CalendarTask Validated User, seconds = " + (DateTime.Now - dateStart).TotalSeconds);
 
             task.Validate();
+            Logger.Debug("Post CalendarTask Validated Task, seconds = " + (DateTime.Now - dateStart).TotalSeconds);
 
             await UserService.UpdateLastActivityDate(task.UserId, task.UpdateDate ?? DateTime.Now);
+            Logger.Debug("Post CalendarTask Update Last ActivityDate, seconds = " + (DateTime.Now - dateStart).TotalSeconds);
 
             var result = await CalendarTaskService.InsertTaskAsync(task);
+            Logger.Debug("Post CalendarTask Inserted Task, seconds = " + (DateTime.Now - dateStart).TotalSeconds);
+
             return Ok(result);
         }
 
