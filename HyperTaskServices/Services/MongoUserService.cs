@@ -82,27 +82,7 @@ namespace HyperTaskServices.Services
                 if (user.InsertDate == DateTime.MinValue)
                     user.InsertDate = DateTime.Now.ToUniversalTime();
 
-                bool alreadyExists = await CheckIfExistsAsync(user.UserId);
-                if (alreadyExists)
-                {
-                    return await updateUserAsync(user);
-                }
-                else
-                {
-                    return await InsertUserAsync(user);
-                }
-            }
-            catch (Grpc.Core.RpcException ex)
-            {
-                if (ex.StatusCode == Grpc.Core.StatusCode.NotFound)
-                {
-                    return await InsertUserAsync(user);
-                }
-                else
-                {
-                    Logger.Error($"GRPC Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
-                    return false;
-                }
+                return await InsertUserAsync(user);
             }
             catch (Exception ex)
             {
@@ -134,51 +114,11 @@ namespace HyperTaskServices.Services
             }
         }
 
-        private async Task<bool> updateUserAsync(IUser user)
-        {
-            var userQuery = await getGetUserQuery(user.UserId);
-            var users = userQuery.ToList();
-
-            // Should not occur but just in case, we delete duplicate ids
-            if (users.Count > 1)
-            {
-                await deleteDuplicates(users, user);
-            }
-
-            var firstDocument = users.SingleOrDefault();
-
-            if (firstDocument != null)
-            {
-                user.Id = users[0].Id; // might be put into the mobile app instead
-                var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
-                var result = await this.Connector.mongoClient
-                                                 .GetDatabase(DBHyperTask)
-                                                 .GetCollection<MongoUser>(CollectionUser)
-                                                 .ReplaceOneAsync(filter, new MongoUser(user));
-
-                return result.IsAcknowledged;
-            }
-
-            return false;
-        }
-
-        private async Task deleteDuplicates(List<MongoUser> users, IUser user)
-        {
-            Logger.Warn("DUPLICATE DOCUMENT WHEN UPDATING, DELETING EXTRA, UserId" + user.UserId);
-
-            var toDeletes = users.OrderBy(p => p.InsertDate).Skip(1);
-
-            foreach (var toDelete in toDeletes)
-            {
-                await DeleteUserWithFireBaseIdAsync(toDelete.Id);
-            }
-        }
-
         public async Task<bool> InsertUserAsync(IUser user)
         {
             try
             {
-                await insertUserAsync(user);
+                await replaceUserAsync(user);
                 return true;
             }
             catch (Exception ex)
@@ -188,13 +128,15 @@ namespace HyperTaskServices.Services
             }
         }
 
-        private async Task insertUserAsync(IUser user)
+        private async Task replaceUserAsync(IUser user)
         {
             var mongoUser = new MongoUser(user);
+            var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
             await this.Connector.mongoClient
                                 .GetDatabase(DBHyperTask)
                                 .GetCollection<MongoUser>(CollectionUser)
-                                .InsertOneAsync(mongoUser);
+                                .ReplaceOneAsync(filter, mongoUser);
+
             user.Id = mongoUser.Id;
         }
 
