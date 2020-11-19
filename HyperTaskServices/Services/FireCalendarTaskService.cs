@@ -30,11 +30,12 @@ namespace HyperTaskServices.Services
                                                              bool includeVoid = false,
                                                              int? firstPosition = null,
                                                              int? lastPosition = null,
+                                                             string groupId = null,
                                                              bool includeOnceDone = true)
         {
             try
             {
-                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, includeOnceDone);
+                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, groupId, includeOnceDone);
             }
             catch (Exception ex)
             {
@@ -47,9 +48,10 @@ namespace HyperTaskServices.Services
                                                               bool includeVoid,
                                                               int? firstPosition,
                                                               int? lastPosition,
+                                                              string groupId,
                                                               bool includeOnceDone = true)
         {
-            Query query = getGetTasksQuery(userId, includeVoid, firstPosition, lastPosition);
+            Query query = getGetTasksQuery(userId, includeVoid, firstPosition, lastPosition, groupId);
             try
             {
                 QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
@@ -86,7 +88,8 @@ namespace HyperTaskServices.Services
         private Query getGetTasksQuery(string userId, 
                                        bool includeVoid,
                                        int? firstPosition,
-                                       int? lastPosition)
+                                       int? lastPosition,
+                                       string groupId)
         {
             var query = this.Connector.fireStoreDb
                                       .Collection("task_todo")
@@ -100,6 +103,9 @@ namespace HyperTaskServices.Services
 
             if (lastPosition != null)
                 query = query.WhereLessThanOrEqualTo("AbsolutePosition", lastPosition.Value);
+
+            if (groupId != null)
+                query = query.WhereEqualTo("GroupId", groupId);
 
             return query;
         }
@@ -117,7 +123,7 @@ namespace HyperTaskServices.Services
                 }
 
                 // Check if AbsolutePosition already exists
-                var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition);
+                var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition, task.GroupId);
                 if (existingTasks.Count > 0)
                 {
                     await reorderTasks(task);
@@ -179,6 +185,7 @@ namespace HyperTaskServices.Services
                                             false,
                                             lowest,
                                             highest,
+                                            task.GroupId,
                                             false);
 
             if (tasks.Count > Math.Abs(difference) + 1 || tasks.GroupBy(p => p.AbsolutePosition).Any(p => p.Count() > 1)) // reorder all if 2 are the same

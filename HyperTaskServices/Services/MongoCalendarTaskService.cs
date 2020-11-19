@@ -32,11 +32,12 @@ namespace HyperTaskServices.Services
                                                              bool includeVoid = false,
                                                              int? firstPosition = null,
                                                              int? lastPosition = null,
+                                                             string groupId = null,
                                                              bool includeOnceDone = true)
         {
             try
             {
-                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, includeOnceDone);
+                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, groupId, includeOnceDone);
             }
             catch (Exception ex)
             {
@@ -49,9 +50,10 @@ namespace HyperTaskServices.Services
                                                               bool includeVoid,
                                                               int? firstPosition,
                                                               int? lastPosition,
+                                                              string groupId,
                                                               bool includeOnceDone = true)
         {
-            var query = await getGetTasksQuery(userId, includeVoid, firstPosition, lastPosition);
+            var query = await getGetTasksQuery(userId, includeVoid, firstPosition, lastPosition, groupId);
             try
             {
                 var tasksQuerySnapshot = query.ToList();
@@ -81,7 +83,8 @@ namespace HyperTaskServices.Services
         private async Task<IAsyncCursor<MongoCalendarTask>> getGetTasksQuery(string userId, 
                                                                                    bool includeVoid,
                                                                                    int? firstPosition,
-                                                                                   int? lastPosition)
+                                                                                   int? lastPosition,
+                                                                                   string groupId)
         {
             var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.UserId, userId);
 
@@ -93,6 +96,9 @@ namespace HyperTaskServices.Services
 
             if (lastPosition != null)
                 filter = filter & Builders<MongoCalendarTask>.Filter.Lte(p => p.AbsolutePosition, lastPosition.Value);
+
+            if (groupId != null)
+                filter = filter & Builders<MongoCalendarTask>.Filter.Eq(p => p.GroupId, groupId);
 
             var query = await this.Connector.mongoClient
                                             .GetDatabase(DBHyperTask)
@@ -106,16 +112,8 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                // Check if task already exists
-                var alreadyExists = await CheckIfExistsAsync(task.CalendarTaskId);
-                if (alreadyExists)
-                {
-                    Logger.Error("Tasks already exists : " + task.CalendarTaskId);
-                    return null;
-                }
-
                 // Check if AbsolutePosition already exists
-                var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition);
+                var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition, task.GroupId);
                 if (existingTasks.Count > 0)
                 {
                     await reorderTasks(task);
@@ -181,6 +179,7 @@ namespace HyperTaskServices.Services
                                             false,
                                             lowest,
                                             highest,
+                                            task.GroupId,
                                             false);
 
             if (tasks.Count > Math.Abs(difference) + 1 || tasks.GroupBy(p => p.AbsolutePosition).Any(p => p.Count() > 1)) // reorder all if 2 are the same

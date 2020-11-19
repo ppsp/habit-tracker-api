@@ -86,14 +86,6 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                // Check if task already exists
-                bool alreadyExists = await CheckIfExistsAsync(group.GroupId);
-                if (alreadyExists)
-                {
-                    Logger.Error("Group already exists : " + group.GroupId);
-                    return null;
-                }
-
                 // Check if Position already exists
                 var existingGroups = await GetGroupsAsync(group.UserId,
                                                           false); /*, task.AbsolutePosition, task.AbsolutePosition);*/ // TODO : Add these parameters
