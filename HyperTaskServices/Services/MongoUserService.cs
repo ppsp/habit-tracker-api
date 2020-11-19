@@ -132,10 +132,10 @@ namespace HyperTaskServices.Services
         {
             var mongoUser = new MongoUser(user);
             var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
-            await this.Connector.mongoClient
-                                .GetDatabase(DBHyperTask)
-                                .GetCollection<MongoUser>(CollectionUser)
-                                .ReplaceOneAsync(filter, mongoUser);
+            var result = await this.Connector.mongoClient
+                                             .GetDatabase(DBHyperTask)
+                                             .GetCollection<MongoUser>(CollectionUser)
+                                             .ReplaceOneAsync(filter, mongoUser, new ReplaceOptions() { IsUpsert = true });
 
             user.Id = mongoUser.Id;
         }
