@@ -2,6 +2,7 @@
 using HyperTaskCore.Services;
 using HyperTaskServices.Models.Mongo;
 using HyperTaskTools;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -131,7 +132,7 @@ namespace HyperTaskServices.Services
         private async Task replaceUserAsync(IUser user)
         {
             var mongoUser = new MongoUser(user);
-            user.Id = null;
+            mongoUser.Id = ObjectId.GenerateNewId().ToString();
             var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
             var result = await this.Connector.mongoClient
                                              .GetDatabase(DBHyperTask)
