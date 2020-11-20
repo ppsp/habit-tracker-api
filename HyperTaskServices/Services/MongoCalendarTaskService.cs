@@ -4,6 +4,7 @@ using HyperTaskCore.Services;
 using HyperTaskCore.Utils;
 using HyperTaskServices.Models.Mongo;
 using HyperTaskTools;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -105,6 +106,8 @@ namespace HyperTaskServices.Services
                                             .GetCollection<MongoCalendarTask>(CollectionTasks)
                                             .FindAsync(filter);
 
+            Logger.Debug($"Request Units in getGetTasksQuery = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
             return query;
         }
 
@@ -112,14 +115,20 @@ namespace HyperTaskServices.Services
         {
             try
             {
+                var dateStart = DateTime.Now;
                 // Check if AbsolutePosition already exists
                 var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition, task.GroupId);
+                Logger.Debug("Got task seconds " + (DateTime.Now - dateStart).TotalSeconds);
                 if (existingTasks.Count > 0)
                 {
                     await reorderTasks(task);
+                    Logger.Debug("Reordered seconds " + (DateTime.Now - dateStart).TotalSeconds);
                 }
 
-                return await insertTaskAsync(task);
+                var result = await insertTaskAsync(task);
+                Logger.Debug("inserted task seconds " + (DateTime.Now - dateStart).TotalSeconds);
+                return result;
+
             }
             catch (Exception ex)
             {
@@ -138,6 +147,9 @@ namespace HyperTaskServices.Services
                                 .GetDatabase(DBHyperTask)
                                 .GetCollection<MongoCalendarTask>(CollectionTasks)
                                 .InsertOneAsync(mongoTask);
+
+            Logger.Debug($"Request Units in insertTaskAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
             task.Id = mongoTask.Id;
 
             return mongoTask.Id;
@@ -268,6 +280,8 @@ namespace HyperTaskServices.Services
                                             .GetCollection<MongoCalendarTask>(CollectionTasks)
                                             .FindAsync<MongoCalendarTask>(filter);
 
+            Logger.Debug($"Request Units in updateTaskAsyncNoPositionCheck = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
             var allDocuments = query.ToList();
 
             // Should not occur but just in case, we delete duplicate ids
@@ -286,6 +300,8 @@ namespace HyperTaskServices.Services
                                                  .GetDatabase(DBHyperTask)
                                                  .GetCollection<MongoCalendarTask>(CollectionTasks)
                                                  .ReplaceOneAsync(filter, mongoTask);
+
+                Logger.Debug($"Request Units in updateTaskAsyncNoPositionCheck = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
             }
         }
 
@@ -345,6 +361,8 @@ namespace HyperTaskServices.Services
                                                 .GetCollection<MongoCalendarTask>(CollectionTasks)
                                                 .FindAsync(filter);
 
+                Logger.Debug($"Request Units in GetTaskAsyncCustomId = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 return tasks.ToList().FirstOrDefault().ToCalendarTask();
             }
             catch (Exception ex)
@@ -363,6 +381,9 @@ namespace HyperTaskServices.Services
                                                      .GetDatabase(DBHyperTask)
                                                      .GetCollection<MongoCalendarTask>(CollectionTasks)
                                                      .FindAsync<MongoCalendarTask>(filter);
+
+                Logger.Debug($"Request Units in GetTaskAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 var tasks = tasksQuery.ToList();
 
                 try
@@ -411,6 +432,9 @@ namespace HyperTaskServices.Services
                                                      .GetDatabase(DBHyperTask)
                                                      .GetCollection<MongoCalendarTask>(CollectionTasks)
                                                      .FindAsync<MongoCalendarTask>(filter);
+
+                Logger.Debug($"Request Units in CheckIfExistsAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 var tasks = tasksQuery.ToList();
 
                 try
@@ -446,6 +470,9 @@ namespace HyperTaskServices.Services
                                                        .GetDatabase(DBHyperTask)
                                                        .GetCollection<MongoCalendarTask>(CollectionTasks)
                                                        .DeleteOneAsync(filter);
+
+                Logger.Debug($"Request Units in DeleteTaskAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)
@@ -464,6 +491,9 @@ namespace HyperTaskServices.Services
                                                        .GetDatabase(DBHyperTask)
                                                        .GetCollection<MongoCalendarTask>(CollectionTasks)
                                                        .DeleteOneAsync(filter);
+
+                Logger.Debug($"Request Units in DeleteTaskWithFireBaseIdAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)

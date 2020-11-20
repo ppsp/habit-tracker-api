@@ -63,6 +63,8 @@ namespace HyperTaskServices.Services
                                                 .GetCollection<MongoUser>(CollectionUser)
                                                 .FindAsync<MongoUser>(filter);
 
+            Logger.Debug($"Request Units in getGetUserQuery = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
             return userQuery;
         }
 
@@ -72,6 +74,8 @@ namespace HyperTaskServices.Services
                                                 .GetDatabase(DBHyperTask)
                                                 .GetCollection<MongoUser>(CollectionUser)
                                                 .FindAsync(Builders<MongoUser>.Filter.Empty);
+
+            Logger.Debug($"Request Units in getGetUsersQuery = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
 
             return userQuery;
         }
@@ -142,6 +146,8 @@ namespace HyperTaskServices.Services
                                              .GetCollection<MongoUser>(CollectionUser)
                                              .ReplaceOneAsync(filter, mongoUser, new ReplaceOptions() { IsUpsert = true });
 
+            Logger.Debug($"Request Units in replaceUserAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
             user.Id = mongoUser.Id;
         }
 
@@ -154,6 +160,8 @@ namespace HyperTaskServices.Services
                                                  .GetDatabase(DBHyperTask)
                                                  .GetCollection<MongoUser>(CollectionUser)
                                                  .DeleteOneAsync(filter);
+
+                Logger.Debug($"Request Units in DeleteUserAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
 
                 return result.DeletedCount == 1;
             }
@@ -263,6 +271,8 @@ namespace HyperTaskServices.Services
                                                  .GetCollection<MongoUser>(CollectionUser)
                                                  .DeleteOneAsync(filter);
 
+                Logger.Debug($"Request Units in DeleteUserWithFireBaseIdAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 return result.DeletedCount == 1;
             }
             catch (Exception ex)
@@ -274,11 +284,14 @@ namespace HyperTaskServices.Services
 
         public async Task UpdateLastActivityDate(string userId, DateTime updateDate)
         {
+            var dateStart = DateTime.Now;
             var user = await this.GetUserAsync(userId);
+            Logger.Debug("Got user seconds " + (DateTime.Now - dateStart).TotalSeconds);
             if (updateDate > user.LastActivityDate)
                 user.LastActivityDate = updateDate.ToUniversalTime();
             
             await this.InsertUpdateUserAsync(user);
+            Logger.Debug("inserted user seconds " + (DateTime.Now - dateStart).TotalSeconds);
         }
 
         public async Task<bool> ValidateUserId(string userId, string jwt)

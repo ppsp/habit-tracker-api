@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Security.Authentication;
 
@@ -24,6 +25,20 @@ namespace HyperTaskTools
             catch (Exception ex)
             {
                 Logger.Error("Unable to create MongoConnector", ex);
+            }
+        }
+
+        public string GetLatestRequestCharge(string dataBaseName)
+        {
+            try
+            {
+                return this.mongoClient
+                           .GetDatabase(dataBaseName)
+                           .RunCommand<BsonDocument>(new BsonDocument { { "getLastRequestStatistics", 1 } })["RequestCharge"].AsBsonValue.AsDouble.ToString();
+            } 
+            catch (Exception ex)
+            {
+                return "n/a";
             }
         }
     }

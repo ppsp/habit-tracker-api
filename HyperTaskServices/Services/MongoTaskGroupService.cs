@@ -33,6 +33,9 @@ namespace HyperTaskServices.Services
                                                      .GetDatabase(DBHyperTask)
                                                      .GetCollection<MongoTaskGroup>(CollectionGroups)
                                                      .FindAsync<MongoTaskGroup>(filter);
+
+                Logger.Debug($"Request Units in GetGroupAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 var tasks = tasksQuery.ToList();
 
                 foreach (var document in tasks)
@@ -68,6 +71,8 @@ namespace HyperTaskServices.Services
                                                      .GetDatabase(DBHyperTask)
                                                      .GetCollection<MongoTaskGroup>(CollectionGroups)
                                                      .FindAsync<MongoTaskGroup>(filter);
+
+                Logger.Debug($"Request Units in GetGroupsAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
 
                 List<TaskGroup> groups = groupsQuery.ToList()
                                                     .Select(p => p.ToTaskGroup())
@@ -113,6 +118,8 @@ namespace HyperTaskServices.Services
                                                      .GetCollection<MongoTaskGroup>(CollectionGroups)
                                                      .FindAsync<MongoTaskGroup>(filter);
 
+                Logger.Debug($"Request Units in CheckIfExistsAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 try
                 {
                     return tasksQuery.ToList().Count > 0;
@@ -139,6 +146,9 @@ namespace HyperTaskServices.Services
                                 .GetDatabase(DBHyperTask)
                                 .GetCollection<MongoTaskGroup>(CollectionGroups)
                                 .InsertOneAsync(mongoGroup);
+
+            Logger.Debug($"Request Units in insertGroupAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
             group.Id = mongoGroup.Id;
 
             return mongoGroup.Id;
@@ -174,6 +184,8 @@ namespace HyperTaskServices.Services
                                             .GetCollection<MongoTaskGroup>(CollectionGroups)
                                             .FindAsync<MongoTaskGroup>(filter);
 
+            Logger.Debug($"Request Units in updateGroupNoPositionCheckAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
             var groups = groupQuery.ToList();
 
             // Should not occur but just in case, we delete duplicate ids
@@ -192,6 +204,8 @@ namespace HyperTaskServices.Services
                                                  .GetDatabase(DBHyperTask)
                                                  .GetCollection<MongoTaskGroup>(CollectionGroups)
                                                  .ReplaceOneAsync(filter, mongoGroup);
+
+                Logger.Debug($"Request Units in updateGroupNoPositionCheckAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
             }
         }
 
@@ -204,6 +218,9 @@ namespace HyperTaskServices.Services
                                                        .GetDatabase(DBHyperTask)
                                                        .GetCollection<MongoTaskGroup>(CollectionGroups)
                                                        .DeleteOneAsync(filter);
+
+                Logger.Debug($"Request Units in DeleteGroupAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)
@@ -222,6 +239,9 @@ namespace HyperTaskServices.Services
                                                        .GetDatabase(DBHyperTask)
                                                        .GetCollection<MongoCalendarTask>(CollectionGroups)
                                                        .DeleteOneAsync(filter);
+
+                Logger.Debug($"Request Units in DeleteGroupWithFireBaseIdAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
                 return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)
