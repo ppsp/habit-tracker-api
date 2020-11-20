@@ -136,31 +136,26 @@ namespace HyperTaskServices.Services
         private async Task replaceUserAsync(IUser user)
         {
             var mongoUser = new MongoUser(user);
-
-            var oldUser = await getUserAsync(user.UserId);
             
-            if (oldUser == NULLUser.Instance)
+            if (mongoUser.Id == null)
             {
-                await this.Connector.mongoClient
-                                 .GetDatabase(DBHyperTask)
-                                 .GetCollection<MongoUser>(CollectionUser)
-                                 .InsertOneAsync(mongoUser);
+                var oldUser = await getUserAsync(user.UserId);
 
-                Logger.Debug($"Request Units in replaceUserAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
-
-                user.Id = mongoUser.Id;
+                if (oldUser == NULLUser.Instance)
+                    mongoUser.Id = ObjectId.GenerateNewId().ToString();
+                else
+                    mongoUser.Id = oldUser.Id;
             }
-            else
-            {
-                mongoUser.Id = oldUser.Id;
-                var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
-                var result = await this.Connector.mongoClient
-                                 .GetDatabase(DBHyperTask)
-                                 .GetCollection<MongoUser>(CollectionUser)
-                                 .ReplaceOneAsync(filter, mongoUser);
 
-                Logger.Debug($"Request Units in replaceUserAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
-            }
+            var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
+            var result = await this.Connector.mongoClient
+                                             .GetDatabase(DBHyperTask)
+                                             .GetCollection<MongoUser>(CollectionUser)
+                                             .ReplaceOneAsync(filter, mongoUser, new ReplaceOptions() { IsUpsert = true });
+
+            Logger.Debug($"Request Units in replaceUserAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
+            user.Id = mongoUser.Id;
         }
 
         public async Task<bool> DeleteUserAsync(string Id)
