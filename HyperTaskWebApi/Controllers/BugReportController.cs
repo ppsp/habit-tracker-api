@@ -22,7 +22,7 @@ namespace HyperTaskWebApi.Controllers
 
         // POST
         [HttpPost]
-        [RequestLimit("PostBugReport", NoOfRequest = 20, Seconds = 3600)]
+        [RequestLimit("PostBugReport", NoOfRequest = 200, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]DTOBugReport report)
         {
             var result = await this.bugReportService.CreateAzureDevopsWorkItemAsync(report);

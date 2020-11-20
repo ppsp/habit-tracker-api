@@ -29,7 +29,7 @@ namespace HyperTaskWebApi.Controllers
 
         // GET
         [HttpGet]
-        [RequestLimit("GetGroups", NoOfRequest = 20, Seconds = 3600)]
+        [RequestLimit("GetGroups", NoOfRequest = 2000, Seconds = 3600)]
         public async Task<IActionResult> Get(string userId)
         {
             await ValidateUserId(userId);
@@ -41,7 +41,7 @@ namespace HyperTaskWebApi.Controllers
 
         // POST
         [HttpPost]
-        [RequestLimit("PostGroup", NoOfRequest = 50, Seconds = 3600)]
+        [RequestLimit("PostGroup", NoOfRequest = 5000, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]DTOTaskGroup group)
         {
             await ValidateUserId(group.UserId);
@@ -54,7 +54,7 @@ namespace HyperTaskWebApi.Controllers
 
         // PUT
         [HttpPut]
-        [RequestLimit("PutGroup", NoOfRequest = 50, Seconds = 3600)]
+        [RequestLimit("PutGroup", NoOfRequest = 5000, Seconds = 3600)]
         public async Task<IActionResult> Put([FromBody] DTOTaskGroup group)
         {
             await ValidateUserId(group.UserId);

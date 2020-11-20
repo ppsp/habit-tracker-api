@@ -31,7 +31,7 @@ namespace HyperTaskWebApi.Controllers
 
         // GET
         [HttpGet]
-        [RequestLimit("GetTasks", NoOfRequest = 20, Seconds = 3600)]
+        [RequestLimit("GetTasks", NoOfRequest = 2000, Seconds = 3600)]
         public async Task<IActionResult> Get([FromQuery]DTOGetCalendarTaskRequest dtoRequest)
         {
             await ValidateUserId(dtoRequest.userId);
@@ -43,7 +43,7 @@ namespace HyperTaskWebApi.Controllers
 
         // POST
         [HttpPost]
-        [RequestLimit("PostTask", NoOfRequest = 100, Seconds = 3600)]
+        [RequestLimit("PostTask", NoOfRequest = 10000, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]DTOCalendarTask task)
         {
             var dateStart = DateTime.Now;
@@ -64,7 +64,7 @@ namespace HyperTaskWebApi.Controllers
 
         // PUT
         [HttpPut]
-        [RequestLimit("PutTask", NoOfRequest = 50, Seconds = 3600)]
+        [RequestLimit("PutTask", NoOfRequest = 5000, Seconds = 3600)]
         public async Task<IActionResult> Put([FromBody]DTOCalendarTask task)
         {
             await ValidateUserId(task.UserId);

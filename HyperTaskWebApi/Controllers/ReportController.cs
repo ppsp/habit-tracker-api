@@ -28,7 +28,7 @@ namespace HyperTaskWebApi.Controllers
 
         // Download all tasks in a csv
         [HttpGet]
-        [RequestLimit("GetReport", NoOfRequest = 5, Seconds = 3600)]
+        [RequestLimit("GetReport", NoOfRequest = 500, Seconds = 3600)]
         public async Task<IActionResult> Get(string userId)
         {
             await ValidateUserId(userId);

@@ -136,19 +136,31 @@ namespace HyperTaskServices.Services
         private async Task replaceUserAsync(IUser user)
         {
             var mongoUser = new MongoUser(user);
+
+            var oldUser = await getUserAsync(user.UserId);
             
-            if (mongoUser.Id == null)
-                mongoUser.Id = ObjectId.GenerateNewId().ToString();
+            if (oldUser == NULLUser.Instance)
+            {
+                await this.Connector.mongoClient
+                                 .GetDatabase(DBHyperTask)
+                                 .GetCollection<MongoUser>(CollectionUser)
+                                 .InsertOneAsync(mongoUser);
 
-            var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
-            var result = await this.Connector.mongoClient
-                                             .GetDatabase(DBHyperTask)
-                                             .GetCollection<MongoUser>(CollectionUser)
-                                             .ReplaceOneAsync(filter, mongoUser, new ReplaceOptions() { IsUpsert = true });
+                Logger.Debug($"Request Units in replaceUserAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
 
-            Logger.Debug($"Request Units in replaceUserAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+                user.Id = mongoUser.Id;
+            }
+            else
+            {
+                mongoUser.Id = oldUser.Id;
+                var filter = Builders<MongoUser>.Filter.Eq(p => p.UserId, user.UserId);
+                var result = await this.Connector.mongoClient
+                                 .GetDatabase(DBHyperTask)
+                                 .GetCollection<MongoUser>(CollectionUser)
+                                 .ReplaceOneAsync(filter, mongoUser);
 
-            user.Id = mongoUser.Id;
+                Logger.Debug($"Request Units in replaceUserAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+            }
         }
 
         public async Task<bool> DeleteUserAsync(string Id)

@@ -29,7 +29,7 @@ namespace HyperTaskWebApi.Controllers
 
         // POST
         [HttpPost]
-        [RequestLimit("PostHistory", NoOfRequest = 500, Seconds = 3600)]
+        [RequestLimit("PostHistory", NoOfRequest = 50000, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]TaskHistory task)
         {
             Logger.Debug("posting taskhistory id:" + task.CalendarTaskId);
@@ -44,7 +44,7 @@ namespace HyperTaskWebApi.Controllers
 
         // PUT
         [HttpPut]
-        [RequestLimit("PutHistory", NoOfRequest = 200, Seconds = 3600)]
+        [RequestLimit("PutHistory", NoOfRequest = 20000, Seconds = 3600)]
         public async Task<IActionResult> Put([FromBody]TaskHistory task)
         {
             Logger.Debug("putting taskhistory id:" + task.CalendarTaskId);
