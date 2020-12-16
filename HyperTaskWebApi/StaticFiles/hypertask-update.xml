@@ -1,5 +1,6 @@
 <update>
-  <version>versionValue</version>
+  <version>000306</version>
   <name>hypertask</name>
-  <url>apkUrlValue</url>
+  <url>https://hypertaskstag9.azurewebsites.net/staticfiles/hypertask.apk</url>
 </update>
+
