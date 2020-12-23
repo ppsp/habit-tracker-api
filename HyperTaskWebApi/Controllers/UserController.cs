@@ -18,16 +18,17 @@ namespace HyperTaskWebApi.Controllers
     {
         private IUserService UserService { get; set; }
 
-        public UserController(FirebaseConnector connector,
-                              CalendarTaskService calendarTaskService,
-                              TaskGroupService taskGroupService)
+        public UserController(FirebaseConnector fireConnector,
+                              MongoConnector mongoConnector,
+                              MongoCalendarTaskService calendarTaskService,
+                              MongoTaskGroupService taskGroupService)
         {
-            UserService = new UserService(connector, calendarTaskService, taskGroupService);
+            UserService = new MongoUserService(mongoConnector, calendarTaskService, taskGroupService, fireConnector);
         }
 
         // GET
         [HttpGet]
-        [RequestLimit("GetUser", NoOfRequest = 100, Seconds = 3600)]
+        [RequestLimit("GetUser", NoOfRequest = 10000, Seconds = 3600)]
         public async Task<IActionResult> Get(string userId)
         {
             await ValidateUserId(userId);
@@ -39,7 +40,7 @@ namespace HyperTaskWebApi.Controllers
 
         // PUT
         [HttpPut]
-        [RequestLimit("PutUser", NoOfRequest = 100, Seconds = 3600)]
+        [RequestLimit("PutUser", NoOfRequest = 10000, Seconds = 3600)]
         public async Task<IActionResult> Put([FromBody]DTOUser user)
         {
             await ValidateUserId(user.UserId);
@@ -50,7 +51,7 @@ namespace HyperTaskWebApi.Controllers
 
         // Delete
         [HttpDelete]
-        [RequestLimit("DeleteUser", NoOfRequest = 10, Seconds = 3600)]
+        [RequestLimit("DeleteUser", NoOfRequest = 1000, Seconds = 3600)]
         public async Task<IActionResult> Delete(string userId)
         {
             await ValidateUserId(userId);

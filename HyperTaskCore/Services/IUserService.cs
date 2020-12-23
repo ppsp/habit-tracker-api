@@ -9,7 +9,7 @@ namespace HyperTaskCore.Services
     {
         Task<bool> InsertUpdateUserAsync(IUser user);
         Task<IUser> GetUserAsync(string userId);
-        Task<List<IUser>> GetInactiveAccounts();
+        Task<List<IUser>> GetAllUsersAsync();
         Task<bool> PermaDeleteUser(IUser user);
         Task UpdateLastActivityDate(string userId, DateTime updateDate);
         Task<bool> ValidateUserId(string userId, string jwt);

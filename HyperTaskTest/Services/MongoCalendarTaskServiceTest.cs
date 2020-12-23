@@ -10,14 +10,7 @@ namespace HyperTaskTest
     public partial class CalendarTaskApiTest
     {
         [TestMethod]
-        public void HelloWorld()
-        {
-            // ASSERT
-            Assert.IsTrue(true);
-        }
-
-        [TestMethod]
-        public void InsertTaskAsync_ShouldReturnId()
+        public void Mongo_InsertTaskAsync_ShouldReturnId()
         {
             // ARRANGE
             var testTask = new CalendarTask();
@@ -31,7 +24,7 @@ namespace HyperTaskTest
             testTask.CalendarTaskId = Guid.NewGuid().ToString();
 
             // ACT
-            var id = calendarTaskService.InsertTaskAsync(testTask).Result;
+            var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
             // ASSERT
             Assert.IsTrue(id != null && id.Length > 0);
@@ -39,7 +32,7 @@ namespace HyperTaskTest
 
 
         [TestMethod]
-        public void GetTaskAsync_ShouldReturnSameValuesAsInsert()
+        public void Mongo_GetTaskAsync_ShouldReturnSameValuesAsInsert()
         {
             // ARRANGE
             var testTask = new CalendarTask();
@@ -53,10 +46,10 @@ namespace HyperTaskTest
             testTask.CalendarTaskId = Guid.NewGuid().ToString();
 
             // ACT
-            var id = calendarTaskService.InsertTaskAsync(testTask).Result;
+            var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
             // ASSERT
-            var task = calendarTaskService.GetTaskAsync(id).Result;
+            var task = mongoCalendarTaskService.GetTaskAsync(id).Result;
             Assert.AreEqual(testTask.Name, task.Name);
             CollectionAssert.AreEqual(testTask.RequiredDays, task.RequiredDays);
             Assert.AreEqual(testTask.ResultType, task.ResultType);
@@ -67,7 +60,7 @@ namespace HyperTaskTest
         }
 
         [TestMethod]
-        public void UpdateAbsolutePositionToFirst_ShouldIncrementOtherTasks()
+        public void Mongo_UpdateAbsolutePositionToFirst_ShouldIncrementOtherTasks()
         {
             // ARRANGE
             var ids = new List<string>();
@@ -83,7 +76,7 @@ namespace HyperTaskTest
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
                 testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
-                var id = calendarTaskService.InsertTaskAsync(testTask).Result;
+                var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
             }
@@ -97,10 +90,10 @@ namespace HyperTaskTest
             var lastTask = tasks.Last();
             lastTask.AbsolutePosition = 1;
             lastTask.InitialAbsolutePosition = 4;
-            var result = calendarTaskService.UpdateTaskAsync(lastTask).Result;
+            var result = mongoCalendarTaskService.UpdateTaskAsync(lastTask).Result;
 
             // ASSERT
-            var updatedTasks = calendarTaskService.GetTasksAsync(testUserId).Result;
+            var updatedTasks = mongoCalendarTaskService.GetTasksAsync(testUserId).Result;
             Assert.AreEqual(2, updatedTasks.First(p => p.CalendarTaskId == tasks[0].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(3, updatedTasks.First(p => p.CalendarTaskId == tasks[1].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(4, updatedTasks.First(p => p.CalendarTaskId == tasks[2].CalendarTaskId).AbsolutePosition);
@@ -108,7 +101,7 @@ namespace HyperTaskTest
         }
 
         [TestMethod]
-        public void InsertAbsolutePosition_ShouldIncrementOtherTasks()
+        public void Mongo_InsertAbsolutePosition_ShouldIncrementOtherTasks()
         {
             // ARRANGE
             var ids = new List<string>();
@@ -124,7 +117,7 @@ namespace HyperTaskTest
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
                 testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
-                var id2 = calendarTaskService.InsertTaskAsync(testTask).Result;
+                var id2 = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
             }
@@ -144,12 +137,12 @@ namespace HyperTaskTest
             testTask2.UserId = testUserId;
             testTask2.AbsolutePosition = 2;
             testTask2.CalendarTaskId = Guid.NewGuid().ToString(); 
-            var id = calendarTaskService.InsertTaskAsync(testTask2).Result;
+            var id = mongoCalendarTaskService.InsertTaskAsync(testTask2).Result;
 
             tasks.Add(testTask2);
 
             // ASSERT
-            var updatedTasks = calendarTaskService.GetTasksAsync(testUserId).Result;
+            var updatedTasks = mongoCalendarTaskService.GetTasksAsync(testUserId).Result;
             Assert.AreEqual(1, updatedTasks.First(p => p.CalendarTaskId == tasks[0].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(3, updatedTasks.First(p => p.CalendarTaskId == tasks[1].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(4, updatedTasks.First(p => p.CalendarTaskId == tasks[2].CalendarTaskId).AbsolutePosition);
@@ -159,7 +152,7 @@ namespace HyperTaskTest
 
 
         [TestMethod]
-        public void UpdateAbsolutePositionToLast_ShouldDecrementOtherTasks()
+        public void Mongo_UpdateAbsolutePositionToLast_ShouldDecrementOtherTasks()
         {
             // ARRANGE
             var ids = new List<string>();
@@ -175,7 +168,7 @@ namespace HyperTaskTest
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
                 testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
-                var id = calendarTaskService.InsertTaskAsync(testTask).Result;
+                var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
             }
@@ -189,10 +182,10 @@ namespace HyperTaskTest
             var lastTask = tasks.First();
             lastTask.AbsolutePosition = 4;
             lastTask.InitialAbsolutePosition = 1;
-            var result = calendarTaskService.UpdateTaskAsync(lastTask).Result;
+            var result = mongoCalendarTaskService.UpdateTaskAsync(lastTask).Result;
 
             // ASSERT
-            var updatedTasks = calendarTaskService.GetTasksAsync(testUserId).Result;
+            var updatedTasks = mongoCalendarTaskService.GetTasksAsync(testUserId).Result;
             Assert.AreEqual(4, updatedTasks.First(p => p.CalendarTaskId == tasks[0].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(1, updatedTasks.First(p => p.CalendarTaskId == tasks[1].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(2, updatedTasks.First(p => p.CalendarTaskId == tasks[2].CalendarTaskId).AbsolutePosition);
@@ -200,7 +193,7 @@ namespace HyperTaskTest
         }
 
         [TestMethod]
-        public void InsertAtTheEnd_ShouldNotIncrementOtherTasks()
+        public void Mongo_InsertAtTheEnd_ShouldNotIncrementOtherTasks()
         {
             // ARRANGE + ACT
             var ids = new List<string>();
@@ -216,7 +209,7 @@ namespace HyperTaskTest
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
                 testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
-                var id = calendarTaskService.InsertTaskAsync(testTask).Result;
+                var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
                 tasks.Add(testTask);
             }
@@ -225,7 +218,7 @@ namespace HyperTaskTest
             Assert.AreEqual(2, tasks[1].AbsolutePosition);
 
             // ASSERT
-            var updatedTasks = calendarTaskService.GetTasksAsync(testUserId).Result;
+            var updatedTasks = mongoCalendarTaskService.GetTasksAsync(testUserId).Result;
             Assert.AreEqual(1, updatedTasks.First(p => p.CalendarTaskId == tasks[0].CalendarTaskId).AbsolutePosition);
             Assert.AreEqual(2, updatedTasks.First(p => p.CalendarTaskId == tasks[1].CalendarTaskId).AbsolutePosition);
         }

@@ -9,6 +9,7 @@ namespace HyperTaskCore.Models
 {
     public class CalendarTask : ICalendarTask
     {
+        public string Id { get; set; }
         public string CalendarTaskId { get ; set ; }
         public string UserId { get ; set ; }
         public string Name { get ; set ; }

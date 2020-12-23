@@ -1,10 +1,11 @@
-﻿using Google.Cloud.Firestore;
-using HyperTaskCore.Exceptions;
+﻿using HyperTaskCore.Exceptions;
 using HyperTaskCore.Models;
 using HyperTaskCore.Services;
 using HyperTaskCore.Utils;
-using HyperTaskServices.Models.Firestore;
+using HyperTaskServices.Models.Mongo;
 using HyperTaskTools;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,13 @@ using System.Threading.Tasks;
 
 namespace HyperTaskServices.Services
 {
-    public class CalendarTaskService : ICalendarTaskService
+    public class MongoCalendarTaskService : ICalendarTaskService
     {
-        private FirebaseConnector Connector { get; set; }
+        private readonly string DBHyperTask = "hypertask";
+        private readonly string CollectionTasks = "task_todo";
+        private MongoConnector Connector { get; set; }
 
-        public CalendarTaskService(FirebaseConnector connector)
+        public MongoCalendarTaskService(MongoConnector connector)
         {
             this.Connector = connector;
         }
@@ -30,11 +33,12 @@ namespace HyperTaskServices.Services
                                                              bool includeVoid = false,
                                                              int? firstPosition = null,
                                                              int? lastPosition = null,
+                                                             string groupId = null,
                                                              bool includeOnceDone = true)
         {
             try
             {
-                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, includeOnceDone);
+                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, groupId, includeOnceDone);
             }
             catch (Exception ex)
             {
@@ -47,27 +51,21 @@ namespace HyperTaskServices.Services
                                                               bool includeVoid,
                                                               int? firstPosition,
                                                               int? lastPosition,
+                                                              string groupId,
                                                               bool includeOnceDone = true)
         {
-            Query query = getGetTasksQuery(userId, includeVoid, firstPosition, lastPosition);
+            var query = await getGetTasksQuery(userId, includeVoid, firstPosition, lastPosition, groupId);
             try
             {
-                QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
+                var tasksQuerySnapshot = query.ToList();
                 List<ICalendarTask> tasks = new List<ICalendarTask>();
 
-                foreach (var document in tasksQuerySnapshot.Documents)
+                foreach (var document in tasksQuerySnapshot)
                 {
-                    if (document.Exists)
+                    if (document != null)
                     {
-                        var newFireTask = document.ConvertTo<FireCalendarTask>();
-                        var newTask = newFireTask.ToCalendarTask();
+                        var newTask = document.ToCalendarTask();
                         
-                        // for retrocompatibility 2020-04-19
-                        if (String.IsNullOrEmpty(newTask.CalendarTaskId))
-                            newTask.CalendarTaskId = document.Id;
-
-                        // newFireTask.Id = document.Id; I don't believe this is necessary
-
                         tasks.Add(newTask);
                     }
                 }
@@ -83,23 +81,32 @@ namespace HyperTaskServices.Services
             }
         }
 
-        private Query getGetTasksQuery(string userId, 
-                                       bool includeVoid,
-                                       int? firstPosition,
-                                       int? lastPosition)
+        private async Task<IAsyncCursor<MongoCalendarTask>> getGetTasksQuery(string userId, 
+                                                                                   bool includeVoid,
+                                                                                   int? firstPosition,
+                                                                                   int? lastPosition,
+                                                                                   string groupId)
         {
-            var query = this.Connector.fireStoreDb
-                                      .Collection("task_todo")
-                                      .WhereEqualTo("UserId", userId);
+            var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.UserId, userId);
 
             if (!includeVoid)
-                query = query.WhereEqualTo("Void", false);
+                filter = filter & Builders<MongoCalendarTask>.Filter.Eq(p => p.Void, false);
 
             if (firstPosition != null)
-                query = query.WhereGreaterThanOrEqualTo("AbsolutePosition", firstPosition.Value);
+                filter = filter & Builders<MongoCalendarTask>.Filter.Gte(p => p.AbsolutePosition, firstPosition.Value);
 
             if (lastPosition != null)
-                query = query.WhereLessThanOrEqualTo("AbsolutePosition", lastPosition.Value);
+                filter = filter & Builders<MongoCalendarTask>.Filter.Lte(p => p.AbsolutePosition, lastPosition.Value);
+
+            if (groupId != null)
+                filter = filter & Builders<MongoCalendarTask>.Filter.Eq(p => p.GroupId, groupId);
+
+            var query = await this.Connector.mongoClient
+                                            .GetDatabase(DBHyperTask)
+                                            .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                            .FindAsync(filter);
+
+            Logger.Debug($"Request Units in getGetTasksQuery = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
 
             return query;
         }
@@ -108,22 +115,20 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                // Check if task already exists
-                var alreadyExists = await CheckIfExistsAsync(task.CalendarTaskId);
-                if (alreadyExists)
-                {
-                    Logger.Error("Tasks already exists : " + task.CalendarTaskId);
-                    return null;
-                }
-
+                var dateStart = DateTime.Now;
                 // Check if AbsolutePosition already exists
-                var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition);
+                var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition, task.GroupId);
+                Logger.Debug("Got task seconds " + (DateTime.Now - dateStart).TotalSeconds);
                 if (existingTasks.Count > 0)
                 {
                     await reorderTasks(task);
+                    Logger.Debug("Reordered seconds " + (DateTime.Now - dateStart).TotalSeconds);
                 }
 
-                return await insertTaskAsync(task);
+                var result = await insertTaskAsync(task);
+                Logger.Debug("inserted task seconds " + (DateTime.Now - dateStart).TotalSeconds);
+                return result;
+
             }
             catch (Exception ex)
             {
@@ -137,10 +142,17 @@ namespace HyperTaskServices.Services
             if (task.InsertDate == null)
                 task.InsertDate = DateTime.UtcNow;
 
-            CollectionReference colRef = this.Connector.fireStoreDb.Collection("task_todo");
-            var reference = await colRef.AddAsync(new FireCalendarTask(task));
+            var mongoTask = new MongoCalendarTask(task);
+            await this.Connector.mongoClient
+                                .GetDatabase(DBHyperTask)
+                                .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                .InsertOneAsync(mongoTask);
 
-            return reference.Id;
+            Logger.Debug($"Request Units in insertTaskAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
+            task.Id = mongoTask.Id;
+
+            return mongoTask.Id;
         }
 
         private static void GuardAgainstInvalidTask(ICalendarTask task)
@@ -179,6 +191,7 @@ namespace HyperTaskServices.Services
                                             false,
                                             lowest,
                                             highest,
+                                            task.GroupId,
                                             false);
 
             if (tasks.Count > Math.Abs(difference) + 1 || tasks.GroupBy(p => p.AbsolutePosition).Any(p => p.Count() > 1)) // reorder all if 2 are the same
@@ -261,12 +274,16 @@ namespace HyperTaskServices.Services
             if (task.AssignedDate != null)
                 task.AssignedDate = task.AssignedDate.Value.ToUniversalTime();
 
-            Query query = this.Connector.fireStoreDb
-                                        .Collection("task_todo")
-                                        .WhereEqualTo("CalendarTaskId", task.CalendarTaskId);
+            var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.CalendarTaskId, task.CalendarTaskId);
+            var query = await this.Connector.mongoClient
+                                            .GetDatabase(DBHyperTask)
+                                            .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                            .FindAsync<MongoCalendarTask>(filter);
 
-            var allDocuments = (await query.GetSnapshotAsync()).Documents;
-            
+            Logger.Debug($"Request Units in updateTaskAsyncNoPositionCheck = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
+            var allDocuments = query.ToList();
+
             // Should not occur but just in case, we delete duplicate ids
             if (allDocuments.Count > 1)
             {
@@ -275,29 +292,24 @@ namespace HyperTaskServices.Services
 
             var firstDocument = allDocuments.SingleOrDefault();
 
-            if (firstDocument != null && firstDocument.Exists)
+            if (firstDocument != null)
             {
-                var dictionnary = new FireCalendarTask(task).ToDictionary();
+                var mongoTask = new MongoCalendarTask(task);
 
-                await firstDocument.Reference.UpdateAsync(dictionnary);
-            } 
-            else // this is going to be obsolete
-            {
-                DocumentReference taskRef = this.Connector.fireStoreDb
-                                                          .Collection("task_todo")
-                                                          .Document(task.CalendarTaskId);
+                var result = await this.Connector.mongoClient
+                                                 .GetDatabase(DBHyperTask)
+                                                 .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                                 .ReplaceOneAsync(filter, mongoTask);
 
-                var dictionnary = new FireCalendarTask(task).ToDictionary();
-
-                await taskRef.UpdateAsync(dictionnary);
+                Logger.Debug($"Request Units in updateTaskAsyncNoPositionCheck = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
             }
         }
 
-        private async Task deleteDuplicates(IReadOnlyList<DocumentSnapshot> allDocuments, string logText)
+        private async Task deleteDuplicates(List<MongoCalendarTask> allDocuments, string logText)
         {
             Logger.Warn("DUPLICATE DOCUMENT WHEN UPDATING, DELETING EXTRA, CalendarTaskId" + logText);
 
-            var toDeletes = allDocuments.OrderBy(p => p.CreateTime).Skip(1);
+            var toDeletes = allDocuments.OrderBy(p => p.InsertDate).Skip(1);
 
             foreach (var toDelete in toDeletes)
             {
@@ -343,16 +355,15 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                var reference = this.Connector.fireStoreDb
-                                              .Collection("task_todo")
-                                              .Document(Id);
+                var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.Id, Id);
+                var tasks = await this.Connector.mongoClient
+                                                .GetDatabase(DBHyperTask)
+                                                .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                                .FindAsync(filter);
 
-                var snapshot = await reference.GetSnapshotAsync();
+                Logger.Debug($"Request Units in GetTaskAsyncCustomId = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
 
-                var task = snapshot.ConvertTo<FireCalendarTask>();
-                task.Id = snapshot.Id;
-
-                return task.ToCalendarTask();
+                return tasks.ToList().FirstOrDefault().ToCalendarTask();
             }
             catch (Exception ex)
             {
@@ -365,32 +376,33 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                Query query = this.Connector.fireStoreDb
-                                            .Collection("task_todo")
-                                            .WhereEqualTo("CalendarTaskId", calendarTaskId);
+                var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.CalendarTaskId, calendarTaskId);
+                var tasksQuery = await this.Connector.mongoClient
+                                                     .GetDatabase(DBHyperTask)
+                                                     .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                                     .FindAsync<MongoCalendarTask>(filter);
+
+                Logger.Debug($"Request Units in GetTaskAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
+                var tasks = tasksQuery.ToList();
 
                 try
                 {
-                    QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
-
                     // Should not occur but just in case, we delete duplicate ids
-                    if (tasksQuerySnapshot.Documents.Count > 1)
+                    if (tasks.Count > 1)
                     {
-                        await deleteDuplicates(tasksQuerySnapshot.Documents, calendarTaskId);
+                        await deleteDuplicates(tasks, calendarTaskId);
                     }
 
-                    foreach (var document in tasksQuerySnapshot.Documents)
+                    foreach (var document in tasks)
                     {
-                        if (document.Exists)
+                        if (document != null)
                         {
-                            var newFireTask = document.ConvertTo<FireCalendarTask>();
-                            var newTask = newFireTask.ToCalendarTask();
+                            var newTask = document.ToCalendarTask();
 
                             // for retrocompatibility 2020-04-19
                             if (String.IsNullOrEmpty(newTask.CalendarTaskId))
                                 newTask.CalendarTaskId = document.Id;
-
-                            // newFireTask.Id = document.Id; I don't believe this is necessary
 
                             return newTask;
                         }
@@ -415,17 +427,21 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                Query query = this.Connector.fireStoreDb
-                                            .Collection("task_todo")
-                                            .WhereEqualTo("CalendarTaskId", calendarTaskId);
+                var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.CalendarTaskId, calendarTaskId);
+                var tasksQuery = await this.Connector.mongoClient
+                                                     .GetDatabase(DBHyperTask)
+                                                     .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                                     .FindAsync<MongoCalendarTask>(filter);
+
+                Logger.Debug($"Request Units in CheckIfExistsAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
+                var tasks = tasksQuery.ToList();
 
                 try
                 {
-                    QuerySnapshot tasksQuerySnapshot = await query.GetSnapshotAsync();
-
-                    foreach (var document in tasksQuerySnapshot.Documents)
+                    foreach (var document in tasks)
                     {
-                        if (document.Exists)
+                        if (document != null)
                         {
                             return true;
                         }
@@ -449,30 +465,15 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                Query query = this.Connector.fireStoreDb
-                                            .Collection("task_todo")
-                                            .WhereEqualTo("CalendarTaskId", calendarTaskId);
+                var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.CalendarTaskId, calendarTaskId);
+                var deleteResult = await this.Connector.mongoClient
+                                                       .GetDatabase(DBHyperTask)
+                                                       .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                                       .DeleteOneAsync(filter);
 
-                var firstDocument = (await query.GetSnapshotAsync()).Documents.FirstOrDefault();
+                Logger.Debug($"Request Units in DeleteTaskAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
 
-                if (firstDocument != null && firstDocument.Exists)
-                {
-                    await firstDocument.Reference.DeleteAsync();
-
-                    return true;
-                }
-                else // this is going to be obsolete
-                {
-                    DocumentReference taskRef = this.Connector.fireStoreDb
-                                                              .Collection("task_todo")
-                                                              .Document(calendarTaskId);
-
-                    await taskRef.DeleteAsync();
-
-                    //TODO: Delete the history (the delete history function has to be done first, or do we want to keep it and simply void the task to preserve the history ? or delete only if there is no history and void if there is one)
-
-                    return true;
-                }
+                return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)
             {
@@ -485,16 +486,15 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                var firstDocument = this.Connector.fireStoreDb
-                                        .Collection("task_todo")
-                                        .Document(fireBaseId);
+                var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.Id, fireBaseId);
+                var deleteResult = await this.Connector.mongoClient
+                                                       .GetDatabase(DBHyperTask)
+                                                       .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                                       .DeleteOneAsync(filter);
 
-                if (firstDocument != null)
-                {
-                    await firstDocument.DeleteAsync();
-                }
+                Logger.Debug($"Request Units in DeleteTaskWithFireBaseIdAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
 
-                return true;
+                return deleteResult.DeletedCount == 1;
             }
             catch (Exception ex)
             {

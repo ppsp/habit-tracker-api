@@ -12,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace HyperTaskServices.Services
 {
-    public class UserService : IUserService
+    public class FireUserService : IUserService
     {
         private const string table_name = "user";
         private FirebaseConnector Connector { get; set; }
-        private CalendarTaskService CalendarTaskService { get; set; }
-        private TaskGroupService TaskGroupService { get; set; }
+        private FireCalendarTaskService CalendarTaskService { get; set; }
+        private FireTaskGroupService TaskGroupService { get; set; }
 
-        public UserService(FirebaseConnector connector,
-                           CalendarTaskService calendarTaskService,
-                           TaskGroupService taskGroupService)
+        public FireUserService(FirebaseConnector connector,
+                           FireCalendarTaskService calendarTaskService,
+                           FireTaskGroupService taskGroupService)
         {
             this.Connector = connector;
             this.CalendarTaskService = calendarTaskService;
@@ -223,11 +223,11 @@ namespace HyperTaskServices.Services
             }
         }
 
-        public async Task<List<IUser>> GetInactiveAccounts()
+        public async Task<List<IUser>> GetAllUsersAsync()
         {
             try
             {
-                var result = await getInactiveAccounts();
+                var result = await getAllUsersAsync();
                 return result;
             }
             catch (Exception ex)
@@ -237,7 +237,7 @@ namespace HyperTaskServices.Services
             }
         }
 
-        private async Task<List<IUser>> getInactiveAccounts()
+        private async Task<List<IUser>> getAllUsersAsync()
         {
             // TODO : Get only Activity Date older than one year
 

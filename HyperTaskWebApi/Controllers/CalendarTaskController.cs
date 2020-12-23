@@ -18,19 +18,20 @@ namespace HyperTaskWebApi.Controllers
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class CalendarTaskController : ControllerBase
     {
-        private CalendarTaskService CalendarTaskService { get; set; }
-        private UserService UserService { get; set; }
+        private MongoCalendarTaskService CalendarTaskService { get; set; }
+        private MongoUserService UserService { get; set; }
 
-        public CalendarTaskController(FirebaseConnector connector,
-                                      TaskGroupService taskGroupService)
+        public CalendarTaskController(FirebaseConnector fireConnector,
+                                      MongoConnector mongoConnector,
+                                      MongoTaskGroupService taskGroupService)
         {
-            CalendarTaskService = new CalendarTaskService(connector);
-            UserService = new UserService(connector, CalendarTaskService, taskGroupService);
+            CalendarTaskService = new MongoCalendarTaskService(mongoConnector);
+            UserService = new MongoUserService(mongoConnector, CalendarTaskService, taskGroupService, fireConnector);
         }
 
         // GET
         [HttpGet]
-        [RequestLimit("GetTasks", NoOfRequest = 20, Seconds = 3600)]
+        [RequestLimit("GetTasks", NoOfRequest = 2000, Seconds = 3600)]
         public async Task<IActionResult> Get([FromQuery]DTOGetCalendarTaskRequest dtoRequest)
         {
             await ValidateUserId(dtoRequest.userId);
@@ -42,22 +43,28 @@ namespace HyperTaskWebApi.Controllers
 
         // POST
         [HttpPost]
-        [RequestLimit("PostTask", NoOfRequest = 100, Seconds = 3600)]
+        [RequestLimit("PostTask", NoOfRequest = 10000, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]DTOCalendarTask task)
         {
+            var dateStart = DateTime.Now;
             await ValidateUserId(task.UserId);
+            Logger.Debug("Post CalendarTask Validated User, seconds = " + (DateTime.Now - dateStart).TotalSeconds);
 
             task.Validate();
+            Logger.Debug("Post CalendarTask Validated Task, seconds = " + (DateTime.Now - dateStart).TotalSeconds);
 
             await UserService.UpdateLastActivityDate(task.UserId, task.UpdateDate ?? DateTime.Now);
+            Logger.Debug("Post CalendarTask Update Last ActivityDate, seconds = " + (DateTime.Now - dateStart).TotalSeconds);
 
             var result = await CalendarTaskService.InsertTaskAsync(task);
+            Logger.Debug("Post CalendarTask Inserted Task, seconds = " + (DateTime.Now - dateStart).TotalSeconds);
+
             return Ok(result);
         }
 
         // PUT
         [HttpPut]
-        [RequestLimit("PutTask", NoOfRequest = 50, Seconds = 3600)]
+        [RequestLimit("PutTask", NoOfRequest = 5000, Seconds = 3600)]
         public async Task<IActionResult> Put([FromBody]DTOCalendarTask task)
         {
             await ValidateUserId(task.UserId);

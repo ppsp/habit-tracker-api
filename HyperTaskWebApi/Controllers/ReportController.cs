@@ -17,10 +17,10 @@ namespace HyperTaskWebApi.Controllers
     public class ReportController : ControllerBase
     {
         private ReportService ReportService { get; set; }
-        private UserService UserService { get; set; }
+        private MongoUserService UserService { get; set; }
 
         public ReportController(ReportService reportService,
-                                UserService userService)
+                                MongoUserService userService)
         {
             ReportService = reportService;
             UserService = userService;
@@ -28,7 +28,7 @@ namespace HyperTaskWebApi.Controllers
 
         // Download all tasks in a csv
         [HttpGet]
-        [RequestLimit("GetReport", NoOfRequest = 5, Seconds = 3600)]
+        [RequestLimit("GetReport", NoOfRequest = 500, Seconds = 3600)]
         public async Task<IActionResult> Get(string userId)
         {
             await ValidateUserId(userId);

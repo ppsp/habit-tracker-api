@@ -13,7 +13,7 @@ namespace HyperTaskTest
         {
             // ARRANGE
             var testTask = getTestTask();
-            var result = this.calendarTaskService.InsertTaskAsync(testTask).Result;
+            var result = this.fireCalendarTaskService.InsertTaskAsync(testTask).Result;
             TaskHistory testHistory = getDoneTestTaskHistory(testTask);
             // testHistory.CalendarTaskId = result;
             // ACT

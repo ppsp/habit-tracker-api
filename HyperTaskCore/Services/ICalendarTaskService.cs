@@ -11,6 +11,7 @@ namespace HyperTaskCore.Services
                                                 bool includeVoid = false, 
                                                 int? firstPosition = null,
                                                 int? lastPosition = null,
+                                                string groupId = null,
                                                 bool includeOnceDone = true);
         Task<bool> UpdateTaskAsync(ICalendarTask task);
         Task<ICalendarTask> GetTaskAsync(string calendarTaskId);

@@ -6,6 +6,7 @@ using System.Text;
 
 namespace HyperTaskServices.Caching
 {
+    [Obsolete("not tested", true)]
     public class TaskHistoryCache
     {
         private CachingManager Caching { get; set; }

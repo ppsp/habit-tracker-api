@@ -37,6 +37,7 @@ namespace HyperTaskWebApi
 
             var vaultName = Configuration["KeyVaultName"];
             var vaultFirebaseSecretName = Configuration["KeyVaultFirebaseSecretName"];
+            var vaultMongoConnectionSecretName = Configuration["KeyVaultMongoConnectionSecretName"];
             var vaultInstrumentationKeySecretName = Configuration["InstrumentationKeySecretName"];
             var personnalAccessTokenSecretName = Configuration["AzureDevopsPersonnalTokenSecretName"];
             var azureDevopsUri = Configuration["AzureDevopsUri"];
@@ -72,6 +73,15 @@ namespace HyperTaskWebApi
                 return firebaseConnector;
             });
 
+            // Add MongoConnector which depends on AzureVaultConnector
+            services.AddSingleton(serviceProvider => {
+                var avureVault = serviceProvider.GetService<AzureVaultConnector>();
+                var mongoConnectionString = avureVault.GetSecretValueString(vaultMongoConnectionSecretName);
+                var mongoConnector = new MongoConnector(mongoConnectionString);
+
+                return mongoConnector;
+            });
+
             // Add AzureDevops which depends on AzureVaultConnector
             services.AddSingleton(serviceProvider => {
                 var avureVault = serviceProvider.GetService<AzureVaultConnector>();
@@ -82,23 +92,37 @@ namespace HyperTaskWebApi
             });
 
             // Add CalendarTaskService
-            services.AddSingleton<CalendarTaskService>(serviceProvider => {
+            services.AddSingleton<FireCalendarTaskService>(serviceProvider => {
                 var firebaseConnector = serviceProvider.GetService<FirebaseConnector>();
-                var calendarTaskService= new CalendarTaskService(firebaseConnector);
+                var calendarTaskService= new FireCalendarTaskService(firebaseConnector);
+                return calendarTaskService;
+            });
+
+            // Add CalendarTaskService
+            services.AddSingleton<MongoCalendarTaskService>(serviceProvider => {
+                var mongoConnector = serviceProvider.GetService<MongoConnector>();
+                var calendarTaskService = new MongoCalendarTaskService(mongoConnector);
                 return calendarTaskService;
             });
 
             // Add GroupService
-            services.AddSingleton<TaskGroupService>(serviceProvider => {
+            services.AddSingleton<FireTaskGroupService>(serviceProvider => {
                 var firebaseConnector = serviceProvider.GetService<FirebaseConnector>();
-                var groupService = new TaskGroupService(firebaseConnector);
+                var groupService = new FireTaskGroupService(firebaseConnector);
+                return groupService;
+            });
+
+            // Add GroupService
+            services.AddSingleton<MongoTaskGroupService>(serviceProvider => {
+                var mongoConnector = serviceProvider.GetService<MongoConnector>();
+                var groupService = new MongoTaskGroupService(mongoConnector);
                 return groupService;
             });
 
             // Add ReportService
             services.AddSingleton<ReportService>(serviceProvider => {
-                var taskService = serviceProvider.GetService<CalendarTaskService>();
-                var groupService = serviceProvider.GetService<TaskGroupService>();
+                var taskService = serviceProvider.GetService<FireCalendarTaskService>();
+                var groupService = serviceProvider.GetService<FireTaskGroupService>();
                 var reportService = new ReportService(taskService, groupService);
                 return reportService;
             });

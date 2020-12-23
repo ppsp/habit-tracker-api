@@ -19,7 +19,7 @@ namespace HyperTaskTest
         [TestMethod]
         public void TaskGroup_Post_ShouldReturnIdAndCode200()
         {
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
 
             // ARRANGE
             var testTaskGroup = DTOTaskGroup.FromTaskGroup(getTestTaskGroup());
@@ -33,17 +33,19 @@ namespace HyperTaskTest
             Assert.IsTrue((okResult.Value as string).Length > 0);
             Assert.AreEqual(200, okResult.StatusCode);
             
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
         }
 
         [TestMethod]
         public void TaskGroup_Get_ShouldReturnTaskGroup()
         {
-            DeleteAllGroups();
+            // FirebaseDeleteAllGroups();
+            MongoDeleteAllGroups();
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            testGroup.Id = this.taskGroupService.InsertGroupAsync(testGroup).Result;
+            // testGroup.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            testGroup.Id = this.mongoTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // var retrievedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
@@ -57,22 +59,24 @@ namespace HyperTaskTest
             Assert.IsTrue(AssertValuesAreTheSame(testGroup, dtoTaskGroup[0].ToTaskGroup()));
             Assert.AreEqual(200, okResult.StatusCode);
 
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
         }
 
         [TestMethod]
         public void TaskGroup_Put_ShouldReturnTrue()
         {
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            testGroup.Id = this.taskGroupService.InsertGroupAsync(testGroup).Result;
+            // testGroup.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            testGroup.Id = this.mongoTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // var retrievedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
             // ACT
-            var updatedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            // var updatedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var updatedGroup = this.mongoTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
             updatedGroup.Name = "NewName2";
             updatedGroup.Position = 32;
             updatedGroup.Void = true;
@@ -86,7 +90,7 @@ namespace HyperTaskTest
             Assert.IsTrue((bool)okResult.Value);
             Assert.AreEqual(200, okResult.StatusCode);
 
-            DeleteAllGroups();
+            FirebaseDeleteAllGroups();
         }
     }
 }

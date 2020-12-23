@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,20 +26,23 @@ namespace HyperTaskTest
     public partial class CalendarTaskApiTest
     {
         private DependencyResolverHelper ServiceProvider;
-        private CalendarTaskService calendarTaskService;
-        private TaskGroupService taskGroupService;
+        private FireCalendarTaskService fireCalendarTaskService;
+        private MongoCalendarTaskService mongoCalendarTaskService;
+        private FireTaskGroupService fireTaskGroupService;
+        private MongoTaskGroupService mongoTaskGroupService;
         private TaskHistoryService taskHistoryService;
-        private UserService userService;
+        private FireUserService fireUserService;
+        private MongoUserService mongoUserService;
         private CalendarTaskController calendarTaskController;
         private TaskGroupController taskGroupController;
         private ReportService reportService;
         private static string testUserId = "testUser";
 
-        private HttpClient TestClient;
-
         public CalendarTaskApiTest()
         {
             Logger.ConfigLogger();
+
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
 
             var webHost = WebHost.CreateDefaultBuilder()
                                  .UseStartup<Startup>()
@@ -46,15 +50,20 @@ namespace HyperTaskTest
 
             ServiceProvider = new DependencyResolverHelper(webHost);
             var firebaseConnector = ServiceProvider.GetService<FirebaseConnector>();
-            this.taskGroupService = new TaskGroupService(firebaseConnector);
-            this.calendarTaskController = new CalendarTaskController(firebaseConnector, taskGroupService);
-            this.calendarTaskService = new CalendarTaskService(firebaseConnector);
-            this.taskHistoryService = new TaskHistoryService(calendarTaskService);
-            this.userService = new UserService(firebaseConnector, calendarTaskService, taskGroupService);
-            this.taskGroupController = new TaskGroupController(firebaseConnector, calendarTaskService);
-            this.reportService = new ReportService(calendarTaskService, taskGroupService);
+            var mongoConnector = ServiceProvider.GetService<MongoConnector>();
+            this.fireTaskGroupService = new FireTaskGroupService(firebaseConnector);
+            this.mongoTaskGroupService = new MongoTaskGroupService(mongoConnector);
+            this.calendarTaskController = new CalendarTaskController(firebaseConnector, mongoConnector, mongoTaskGroupService);
+            this.fireCalendarTaskService = new FireCalendarTaskService(firebaseConnector);
+            this.mongoCalendarTaskService = new MongoCalendarTaskService(mongoConnector);
+            this.taskHistoryService = new TaskHistoryService(fireCalendarTaskService);
+            this.fireUserService = new FireUserService(firebaseConnector, fireCalendarTaskService, fireTaskGroupService);
+            this.mongoUserService = new MongoUserService(mongoConnector, mongoCalendarTaskService, mongoTaskGroupService, firebaseConnector);
+            this.taskGroupController = new TaskGroupController(firebaseConnector, mongoConnector, mongoCalendarTaskService);
+            this.reportService = new ReportService(fireCalendarTaskService, fireTaskGroupService);
 
-            DeleteTests();
+            DeleteTestsFirebase();
+            DeleteTestsMongo();
         }
 
         [TestMethod]
@@ -66,7 +75,7 @@ namespace HyperTaskTest
             testTask.Name = "Test Task";
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
-            testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
+            testTask.RequiredDays = new List<DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
 
@@ -91,12 +100,13 @@ namespace HyperTaskTest
                 testTask.Name = Guid.NewGuid().ToString();
                 testTask.Frequency = eTaskFrequency.Monthly;
                 testTask.ResultType = eResultType.Decimal;
-                testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
+                testTask.RequiredDays = new List<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday };
                 testTask.UserId = testUserId;
                 testTask.AbsolutePosition = i;
                 testTask.InitialAbsolutePosition = i;
                 testTask.CalendarTaskId = Guid.NewGuid().ToString();
-                var id = calendarTaskService.InsertTaskAsync(testTask).Result;
+                //var id = fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+                var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
             }
 
             // ACT
@@ -121,14 +131,16 @@ namespace HyperTaskTest
             testTask.Name = "Test Task";
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
-            testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
+            testTask.RequiredDays = new List<DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
-            testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
-            var id = calendarTaskService.InsertTaskAsync(testTask).Result;
+            testTask.CalendarTaskId = Guid.NewGuid().ToString();
+            // var id = fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+            var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
             // ACT
-            var task = calendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            //var task = fireCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            var task = mongoCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
             var DTOtask = new DTOCalendarTask(task);
             var response = calendarTaskController.Put(DTOtask).Result;
             var okResult = response as OkObjectResult;
@@ -148,14 +160,16 @@ namespace HyperTaskTest
             testTask.Name = "Test Task";
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
-            testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
+            testTask.RequiredDays = new List<DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
-            testTask.CalendarTaskId = Guid.NewGuid().ToString(); 
-            var id = calendarTaskService.InsertTaskAsync(testTask).Result;
+            testTask.CalendarTaskId = Guid.NewGuid().ToString();
+            // var id = fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+            var id = mongoCalendarTaskService.InsertTaskAsync(testTask).Result;
 
             // ACT
-            var task = calendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            // var task = fireCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            var task = mongoCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
             var DTOtask = new DTOCalendarTask(task);
             DTOtask.Name = "new task name";
             DTOtask.AbsolutePosition = 2;
@@ -164,7 +178,8 @@ namespace HyperTaskTest
             DTOtask.ResultType = eResultType.Time;
             calendarTaskController.Put(DTOtask).Wait();
 
-            var taskUpdated = calendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            // var taskUpdated = fireCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
+            var taskUpdated = mongoCalendarTaskService.GetTaskAsync(testTask.CalendarTaskId).Result;
 
             // ASSERT
             Assert.AreEqual(DTOtask.Name, taskUpdated.Name);
@@ -189,7 +204,7 @@ namespace HyperTaskTest
 
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
-            testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
+            testTask.RequiredDays = new List<DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
 
@@ -206,7 +221,7 @@ namespace HyperTaskTest
             testTask.CalendarTaskId = Guid.NewGuid().ToString();
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
-            testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
+            testTask.RequiredDays = new List<DayOfWeek>() { DayOfWeek.Monday };
             testTask.UserId = testUserId;
             testTask.AbsolutePosition = 1;
             testTask.Histories.Add(new TaskHistory()
@@ -224,13 +239,23 @@ namespace HyperTaskTest
             Assert.ThrowsException<AggregateException>(() => calendarTaskController.Post(testTask).Result);
         }
 
-        private void DeleteTests()
+        private void DeleteTestsFirebase()
         {
-            var tasks = calendarTaskService.GetTasksAsync(testUserId, true).Result;
+            var tasks = fireCalendarTaskService.GetTasksAsync(testUserId, true).Result;
 
             foreach (var task in tasks)
             {
-                var result = calendarTaskService.DeleteTaskAsync(task.CalendarTaskId).Result;
+                var result = fireCalendarTaskService.DeleteTaskAsync(task.CalendarTaskId).Result;
+            }
+        }
+
+        private void DeleteTestsMongo()
+        {
+            var tasks = mongoCalendarTaskService.GetTasksAsync(testUserId, true).Result;
+
+            foreach (var task in tasks)
+            {
+                var result = mongoCalendarTaskService.DeleteTaskAsync(task.CalendarTaskId).Result;
             }
         }
     }

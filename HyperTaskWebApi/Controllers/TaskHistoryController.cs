@@ -16,19 +16,20 @@ namespace HyperTaskWebApi.Controllers
     public class TaskHistoryController : ControllerBase
     {
         private TaskHistoryService TaskHistoryService { get; set; }
-        private UserService UserService { get; set; }
+        private MongoUserService UserService { get; set; }
 
-        public TaskHistoryController(FirebaseConnector connector,
-                                     CalendarTaskService calendarTaskService,
-                                     TaskGroupService taskGroupService)
+        public TaskHistoryController(FirebaseConnector fireConnector,
+                                     MongoConnector mongoConnector,
+                                     MongoCalendarTaskService calendarTaskService,
+                                     MongoTaskGroupService taskGroupService)
         {
             TaskHistoryService = new TaskHistoryService(calendarTaskService);
-            UserService = new UserService(connector, calendarTaskService, taskGroupService);
+            UserService = new MongoUserService(mongoConnector, calendarTaskService, taskGroupService, fireConnector);
         }
 
         // POST
         [HttpPost]
-        [RequestLimit("PostHistory", NoOfRequest = 500, Seconds = 3600)]
+        [RequestLimit("PostHistory", NoOfRequest = 50000, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]TaskHistory task)
         {
             Logger.Debug("posting taskhistory id:" + task.CalendarTaskId);
@@ -43,7 +44,7 @@ namespace HyperTaskWebApi.Controllers
 
         // PUT
         [HttpPut]
-        [RequestLimit("PutHistory", NoOfRequest = 200, Seconds = 3600)]
+        [RequestLimit("PutHistory", NoOfRequest = 20000, Seconds = 3600)]
         public async Task<IActionResult> Put([FromBody]TaskHistory task)
         {
             Logger.Debug("putting taskhistory id:" + task.CalendarTaskId);
