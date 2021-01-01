@@ -46,6 +46,7 @@ namespace HyperTaskWebApi
             if (vaultName != null)
             {
                 Logger.Debug("from config, KeyVaultName : " + vaultName);
+                Console.WriteLine("from config, KeyVaultName : " + vaultName);
                 Logger.Debug("from config, KeyVaultFirebaseSecretName : " + vaultFirebaseSecretName);
             }
             else
