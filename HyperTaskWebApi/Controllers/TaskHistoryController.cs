@@ -60,7 +60,10 @@ namespace HyperTaskWebApi.Controllers
         private async Task ValidateUserId(string userId)
         {
             if (!await this.UserService.ValidateUserId(userId, this.Request.GetJwt()))
+            {
+                Logger.Error($"TaskHistoryController UserId is invalid userId={userId} jwt={this.Request.GetJwt()}");
                 throw new UnauthorizedAccessException("userId does not correspond to authenticated user");
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using HyperTaskTools;
 using HyperTaskWebApi.ActionFilterAttributes;
 using HyperTaskWebApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,6 +45,8 @@ namespace HyperTaskWebApi.Controllers
         [RequestLimit("PostGroup", NoOfRequest = 5000, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]DTOTaskGroup group)
         {
+            Logger.Debug("Post TaskGroup" + JsonConvert.SerializeObject(group));
+
             await ValidateUserId(group.UserId);
 
             await UserService.UpdateLastActivityDate(group.UserId, group.UpdateDate ?? DateTime.Now);
@@ -68,7 +71,10 @@ namespace HyperTaskWebApi.Controllers
         private async Task ValidateUserId(string userId)
         {
             if (!await this.UserService.ValidateUserId(userId, this.Request.GetJwt()))
+            {
+                Logger.Error($"TaskGroupController UserId is invalid userId={userId} jwt={this.Request.GetJwt()}");
                 throw new UnauthorizedAccessException("userId does not correspond to authenticated user");
+            }
         }
     }
 }
