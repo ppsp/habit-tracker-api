@@ -29,7 +29,7 @@ namespace HyperTaskWebApi.ActionFilterAttributes
                 else
                     return;
             }
-            catch (InvalidJwtTokenException)
+            catch (InvalidJwtTokenException x)
             {
                 throw new UnauthorizedAccessException();
             }

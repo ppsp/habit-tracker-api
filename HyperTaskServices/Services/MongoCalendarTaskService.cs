@@ -295,6 +295,7 @@ namespace HyperTaskServices.Services
             if (firstDocument != null)
             {
                 var mongoTask = new MongoCalendarTask(task);
+                mongoTask.Id = firstDocument.Id;
 
                 var result = await this.Connector.mongoClient
                                                  .GetDatabase(DBHyperTask)

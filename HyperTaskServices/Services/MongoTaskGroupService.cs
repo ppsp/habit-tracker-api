@@ -199,6 +199,7 @@ namespace HyperTaskServices.Services
             if (firstDocument != null)
             {
                 var mongoGroup = MongoTaskGroup.FromTaskGroup(group);
+                mongoGroup.Id = firstDocument.Id;
 
                 var result = await this.Connector.mongoClient
                                                  .GetDatabase(DBHyperTask)
