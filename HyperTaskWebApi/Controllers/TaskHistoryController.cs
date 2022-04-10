@@ -4,6 +4,7 @@ using HyperTaskTools;
 using HyperTaskWebApi.ActionFilterAttributes;
 using HyperTaskWebApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
@@ -32,6 +33,7 @@ namespace HyperTaskWebApi.Controllers
         [RequestLimit("PostHistory", NoOfRequest = 50000, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]TaskHistory task)
         {
+            Logger.Debug("posting taskhistory id:" + JsonConvert.SerializeObject(task));
             Logger.Debug("posting taskhistory id:" + task.CalendarTaskId);
 
             await ValidateUserId(task.UserId);
