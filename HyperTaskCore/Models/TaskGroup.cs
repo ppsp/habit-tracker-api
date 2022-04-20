@@ -24,7 +24,8 @@ namespace HyperTaskCore.Models
         public bool Void { get; set; }
         [ReportInclude]
         public DateTime? VoidDate { get; set; }
-
+        [ReportInclude]
+        public bool RecurringDefault { get; set; }
         public TaskGroup()
         {
             this.InitialPosition = TaskPosition.MaxValue;

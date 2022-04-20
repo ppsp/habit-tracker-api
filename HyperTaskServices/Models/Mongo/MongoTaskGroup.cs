@@ -31,6 +31,8 @@ namespace HyperTaskServices.Models.Mongo
         public bool Void { get; set; }
         [BsonElement]
         public DateTime? VoidDate { get; set; }
+        [BsonElement]
+        public bool RecurringDefault { get; set; }
 
         public TaskGroup ToTaskGroup()
         {

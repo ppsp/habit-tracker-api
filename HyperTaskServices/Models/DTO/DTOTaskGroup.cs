@@ -22,7 +22,7 @@ namespace HyperTaskServices.Models.DTO
         public DateTime? UpdateDate { get; set; }
         public bool Void { get; set; }
         public DateTime? VoidDate { get; set; }
-
+        public bool RecurringDefault { get; set; }
         public DTOTaskGroup()
         {
             this.InitialPosition = TaskPosition.MaxValue;
@@ -42,6 +42,7 @@ namespace HyperTaskServices.Models.DTO
             newGroup.UserId = this.UserId;
             newGroup.Void = this.Void;
             newGroup.VoidDate = this.VoidDate;
+            newGroup.RecurringDefault = false;
 
             return newGroup;
         }
@@ -61,6 +62,7 @@ namespace HyperTaskServices.Models.DTO
             newGroup.UserId = group.UserId;
             newGroup.Void = group.Void;
             newGroup.VoidDate = group.VoidDate;
+            newGroup.RecurringDefault = group.RecurringDefault;
 
             return newGroup;
         }

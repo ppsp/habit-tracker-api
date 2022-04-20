@@ -27,6 +27,8 @@ namespace HyperTaskServices.Models.Firestore
         public bool Void { get; set; }
         [FirestoreProperty]
         public DateTime? VoidDate { get; set; }
+        [FirestoreProperty]
+        public bool RecurringDefault { get; set; }
 
         public TaskGroup ToTaskGroup()
         {
@@ -41,6 +43,7 @@ namespace HyperTaskServices.Models.Firestore
             newGroup.UserId = this.UserId;
             newGroup.Void = this.Void;
             newGroup.VoidDate = this.VoidDate;
+            newGroup.RecurringDefault = this.RecurringDefault;
 
             return newGroup;
         }
@@ -59,6 +62,7 @@ namespace HyperTaskServices.Models.Firestore
             newGroup.UserId = group.UserId;
             newGroup.Void = group.Void;
             newGroup.VoidDate = group.VoidDate;
+            newGroup.RecurringDefault = group.RecurringDefault;
 
             return newGroup;
         }
