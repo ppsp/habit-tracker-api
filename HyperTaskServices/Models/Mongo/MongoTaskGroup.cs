@@ -48,6 +48,7 @@ namespace HyperTaskServices.Models.Mongo
             newGroup.Void = this.Void;
             newGroup.VoidDate = this.VoidDate;
             newGroup.Id = this.Id;
+            newGroup.RecurringDefault = this.RecurringDefault;
 
             return newGroup;
         }
@@ -66,6 +67,7 @@ namespace HyperTaskServices.Models.Mongo
             newGroup.Void = group.Void;
             newGroup.VoidDate = group.VoidDate;
             newGroup.Id = group.Id;
+            newGroup.RecurringDefault = group.RecurringDefault;
 
             return newGroup;
         }
