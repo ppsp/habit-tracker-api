@@ -15,7 +15,6 @@ namespace HyperTaskWebApi.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    [LogRequest]
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class CalendarTaskController : ControllerBase
     {
@@ -32,6 +31,7 @@ namespace HyperTaskWebApi.Controllers
 
         // GET
         [HttpGet]
+        [LogRequest]
         [RequestLimit("GetTasks", NoOfRequest = 2000, Seconds = 3600)]
         public async Task<IActionResult> Get([FromQuery]DTOGetCalendarTaskRequest dtoRequest)
         {
@@ -44,6 +44,7 @@ namespace HyperTaskWebApi.Controllers
 
         // POST
         [HttpPost]
+        [LogRequest]
         [RequestLimit("PostTask", NoOfRequest = 10000, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]DTOCalendarTask task)
         {
@@ -65,6 +66,7 @@ namespace HyperTaskWebApi.Controllers
 
         // PUT
         [HttpPut]
+        [LogRequest]
         [RequestLimit("PutTask", NoOfRequest = 5000, Seconds = 3600)]
         public async Task<IActionResult> Put([FromBody]DTOCalendarTask task)
         {

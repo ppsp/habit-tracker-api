@@ -16,7 +16,7 @@ namespace HyperTaskWebApi.ActionFilterAttributes
     {
         public LogRequestAttribute()
         {
-           
+            Logger.Debug("LogRequestAttribute");
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
