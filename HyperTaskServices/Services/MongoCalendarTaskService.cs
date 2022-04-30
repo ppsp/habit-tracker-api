@@ -452,14 +452,10 @@ namespace HyperTaskServices.Services
             try
             {
                 var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.CalendarTaskId, calendarTaskId);
-                var tasksQuery = await this.Connector.mongoClient
-                                                     .GetDatabase(DBHyperTask)
-                                                     .GetCollection<MongoCalendarTask>(CollectionTasks)
-                                                     .FindAsync<MongoCalendarTask>(filter);
+                
+                var tasks = (await TryGet(filter)).ToList();
 
                 Logger.Debug($"Request Units in GetTaskAsync = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
-
-                var tasks = tasksQuery.ToList();
 
                 try
                 {
