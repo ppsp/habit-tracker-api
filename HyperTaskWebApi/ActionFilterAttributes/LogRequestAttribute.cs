@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HyperTaskWebApi.ActionFilterAttributes
 {
-    [AttributeUsage(AttributeTargets.Class|AttributeTargets.Method]
+    [AttributeUsage(AttributeTargets.Class|AttributeTargets.Method)]
     public class LogRequestAttribute : ActionFilterAttribute
     {
         public LogRequestAttribute()
