@@ -13,6 +13,7 @@ namespace HyperTaskWebApi.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
+    [LogRequest]
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class UserController : ControllerBase
     {
@@ -28,7 +29,6 @@ namespace HyperTaskWebApi.Controllers
 
         // GET
         [HttpGet]
-        [LogRequest]
         [RequestLimit("GetUser", NoOfRequest = 10000, Seconds = 3600)]
         public async Task<IActionResult> Get(string userId)
         {
@@ -41,7 +41,6 @@ namespace HyperTaskWebApi.Controllers
 
         // PUT
         [HttpPut]
-        [LogRequest]
         [RequestLimit("PutUser", NoOfRequest = 10000, Seconds = 3600)]
         public async Task<IActionResult> Put([FromBody]DTOUser user)
         {
@@ -53,7 +52,6 @@ namespace HyperTaskWebApi.Controllers
 
         // Delete
         [HttpDelete]
-        [LogRequest]
         [RequestLimit("DeleteUser", NoOfRequest = 1000, Seconds = 3600)]
         public async Task<IActionResult> Delete(string userId)
         {

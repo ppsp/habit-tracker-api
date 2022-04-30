@@ -13,6 +13,7 @@ namespace HyperTaskWebApi.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
+    [LogRequest]
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class TaskHistoryController : ControllerBase
     {
@@ -30,7 +31,6 @@ namespace HyperTaskWebApi.Controllers
 
         // POST
         [HttpPost]
-        [LogRequest]
         [RequestLimit("PostHistory", NoOfRequest = 50000, Seconds = 3600)]
         public async Task<IActionResult> Post([FromBody]TaskHistory task)
         {
@@ -47,7 +47,6 @@ namespace HyperTaskWebApi.Controllers
 
         // PUT
         [HttpPut]
-        [LogRequest]
         [RequestLimit("PutHistory", NoOfRequest = 20000, Seconds = 3600)]
         public async Task<IActionResult> Put([FromBody]TaskHistory task)
         {
