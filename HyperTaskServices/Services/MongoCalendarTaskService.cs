@@ -297,12 +297,19 @@ namespace HyperTaskServices.Services
                 var mongoTask = new MongoCalendarTask(task);
                 mongoTask.Id = firstDocument.Id;
 
+                // TODO: Find a solution for too many request units
+                if (task.Histories != null && task.Histories.Count > 90)
+                {
+                    Logger.Info("More than 90 histories, deleting :" + task.CalendarTaskId);
+                    task.Histories.RemoveAll(p => p.InsertDate < DateTime.Now.AddDays(-90));
+                }
+
                 var result = await this.Connector.mongoClient
                                                  .GetDatabase(DBHyperTask)
                                                  .GetCollection<MongoCalendarTask>(CollectionTasks)
                                                  .ReplaceOneAsync(filter, mongoTask);
 
-                Logger.Debug($"Request Units in updateTaskAsyncNoPositionCheck = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+                Logger.Debug($"Request Units in updateTaskAsyncNoPositionCheck2 = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
             }
         }
 
