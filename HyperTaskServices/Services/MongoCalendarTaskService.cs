@@ -260,7 +260,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error5 in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
                 return false;
             }
         }
@@ -313,11 +313,14 @@ namespace HyperTaskServices.Services
 
         private async Task<ReplaceOneResult> TryReplace(FilterDefinition<MongoCalendarTask> filter, MongoCalendarTask mongoTask)
         {
+            Logger.Debug("TryReplace Enter");
             int retry = 0;
             while (retry < 6)
             {
                 try
                 {
+                    Logger.Debug($"TryReplace [{retry}]");
+
                     var result = await this.Connector.mongoClient
                                            .GetDatabase(DBHyperTask)
                                            .GetCollection<MongoCalendarTask>(CollectionTasks)
