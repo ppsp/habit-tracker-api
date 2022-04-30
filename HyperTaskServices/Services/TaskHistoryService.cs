@@ -74,7 +74,8 @@ namespace HyperTaskServices.Services
             {
                 // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
                 Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
-                return false;
+                throw new Exception("Unable to updatehistory");
+                //return false;
             }
         }
     }
