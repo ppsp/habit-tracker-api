@@ -9,6 +9,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HyperTaskServices.Services
@@ -304,13 +305,42 @@ namespace HyperTaskServices.Services
                     task.Histories.RemoveAll(p => p.InsertDate < DateTime.Now.AddDays(-90));
                 }
 
-                var result = await this.Connector.mongoClient
-                                                 .GetDatabase(DBHyperTask)
-                                                 .GetCollection<MongoCalendarTask>(CollectionTasks)
-                                                 .ReplaceOneAsync(filter, mongoTask);
+                await TryReplace(filter, mongoTask);
 
                 Logger.Debug($"Request Units in updateTaskAsyncNoPositionCheck2 = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
             }
+        }
+
+        private async Task<ReplaceOneResult> TryReplace(FilterDefinition<MongoCalendarTask> filter, MongoCalendarTask mongoTask)
+        {
+            int retry = 0;
+            while (retry < 6)
+            {
+                try
+                {
+                    var result = await this.Connector.mongoClient
+                                           .GetDatabase(DBHyperTask)
+                                           .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                           .ReplaceOneAsync(filter, mongoTask);
+
+                    return result;
+                }
+                catch (MongoCommandException ex)
+                {
+                    if (ex.Code == 16500)
+                    {
+                        if (retry > 4)
+                            throw ex;
+
+                        Logger.Warn("Too many requests, retrying in 2 seconds", ex);
+                        retry++;
+
+                        Thread.Sleep(2000);
+                    }
+                }
+            }
+
+            throw new Exception("Too many requests");
         }
 
         private async Task deleteDuplicates(List<MongoCalendarTask> allDocuments, string logText)
