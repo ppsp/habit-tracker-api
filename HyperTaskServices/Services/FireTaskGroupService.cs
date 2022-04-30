@@ -47,7 +47,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in GetGroupAsync", ex);
                 return new TaskGroup();
             }
         }
@@ -82,7 +82,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in GetGroupsAsync", ex);
                 return new List<TaskGroup>();
             }
         }
@@ -111,7 +111,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in InsertGroupAsync", ex);
                 return null;
             }
         }
@@ -145,7 +145,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in CheckIfExistsAsync", ex);
                 throw ex;
             }
         }
@@ -176,7 +176,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in UpdateGroupAsync", ex);
                 return false;
             }
         }
@@ -231,7 +231,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in DeleteGroupAsync", ex);
                 return false;
             }
         }
@@ -253,7 +253,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in DeleteGroupWithFireBaseIdAsync", ex);
                 return false;
             }
         }
@@ -279,7 +279,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in ReorderGroups", ex);
                 return false;
             }
         }

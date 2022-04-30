@@ -133,7 +133,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in InsertTaskAsync", ex);
                 return null;
             }
         }
@@ -177,7 +177,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in ReorderTasks", ex);
                 return false;
             }
         }
@@ -372,7 +372,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in UpdateTaskAsync", ex);
                 return false;
             }
         }
@@ -397,10 +397,8 @@ namespace HyperTaskServices.Services
             try
             {
                 var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.Id, Id);
-                var tasks = await this.Connector.mongoClient
-                                                .GetDatabase(DBHyperTask)
-                                                .GetCollection<MongoCalendarTask>(CollectionTasks)
-                                                .FindAsync(filter);
+
+                var tasks = await TryGet(filter);
 
                 Logger.Debug($"Request Units in GetTaskAsyncCustomId = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
 
@@ -408,9 +406,45 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in GetTaskAsyncCustomId", ex);
                 return null;
             }
+        }
+
+
+        private async Task<IAsyncCursor<MongoCalendarTask>> TryGet(FilterDefinition<MongoCalendarTask> filter)
+        {
+            Logger.Debug("TryGet Enter");
+            int retry = 0;
+            while (retry < 6)
+            {
+                try
+                {
+                    Logger.Debug($"TryGet [{retry}]");
+
+                    var tasks = await this.Connector.mongoClient
+                                                .GetDatabase(DBHyperTask)
+                                                .GetCollection<MongoCalendarTask>(CollectionTasks)
+                                                .FindAsync(filter);
+
+                    return tasks;
+                }
+                catch (MongoCommandException ex)
+                {
+                    if (ex.Code == 16500)
+                    {
+                        if (retry > 4)
+                            throw ex;
+
+                        Logger.Warn("Too many requests, retrying in 2 seconds", ex);
+                        retry++;
+
+                        Thread.Sleep(2000);
+                    }
+                }
+            }
+
+            throw new Exception("Too many requests TryGet");
         }
 
         public async Task<ICalendarTask> GetTaskAsync(string calendarTaskId)
@@ -459,7 +493,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in GetTaskAsync", ex);
                 return null;
             }
         }
@@ -497,7 +531,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in CheckIfExistsAsync", ex);
                 throw ex;
             }
         }
@@ -518,7 +552,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in DeleteTaskAsync", ex);
                 return false;
             }
         }
@@ -539,7 +573,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in DeleteTaskWithFireBaseIdAsync", ex);
                 return false;
             }
         }

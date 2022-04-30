@@ -33,7 +33,7 @@ namespace HyperTaskServices.Services
             {
                 // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
 
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in InsertHistoryAsync", ex);
                 throw new Exception("Too many requests");
                 //return null;
             }
@@ -73,7 +73,7 @@ namespace HyperTaskServices.Services
             catch (Exception ex)
             {
                 // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in UpdateHistoryAsync", ex);
                 throw new Exception("Unable to updatehistory");
                 //return false;
             }

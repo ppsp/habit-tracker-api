@@ -36,7 +36,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in GetUserAsync", ex);
                 return NULLUser.Instance;
             }
         }
@@ -98,13 +98,13 @@ namespace HyperTaskServices.Services
                 }
                 else
                 {
-                    Logger.Error($"GRPC Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                    Logger.Error($"GRPC Error in InsertUpdateUserAsync", ex);
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in InsertUpdateUserAsync", ex);
                 return false;
             }
         }
@@ -138,7 +138,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in CheckIfExistsAsync", ex);
                 throw ex;
             }
         }
@@ -193,7 +193,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in InsertUserAsync", ex);
                 return false;
             }
         }
@@ -218,7 +218,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in DeleteUserAsync", ex);
                 return false;
             }
         }
@@ -232,7 +232,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in GetAllUsersAsync", ex);
                 return new List<IUser>();
             }
         }
@@ -273,7 +273,7 @@ namespace HyperTaskServices.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Error deleting from authentication in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                    Logger.Error($"Error deleting from authentication in PermaDeleteUser", ex);
                 }
 
                 // DELETE FROM CALENDARTASK TABLE
@@ -288,7 +288,7 @@ namespace HyperTaskServices.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Error deleting calendartask table in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                    Logger.Error($"Error deleting calendartask table in PermaDeleteUser", ex);
                 }
 
                 // DELETE FROM GROUP TABLE
@@ -303,14 +303,14 @@ namespace HyperTaskServices.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Error deleting calendartask table in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                    Logger.Error($"Error deleting calendartask table in PermaDeleteUser", ex);
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in PermaDeleteUser", ex);
                 return false;
             }
         }
@@ -332,7 +332,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in DeleteUserWithFireBaseIdAsync", ex);
                 return false;
             }
         }

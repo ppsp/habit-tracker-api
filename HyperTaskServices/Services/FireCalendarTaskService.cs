@@ -133,7 +133,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in InsertTaskAsync", ex);
                 return null;
             }
         }
@@ -170,7 +170,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in ReorderTasks", ex);
                 return false;
             }
         }
@@ -253,7 +253,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in UpdateTaskAsyncNoPositionCheck", ex);
                 return false;
             }
         }
@@ -326,7 +326,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in UpdateTaskAsync", ex);
                 return false;
             }
         }
@@ -363,7 +363,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in GetTaskAsyncCustomId", ex);
                 return null;
             }
         }
@@ -413,7 +413,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in GetTaskAsync", ex);
                 return null;
             }
         }
@@ -447,7 +447,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in CheckIfExistsAsync", ex);
                 throw ex;
             }
         }
@@ -483,7 +483,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in DeleteTaskAsync", ex);
                 return false;
             }
         }
@@ -505,7 +505,7 @@ namespace HyperTaskServices.Services
             }
             catch (Exception ex)
             {
-                Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                Logger.Error($"Error in DeleteTaskWithFireBaseIdAsync", ex);
                 return false;
             }
         }
