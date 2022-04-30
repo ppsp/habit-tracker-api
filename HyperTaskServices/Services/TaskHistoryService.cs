@@ -34,7 +34,8 @@ namespace HyperTaskServices.Services
                 // TODO: Throw exception instead of returning null and add an exceptoin handler on the controller
 
                 Logger.Error($"Error in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
-                return null;
+                throw new Exception("Too many requests");
+                //return null;
             }
         }
 

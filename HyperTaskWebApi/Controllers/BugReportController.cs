@@ -10,6 +10,7 @@ namespace HyperTaskWebApi.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
+    [ExceptionHandling]
     [LogRequest]
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class BugReportController : ControllerBase

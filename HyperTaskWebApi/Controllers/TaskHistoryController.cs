@@ -14,6 +14,7 @@ namespace HyperTaskWebApi.Controllers
     [Produces("application/json")]
     [ApiController]
     [LogRequest]
+    [ExceptionHandling]
     [ServiceFilter(typeof(AuthorizeJwt))]
     public class TaskHistoryController : ControllerBase
     {
