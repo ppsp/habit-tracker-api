@@ -396,7 +396,33 @@ namespace HyperTaskServices.Services
         {
             try
             {
+                if (Id.Contains("."))
+                    return await GetTaskAsyncCustomCalendarTaskId(Id);
+
                 var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.Id, Id); 
+
+                var tasks = await TryGet(filter);
+
+                Logger.Debug($"Request Units in GetTaskAsyncCustomId = {this.Connector.GetLatestRequestCharge(DBHyperTask)}");
+
+                return tasks.ToList().FirstOrDefault().ToCalendarTask();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error in GetTaskAsyncCustomId", ex);
+                return null;
+            }
+        }
+
+
+        // For retrocompatibility
+        private async Task<ICalendarTask> GetTaskAsyncCustomCalendarTaskId(string CalendarTaskId)
+        {
+            try
+            {
+                Logger.Warn("Getting old CalendarTaskId" + CalendarTaskId);
+
+                var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.CalendarTaskId, CalendarTaskId);
 
                 var tasks = await TryGet(filter);
 
