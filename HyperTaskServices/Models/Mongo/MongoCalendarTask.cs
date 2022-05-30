@@ -13,7 +13,7 @@ namespace HyperTaskServices.Models.Mongo
     public class MongoCalendarTask
     {
         [BsonId]
-        //[BsonRepresentation(BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         [BsonElement]
         public string CalendarTaskId { get; set; }

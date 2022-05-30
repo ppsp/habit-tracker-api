@@ -9,7 +9,7 @@ namespace HyperTaskServices.Models.Mongo
     public class MongoUser
     {
         [BsonId]
-        //[BsonRepresentation(BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         [BsonElement]
         public string UserId { get; set; }
