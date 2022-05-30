@@ -396,8 +396,7 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                //var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.Id, Id); // test remove this
-                var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.CalendarTaskId, Id); // test
+                var filter = Builders<MongoCalendarTask>.Filter.Eq(p => p.Id, Id); 
 
                 var tasks = await TryGet(filter);
 
