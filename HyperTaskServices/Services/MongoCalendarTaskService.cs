@@ -39,7 +39,21 @@ namespace HyperTaskServices.Services
         {
             try
             {
-                return await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, groupId, includeOnceDone);
+                var tasks = await getTasksAsync(userId, includeVoid, firstPosition, lastPosition, groupId, includeOnceDone);
+
+                foreach (var group in tasks.GroupBy(p => p.GroupId))
+                {
+                    if (group.Where(p => !p.Void &&
+                                    (IsPresentOrFuture(p)))
+                             .GroupBy(p => p.AbsolutePosition).Any(p => p.Count() > 1)) // more than 1 have same position in same group
+                    {
+                        var buggedGroupId = group.First().GroupId;
+                        Logger.Warn($"Reordering bugged tasks with same position, userId = {userId} groupId = {groupId}");
+                        await reorderAllTasks(group);
+                    }
+                }
+
+                return tasks;
             }
             catch (Exception ex)
             {
@@ -245,6 +259,24 @@ namespace HyperTaskServices.Services
             }
         }
 
+        private async Task reorderAllTasks(IEnumerable<ICalendarTask> tasks)
+        {
+            tasks = tasks.Where(p => !p.Void &&
+                                     (IsPresentOrFuture(p)))
+                         .OrderBy(p => p.AbsolutePosition)
+                         .ToList();
+
+            int positionIterator = 1;
+            foreach (var currentTask in tasks)
+            {
+                currentTask.AbsolutePosition = positionIterator++;
+
+                await UpdateTaskAsyncNoPositionCheck(currentTask);
+
+                Thread.Sleep(50);
+            }
+        }
+
         private static bool IsPresentOrFuture(ICalendarTask p)
         {
             return p.Frequency.NotIn(eTaskFrequency.Once, eTaskFrequency.UntilDone) ||
@@ -253,16 +285,37 @@ namespace HyperTaskServices.Services
 
         private async Task<bool> UpdateTaskAsyncNoPositionCheck(ICalendarTask task)
         {
-            try
+            int retry = 0;
+            while (retry < 6)
             {
-                await updateTaskAsyncNoPositionCheck(task);
-                return true;
+                try
+                {
+                    Logger.Debug($"TryUpdate [{retry}]");
+
+                    await updateTaskAsyncNoPositionCheck(task);
+                    return true;
+                }
+                catch (MongoCommandException ex)
+                {
+                    if (ex.Code == 16500)
+                    {
+                        if (retry > 4)
+                            throw ex;
+
+                        Logger.Warn("Too many requests, retrying in 2 seconds", ex);
+                        retry++;
+
+                        Thread.Sleep(2000);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Error5 in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
+                    return false;
+                }
             }
-            catch (Exception ex)
-            {
-                Logger.Error($"Error5 in {System.Reflection.MethodBase.GetCurrentMethod().Name}", ex);
-                return false;
-            }
+
+            throw new Exception("Too many requests");
         }
 
         private async Task updateTaskAsyncNoPositionCheck(ICalendarTask task)
