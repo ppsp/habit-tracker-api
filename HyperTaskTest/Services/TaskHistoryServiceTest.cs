@@ -13,11 +13,11 @@ namespace HyperTaskTest
         {
             // ARRANGE
             var testTask = getTestTask();
-            var result = this.fireCalendarTaskService.InsertTaskAsync(testTask).Result;
+            var result = this._fireCalendarTaskService.InsertTaskAsync(testTask).Result;
             TaskHistory testHistory = getDoneTestTaskHistory(testTask);
             // testHistory.CalendarTaskId = result;
             // ACT
-            var id = taskHistoryService.InsertHistoryAsync(testHistory).Result;
+            var id = _taskHistoryService.InsertHistoryAsync(testHistory).Result;
 
             // ASSERT
             Assert.IsTrue(id != null && id.Length > 0);
@@ -68,8 +68,8 @@ namespace HyperTaskTest
             testTask.Frequency = eTaskFrequency.Daily;
             testTask.ResultType = eResultType.Binary;
             testTask.RequiredDays = new List<System.DayOfWeek>() { DayOfWeek.Monday };
-            testTask.UserId = testUserId;
-            testTask.AbsolutePosition = 1;
+            testTask.UserId = _testUserId;
+            testTask.Position = 1;
             testTask.CalendarTaskId = Guid.NewGuid().ToString();
             return testTask;
         }

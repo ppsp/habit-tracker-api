@@ -58,7 +58,7 @@ namespace HyperTaskServices.Services
                                                                        group.GetPropertyValue(p.Name).ToString().Replace(",", " ")))); // group values
 
                 // Loop on tasks
-                foreach (var task in tasks.Where(p => p.GroupId == group.GroupId).OrderBy(p => p.AbsolutePosition))
+                foreach (var task in tasks.Where(p => p.GroupId == group.GroupId).OrderBy(p => p.Position))
                 {
                     lines.Add(String.Concat(new String(',', groupProperties.Count), // group columns
                                             String.Join(",", taskProperties.Select(p => task.GetPropertyValue(p.Name) == null ?

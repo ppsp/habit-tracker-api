@@ -30,7 +30,7 @@ namespace HyperTaskServices.Models.DTO
         /// <summary>
         /// Position (order) in the task list
         /// </summary>
-        public int AbsolutePosition { get; set; }
+        public int Position { get; set; }
 
         /// <summary>
         /// The result type of the task. If It's simply Done or Not done, use Binary. 
@@ -83,11 +83,11 @@ namespace HyperTaskServices.Models.DTO
         /// because we can't update this property alone, we need to update every 
         /// element between the initial position and the target position
         /// </summary>
-        public int InitialAbsolutePosition { get; set; }
+        public int InitialPosition { get; set; }
 
         public bool PositionHasBeenModified()
         {
-            return this.AbsolutePosition != this.InitialAbsolutePosition;
+            return this.Position != this.InitialPosition;
         }
 
         public bool HasBeenVoided()
@@ -97,17 +97,17 @@ namespace HyperTaskServices.Models.DTO
 
         public DTOCalendarTask()
         {
-            this.InitialAbsolutePosition = TaskPosition.MaxValue;
+            this.InitialPosition = TaskPosition.MaxValue;
         }
 
         public DTOCalendarTask(FireCalendarTask task)
         {
             try
             {
-                this.InitialAbsolutePosition = task.AbsolutePosition;
+                this.InitialPosition = task.AbsolutePosition;
 
                 this.CalendarTaskId = task.CalendarTaskId;
-                this.AbsolutePosition = task.AbsolutePosition;
+                this.Position = task.AbsolutePosition;
                 this.Frequency = task.Frequency;
                 this.Name = task.Name;
                 this.RequiredDays = task.RequiredDays;
@@ -137,9 +137,9 @@ namespace HyperTaskServices.Models.DTO
         {
             try
             {
-                this.InitialAbsolutePosition = task.InitialAbsolutePosition;
+                this.InitialPosition = task.InitialPosition;
                 this.CalendarTaskId = task.CalendarTaskId;
-                this.AbsolutePosition = task.AbsolutePosition;
+                this.Position = task.Position;
                 this.Frequency = task.Frequency;
                 this.Name = task.Name;
                 this.RequiredDays = task.RequiredDays;
@@ -172,8 +172,8 @@ namespace HyperTaskServices.Models.DTO
             CalendarTask task = new CalendarTask();
 
             task.CalendarTaskId = this.CalendarTaskId;
-            task.AbsolutePosition = this.AbsolutePosition;
-            task.InitialAbsolutePosition = this.InitialAbsolutePosition;
+            task.Position = this.Position;
+            task.InitialPosition = this.InitialPosition;
             task.Frequency = this.Frequency;
             task.Name = this.Name;
             task.RequiredDays = this.RequiredDays;

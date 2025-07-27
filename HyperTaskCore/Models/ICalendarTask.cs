@@ -27,12 +27,12 @@ namespace HyperTaskCore.Models
         /// Position (order) in the task list
         /// </summary>
         [ReportInclude]
-        public int AbsolutePosition { get; set; }
+        public int Position { get; set; }
 
         /// <summary>
         /// Used to track if AbsolutePosition has changed
         /// </summary>
-        public int InitialAbsolutePosition { get; set; }
+        public int InitialPosition { get; set; }
 
         /// <summary>
         /// The result type of the task. If It's simply Done or Not done, use Binary. 

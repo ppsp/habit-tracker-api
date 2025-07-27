@@ -45,7 +45,7 @@ namespace HyperTaskServices.Services
                 {
                     if (group.Where(p => !p.Void &&
                                     (IsPresentOrFuture(p)))
-                             .GroupBy(p => p.AbsolutePosition).Any(p => p.Count() > 1)) // more than 1 have same position in same group
+                             .GroupBy(p => p.Position).Any(p => p.Count() > 1)) // more than 1 have same position in same group
                     {
                         var buggedGroupId = group.First().GroupId;
                         Logger.Warn($"Reordering bugged tasks with same position, userId = {userId} groupId = {groupId}");
@@ -132,7 +132,7 @@ namespace HyperTaskServices.Services
             {
                 var dateStart = DateTime.Now;
                 // Check if AbsolutePosition already exists
-                var existingTasks = await getTasksAsync(task.UserId, false, task.AbsolutePosition, task.AbsolutePosition, task.GroupId);
+                var existingTasks = await getTasksAsync(task.UserId, false, task.Position, task.Position, task.GroupId);
                 Logger.Debug("Got task seconds " + (DateTime.Now - dateStart).TotalSeconds);
                 if (existingTasks.Count > 0)
                 {
@@ -175,7 +175,7 @@ namespace HyperTaskServices.Services
             if (task.Name == null || task.Name.Length == 0)
                 throw new InvalidCalendarTaskException("Name is invalid");
 
-            if (!task.AbsolutePosition.IsBetween(0, 500))
+            if (!task.Position.IsBetween(0, 500))
                 throw new InvalidCalendarTaskException("Position must be between 0 and 500");
 
             if (task.Frequency.In(eTaskFrequency.Once, eTaskFrequency.UntilDone) && task.AssignedDate == null)
@@ -198,9 +198,9 @@ namespace HyperTaskServices.Services
 
         private async Task reorderTasks(ICalendarTask task)
         {
-            int difference = task.AbsolutePosition - task.InitialAbsolutePosition;
-            int lowest = Math.Min(task.AbsolutePosition, task.InitialAbsolutePosition);
-            int highest = Math.Max(task.AbsolutePosition, task.InitialAbsolutePosition);
+            int difference = task.Position - task.InitialPosition;
+            int lowest = Math.Min(task.Position, task.InitialPosition);
+            int highest = Math.Max(task.Position, task.InitialPosition);
 
             var tasks = await GetTasksAsync(task.UserId,
                                             false,
@@ -209,7 +209,7 @@ namespace HyperTaskServices.Services
                                             task.GroupId,
                                             false);
 
-            if (tasks.Count > Math.Abs(difference) + 1 || tasks.GroupBy(p => p.AbsolutePosition).Any(p => p.Count() > 1)) // reorder all if 2 are the same
+            if (tasks.Count > Math.Abs(difference) + 1 || tasks.GroupBy(p => p.Position).Any(p => p.Count() > 1)) // reorder all if 2 are the same
             {
                 Logger.Debug("Update all tasks" + task.CalendarTaskId + " " + task.UserId);
 
@@ -221,14 +221,14 @@ namespace HyperTaskServices.Services
 
                 // reorder only between current and new Id
                 foreach (var currentTask in tasks.Where(p => p.GroupId == task.GroupId &&
-                                                             p.AbsolutePosition.IsBetween(task.AbsolutePosition,
-                                                                                          task.InitialAbsolutePosition) &&
+                                                             p.Position.IsBetween(task.Position,
+                                                                                          task.InitialPosition) &&
                                                              !p.Void &&
                                                              p.CalendarTaskId != task.CalendarTaskId))
                 {
-                    currentTask.AbsolutePosition = difference < 0 ?
-                                                    currentTask.AbsolutePosition + 1 :
-                                                    currentTask.AbsolutePosition - 1;
+                    currentTask.Position = difference < 0 ?
+                                                    currentTask.Position + 1 :
+                                                    currentTask.Position - 1;
 
                     await UpdateTaskAsyncNoPositionCheck(currentTask);
                 }
@@ -244,16 +244,16 @@ namespace HyperTaskServices.Services
                                      !p.Void &&
                                      p.CalendarTaskId != task.CalendarTaskId &&
                                      (IsPresentOrFuture(p)))
-                         .OrderBy(p => p.AbsolutePosition)
+                         .OrderBy(p => p.Position)
                          .ToList();
 
             int positionIterator = 1;
             foreach (var currentTask in tasks)
             {
-                if (positionIterator == task.AbsolutePosition)
+                if (positionIterator == task.Position)
                     positionIterator++;
 
-                currentTask.AbsolutePosition = positionIterator++;
+                currentTask.Position = positionIterator++;
 
                 await UpdateTaskAsyncNoPositionCheck(currentTask);
             }
@@ -263,13 +263,13 @@ namespace HyperTaskServices.Services
         {
             tasks = tasks.Where(p => !p.Void &&
                                      (IsPresentOrFuture(p)))
-                         .OrderBy(p => p.AbsolutePosition)
+                         .OrderBy(p => p.Position)
                          .ToList();
 
             int positionIterator = 1;
             foreach (var currentTask in tasks)
             {
-                currentTask.AbsolutePosition = positionIterator++;
+                currentTask.Position = positionIterator++;
 
                 await UpdateTaskAsyncNoPositionCheck(currentTask);
 
@@ -434,7 +434,7 @@ namespace HyperTaskServices.Services
         {
             if (task.HasBeenVoided())
             {
-                task.AbsolutePosition = TaskPosition.MaxValue;
+                task.Position = TaskPosition.MaxValue;
             }
             else if (task.PositionHasBeenModified())
             {

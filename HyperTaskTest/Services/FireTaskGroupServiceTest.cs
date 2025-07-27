@@ -16,7 +16,7 @@ namespace HyperTaskTest
             var testGroup = getTestTaskGroup();
             
             // ACT
-            var id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            var id = this._fireTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // ASSERT
             Assert.IsTrue(id != null && id.Length > 0);
@@ -31,10 +31,10 @@ namespace HyperTaskTest
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            var firebaseId = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            var firebaseId = this._fireTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // ACT
-            var retrievedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var retrievedGroup = this._fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
             // ASSERT
             Assert.IsTrue(AssertValuesAreTheSame(testGroup, retrievedGroup));
@@ -62,16 +62,16 @@ namespace HyperTaskTest
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            var id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            var id = this._fireTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // ACT
-            var updatedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var updatedGroup = this._fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
             updatedGroup.Name = "NewName2";
             updatedGroup.Position = 32;
             updatedGroup.Void = true;
             updatedGroup.ColorHex = "ABBABC";
 
-            var success1 = this.fireTaskGroupService.UpdateGroupAsync(updatedGroup).Result;
+            var success1 = this._fireTaskGroupService.UpdateGroupAsync(updatedGroup).Result;
 
             // ASSERT
             Assert.IsTrue(success1);
@@ -86,17 +86,17 @@ namespace HyperTaskTest
 
             // ARRANGE
             var testGroup = getTestTaskGroup();
-            var id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
+            var id = this._fireTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // ACT
-            var updatedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var updatedGroup = this._fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
             updatedGroup.Name = "NewName2";
             updatedGroup.Position = 32;
             updatedGroup.Void = true;
             updatedGroup.ColorHex = "ABBABC";
 
-            var success1 = this.fireTaskGroupService.UpdateGroupAsync(updatedGroup).Result;
-            var retrievedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var success1 = this._fireTaskGroupService.UpdateGroupAsync(updatedGroup).Result;
+            var retrievedGroup = this._fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
             // ASSERT
             Assert.IsTrue(AssertValuesAreTheSame(updatedGroup, retrievedGroup));
@@ -116,12 +116,12 @@ namespace HyperTaskTest
             testGroup2.Position = 2;
             var testGroup3 = getTestTaskGroup();
             testGroup3.Position = 3;
-            testGroup1.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup1).Result;
-            testGroup2.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup2).Result;
-            testGroup3.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup3).Result;
+            testGroup1.Id = this._fireTaskGroupService.InsertGroupAsync(testGroup1).Result;
+            testGroup2.Id = this._fireTaskGroupService.InsertGroupAsync(testGroup2).Result;
+            testGroup3.Id = this._fireTaskGroupService.InsertGroupAsync(testGroup3).Result;
 
             // ACT
-            var retrievedGroups = this.fireTaskGroupService.GetGroupsAsync(testUserId, true).Result;
+            var retrievedGroups = this._fireTaskGroupService.GetGroupsAsync(_testUserId, true).Result;
 
             // ASSERT
             Assert.IsTrue(retrievedGroups.Count == 3);
@@ -134,21 +134,21 @@ namespace HyperTaskTest
 
         private void FirebaseDeleteAllGroups()
         {
-            var groups = this.fireTaskGroupService.GetGroupsAsync(testUserId, true).Result;
+            var groups = this._fireTaskGroupService.GetGroupsAsync(_testUserId, true).Result;
 
             foreach (var group in groups)
             {
-                var result = this.fireTaskGroupService.DeleteGroupAsync(group.GroupId).Result;
+                var result = this._fireTaskGroupService.DeleteGroupAsync(group.GroupId).Result;
             }
         }
 
         private void MongoDeleteAllGroups()
         {
-            var groups = this.mongoTaskGroupService.GetGroupsAsync(testUserId, true).Result;
+            var groups = this._mongoTaskGroupService.GetGroupsAsync(_testUserId, true).Result;
 
             foreach (var group in groups)
             {
-                var result = this.mongoTaskGroupService.DeleteGroupAsync(group.GroupId).Result;
+                var result = this._mongoTaskGroupService.DeleteGroupAsync(group.GroupId).Result;
             }
         }
 
@@ -160,7 +160,7 @@ namespace HyperTaskTest
             testGroup.GroupId = Guid.NewGuid().ToString();
             testGroup.ColorHex = "FFFFFF";
             testGroup.Position = 1;
-            testGroup.UserId = testUserId;
+            testGroup.UserId = _testUserId;
 
             return testGroup;
         }

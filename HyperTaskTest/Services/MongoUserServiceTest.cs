@@ -12,7 +12,7 @@ namespace HyperTaskTest
             var testUser = getTestUser();
 
             // ACT
-            var success = mongoUserService.InsertUpdateUserAsync(testUser).Result;
+            var success = _mongoUserService.InsertUpdateUserAsync(testUser).Result;
 
             // ASSERT
             Assert.IsTrue(success);
@@ -63,11 +63,11 @@ namespace HyperTaskTest
         {
             // ARRANGE
             var testUser = getTestUser();
-            var successInsert = mongoUserService.InsertUpdateUserAsync(testUser).Result;
-            var insertedUser = mongoUserService.GetUserAsync(testUser.UserId).Result;
+            var successInsert = _mongoUserService.InsertUpdateUserAsync(testUser).Result;
+            var insertedUser = _mongoUserService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
-            var successDelete = mongoUserService.DeleteUserAsync(insertedUser.Id).Result;
+            var successDelete = _mongoUserService.DeleteUserAsync(insertedUser.Id).Result;
 
             // ASSERT
             Assert.IsTrue(successDelete);
@@ -81,12 +81,12 @@ namespace HyperTaskTest
         {
             // ARRANGE
             var testUser = getTestUser();
-            var successInsert = mongoUserService.InsertUpdateUserAsync(testUser).Result;
-            var insertedUser = mongoUserService.GetUserAsync(testUser.UserId).Result;
+            var successInsert = _mongoUserService.InsertUpdateUserAsync(testUser).Result;
+            var insertedUser = _mongoUserService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
-            var successDelete = mongoUserService.DeleteUserAsync(insertedUser.Id).Result;
-            insertedUser = mongoUserService.GetUserAsync(testUser.UserId).Result;
+            var successDelete = _mongoUserService.DeleteUserAsync(insertedUser.Id).Result;
+            insertedUser = _mongoUserService.GetUserAsync(testUser.UserId).Result;
 
             // ASSERT
             Assert.IsTrue(insertedUser is NULLUser);

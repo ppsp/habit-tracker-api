@@ -17,7 +17,7 @@ namespace HyperTaskTest
             var testUser = getTestUser();
 
             // ACT
-            var success = fireUserService.InsertUpdateUserAsync(testUser).Result;
+            var success = _fireUserService.InsertUpdateUserAsync(testUser).Result;
 
             // ASSERT
             Assert.IsTrue(success);
@@ -68,11 +68,11 @@ namespace HyperTaskTest
         {
             // ARRANGE
             var testUser = getTestUser();
-            var successInsert = fireUserService.InsertUpdateUserAsync(testUser).Result;
-            var insertedUser = fireUserService.GetUserAsync(testUser.UserId).Result;
+            var successInsert = _fireUserService.InsertUpdateUserAsync(testUser).Result;
+            var insertedUser = _fireUserService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
-            var successDelete = fireUserService.DeleteUserAsync(insertedUser.Id).Result;
+            var successDelete = _fireUserService.DeleteUserAsync(insertedUser.Id).Result;
 
             // ASSERT
             Assert.IsTrue(successDelete);
@@ -86,12 +86,12 @@ namespace HyperTaskTest
         {
             // ARRANGE
             var testUser = getTestUser();
-            var successInsert = fireUserService.InsertUpdateUserAsync(testUser).Result;
-            var insertedUser = fireUserService.GetUserAsync(testUser.UserId).Result;
+            var successInsert = _fireUserService.InsertUpdateUserAsync(testUser).Result;
+            var insertedUser = _fireUserService.GetUserAsync(testUser.UserId).Result;
 
             // ACT
-            var successDelete = fireUserService.DeleteUserAsync(insertedUser.Id).Result;
-            insertedUser = fireUserService.GetUserAsync(testUser.UserId).Result;
+            var successDelete = _fireUserService.DeleteUserAsync(insertedUser.Id).Result;
+            insertedUser = _fireUserService.GetUserAsync(testUser.UserId).Result;
 
             // ASSERT
             Assert.IsTrue(insertedUser is NULLUser);
@@ -229,7 +229,7 @@ namespace HyperTaskTest
 
         private void DeleteUser(IUser user)
         {
-            var result = fireUserService.DeleteUserAsync(user.UserId).Result;
+            var result = _fireUserService.DeleteUserAsync(user.UserId).Result;
         }
     }
 }

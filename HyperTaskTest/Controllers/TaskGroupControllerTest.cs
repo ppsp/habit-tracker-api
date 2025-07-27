@@ -25,7 +25,7 @@ namespace HyperTaskTest
             var testTaskGroup = DTOTaskGroup.FromTaskGroup(getTestTaskGroup());
 
             // ACT
-            var response = taskGroupController.Post(testTaskGroup).Result;
+            var response = _taskGroupController.Post(testTaskGroup).Result;
             var okResult = response as OkObjectResult;
 
             // ASSERT
@@ -45,12 +45,12 @@ namespace HyperTaskTest
             // ARRANGE
             var testGroup = getTestTaskGroup();
             // testGroup.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
-            testGroup.Id = this.mongoTaskGroupService.InsertGroupAsync(testGroup).Result;
+            testGroup.Id = this._mongoTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // var retrievedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
             // ACT
-            var response = taskGroupController.Get(testGroup.UserId).Result;
+            var response = _taskGroupController.Get(testGroup.UserId).Result;
             var okResult = response as OkObjectResult;
 
             // ASSERT
@@ -70,19 +70,19 @@ namespace HyperTaskTest
             // ARRANGE
             var testGroup = getTestTaskGroup();
             // testGroup.Id = this.fireTaskGroupService.InsertGroupAsync(testGroup).Result;
-            testGroup.Id = this.mongoTaskGroupService.InsertGroupAsync(testGroup).Result;
+            testGroup.Id = this._mongoTaskGroupService.InsertGroupAsync(testGroup).Result;
 
             // var retrievedGroup = this.taskGroupService.GetGroupAsync(testGroup.GroupId).Result;
 
             // ACT
             // var updatedGroup = this.fireTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
-            var updatedGroup = this.mongoTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
+            var updatedGroup = this._mongoTaskGroupService.GetGroupAsync(testGroup.GroupId).Result;
             updatedGroup.Name = "NewName2";
             updatedGroup.Position = 32;
             updatedGroup.Void = true;
             updatedGroup.ColorHex = "ABBABC";
 
-            var response = taskGroupController.Put(DTOTaskGroup.FromTaskGroup(updatedGroup)).Result;
+            var response = _taskGroupController.Put(DTOTaskGroup.FromTaskGroup(updatedGroup)).Result;
             var okResult = response as OkObjectResult;
 
             // ASSERT

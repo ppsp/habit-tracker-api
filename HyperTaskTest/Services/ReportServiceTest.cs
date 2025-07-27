@@ -19,7 +19,7 @@ namespace HyperTaskTest
             // ACT
             // var success = userService.InsertUpdateUserAsync(testUser).Result;
 
-            var file = this.reportService.GetTasksCsv("NSm32K4BF6Y7NFc2kwqWeGmy6KG2").Result;
+            var file = this._reportService.GetTasksCsv("NSm32K4BF6Y7NFc2kwqWeGmy6KG2").Result;
 
             // ASSERT
             Assert.IsTrue(file.Length > 0);

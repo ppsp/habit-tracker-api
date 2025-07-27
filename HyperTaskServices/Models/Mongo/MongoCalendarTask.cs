@@ -86,7 +86,7 @@ namespace HyperTaskServices.Models.Mongo
             try
             {
                 this.CalendarTaskId = task.CalendarTaskId;
-                this.AbsolutePosition = task.AbsolutePosition;
+                this.AbsolutePosition = task.Position;
                 this.Frequency = task.Frequency;
                 this.Name = task.Name;
                 this.RequiredDays = task.RequiredDays;
@@ -118,7 +118,7 @@ namespace HyperTaskServices.Models.Mongo
             CalendarTask task = new CalendarTask();
 
             task.CalendarTaskId = this.CalendarTaskId;
-            task.AbsolutePosition = this.AbsolutePosition;
+            task.Position = this.AbsolutePosition;
             task.Frequency = this.Frequency;
             task.Name = this.Name;
             task.RequiredDays = this.RequiredDays;
@@ -132,7 +132,7 @@ namespace HyperTaskServices.Models.Mongo
             task.NotificationTime = this.NotificationTime;
             task.NotificationId = this.NotificationId;
             task.StatType = this.StatType;
-            task.InitialAbsolutePosition = this.AbsolutePosition;
+            task.InitialPosition = this.AbsolutePosition;
             task.Histories = this.Histories.Select(p => p.ToTaskHistory() as ITaskHistory).ToList();
             task.SkipUntil = this.SkipUntil;
             task.DoneDate = this.DoneDate;

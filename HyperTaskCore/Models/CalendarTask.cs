@@ -15,8 +15,8 @@ namespace HyperTaskCore.Models
         public string Name { get ; set ; }
         public List<DayOfWeek> RequiredDays { get ; set ; }
         public eTaskFrequency Frequency { get ; set ; }
-        public int AbsolutePosition { get ; set ; }
-        public int InitialAbsolutePosition { get; set; }
+        public int Position { get ; set ; }
+        public int InitialPosition { get; set; }
         public eResultType ResultType { get ; set ; }
         public bool Void { get ; set ; }
         public DateTime? InsertDate { get ; set ; }
@@ -64,12 +64,12 @@ namespace HyperTaskCore.Models
 
         public bool PositionHasBeenModified()
         {
-            return this.AbsolutePosition != this.InitialAbsolutePosition;
+            return this.Position != this.InitialPosition;
         }
 
         public CalendarTask()
         {
-            this.InitialAbsolutePosition = TaskPosition.MaxValue;
+            this.InitialPosition = TaskPosition.MaxValue;
         }
     }
 }

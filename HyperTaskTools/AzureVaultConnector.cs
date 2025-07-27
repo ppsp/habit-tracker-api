@@ -1,25 +1,37 @@
-﻿using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.Services.AppAuthentication;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using System;
+using System.Threading.Tasks;
 
 namespace HyperTaskTools
 {
     public class AzureVaultConnector
     {
-        private string VaultName { get; set; }
+        private readonly SecretClient _secretClient;
 
         public AzureVaultConnector(string vaultName)
         {
-            this.VaultName = vaultName;
+            if (string.IsNullOrEmpty(vaultName))
+                throw new ArgumentNullException(nameof(vaultName));
+
+            var vaultUri = new Uri($"https://{vaultName}.vault.azure.net");
+            _secretClient = new SecretClient(vaultUri, new DefaultAzureCredential());
         }
 
-        public string GetSecretValueString(string key)
+        public async Task<string> GetSecretValueStringAsync(string key)
         {
-            AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
-            KeyVaultClient keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-            var secretJson = keyVaultClient.GetSecretAsync($"https://{this.VaultName}.vault.azure.net/secrets/{key}")
-                                           .ConfigureAwait(false).GetAwaiter().GetResult();
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
 
-            return secretJson.Value;
+            try
+            {
+                KeyVaultSecret secret = await _secretClient.GetSecretAsync(key);
+                return secret.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to retrieve secret '{key}' from Key Vault.", ex);
+            }
         }
     }
 }
